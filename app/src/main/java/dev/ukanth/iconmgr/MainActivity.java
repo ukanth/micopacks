@@ -1,0 +1,123 @@
+package dev.ukanth.iconmgr;
+
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+    private RecyclerView recyclerView;
+    private IconAdapter adapter;
+    private List<IconPack> iconPacksList;
+
+    private MaterialDialog plsWait;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.content_main);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+
+        iconPacksList = new ArrayList<>();
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(llm);
+        recyclerView.setHasFixedSize(true);
+
+
+        LoadAppList getAppList = new LoadAppList();
+        if (plsWait == null && (getAppList.getStatus() == AsyncTask.Status.PENDING ||
+                getAppList.getStatus() == AsyncTask.Status.FINISHED)) {
+            getAppList.setContext(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+
+    }
+
+    public class LoadAppList extends AsyncTask<Void, Integer, Void> {
+
+        Context context = null;
+
+        public LoadAppList setContext(Context context) {
+            this.context = context;
+            return this;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            plsWait = new MaterialDialog.Builder(context).cancelable(false).
+                    title(context.getString(R.string.loading)).progress(false, context.getPackageManager().getInstalledApplications(0)
+                    .size(), true).show();
+            doProgress(0);
+        }
+
+        public void doProgress(int value) {
+            publishProgress(value);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
+            HashMap<String, IconPack> iconPack = iconPackManager.getAvailableIconPacks(false);
+            for (Map.Entry<String, IconPack> entry : iconPack.entrySet()) {
+                iconPacksList.add(entry.getValue());
+            }
+
+            if (isCancelled())
+                return null;
+            //publishProgress(-1);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            doProgress(-1);
+            try {
+                try {
+                    if (plsWait != null && plsWait.isShowing()) {
+                        plsWait.dismiss();
+                    }
+                } catch (final IllegalArgumentException e) {
+                    // Handle or log or ignore
+                } catch (final Exception e) {
+                    // Handle or log or ignore
+                } finally {
+                    plsWait.dismiss();
+                    plsWait = null;
+                }
+                //mSwipeLayout.setRefreshing(false);
+                adapter = new IconAdapter(MainActivity.this, iconPacksList);
+                recyclerView.setAdapter(adapter);
+            } catch (Exception e) {
+                // nothing
+                if (plsWait != null) {
+                    plsWait.dismiss();
+                    plsWait = null;
+                }
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+
+            if (progress[0] == 0 || progress[0] == -1) {
+                //do nothing
+            } else {
+                if (plsWait != null) {
+                    plsWait.incrementProgress(progress[0]);
+                }
+            }
+        }
+    }
+}

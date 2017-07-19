@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Icon Theme Manager</string>
+    <string name="loading">Loading Icon Pack</string>
+    <string name="title">Action</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="install">Install</string>
+    <string name="no_browser">No browser</string>
+    <string name="close">Close</string>
+    <string name="apply_manual">%1$s doesn\'t support direct apply, you can apply %2$s manually from the launcher settings.</string>
+    <string name="apply_manual_evie">Tap and hold on homescreen - Settings - Icon Pack - choose %s.</string>
+    <string name="apply_launch_failed">Unable to launch %s settings</string>
+    <string name="apply_launcher_not_installed">%s is not installed. Do you want to open
+        Google Play Store to download and install it?</string>
+    <string name="nodefault">No Default Launcher found</string>
+</resources>
