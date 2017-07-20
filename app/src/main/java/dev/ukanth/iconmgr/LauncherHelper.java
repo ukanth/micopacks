@@ -7,14 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.content.IntentCompat;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.stericson.roottools.RootTools;
-
-import dev.ukanth.iconmgr.util.Util;
 
 /*
  * CandyBar - Material Dashboard

@@ -56,9 +56,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                                             determineApply(ctx, currentItem);
                                             break;
                                         case 1:
-                                            //openPlay(ctx, currentItem);
-                                            Util.changeSharedPreferences(ctx, "com.teslacoilsw.launcher", currentItem.name + ":GO:" + currentItem.packageName);
-                                            Util.restartLauncher(ctx, "com.teslacoilsw.launcher");
+                                            openPlay(ctx, currentItem);
+                                            //Util.changeSharedPreferences(ctx, "com.teslacoilsw.launcher", currentItem.name + ":GO:" + currentItem.packageName);
+                                            //Util.restartLauncher(ctx, "com.teslacoilsw.launcher");
                                             break;
                                         case 2:
                                             openApp(ctx, currentItem);
