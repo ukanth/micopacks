@@ -23,6 +23,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.List;
 
+import dev.ukanth.iconmgr.util.Util;
+
 public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
 
     private Context ctx;
@@ -54,7 +56,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                                             determineApply(ctx, currentItem);
                                             break;
                                         case 1:
-                                            openPlay(ctx, currentItem);
+                                            //openPlay(ctx, currentItem);
+                                            Util.changeSharedPreferences(ctx, "com.teslacoilsw.launcher", currentItem.name + ":GO:" + currentItem.packageName);
+                                            Util.restartLauncher(ctx, "com.teslacoilsw.launcher");
                                             break;
                                         case 2:
                                             openApp(ctx, currentItem);

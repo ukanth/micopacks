@@ -7,10 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.content.IntentCompat;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.stericson.roottools.RootTools;
+
+import dev.ukanth.iconmgr.util.Util;
 
 /*
  * CandyBar - Material Dashboard
@@ -258,7 +262,7 @@ public class LauncherHelper {
                     nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_PACKAGE", launcherPackage);
                     nova.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(nova);
-
+                    //restart NOVA
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }

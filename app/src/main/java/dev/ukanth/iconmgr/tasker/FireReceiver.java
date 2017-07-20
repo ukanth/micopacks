@@ -22,6 +22,8 @@ import android.os.Message;
 import android.support.v4.content.IntentCompat;
 import android.widget.Toast;
 
+import com.stericson.roottools.RootTools;
+
 /**
  * This is the "fire" BroadcastReceiver for a Locale Plug-in setting.
  */
@@ -67,10 +69,10 @@ public final class FireReceiver extends BroadcastReceiver {
         if (PluginBundleManager.isBundleValid(bundle)) {
             String index = bundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
 
+
+
             //restart activity
-            ComponentName componentName = context.getPackageManager().getLaunchIntentForPackage("com.xxx.yyy.zzz").getComponent();
-            Intent intent2 = IntentCompat.makeRestartActivityTask(componentName);
-            context.startActivity(intent2);
+
         }
     }
 }
