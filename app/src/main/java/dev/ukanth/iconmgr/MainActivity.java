@@ -1,11 +1,17 @@
 package dev.ukanth.iconmgr;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -16,6 +22,8 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
+    private TextView emptyView;
+
     private IconAdapter adapter;
     private List<IconPack> iconPacksList;
 
@@ -28,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.content_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        emptyView = (TextView) findViewById(R.id.empty_view);
+
 
         iconPacksList = new ArrayList<>();
 
@@ -42,6 +52,28 @@ public class MainActivity extends AppCompatActivity {
             getAppList.setContext(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.pref:
+                Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(myIntent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public class LoadAppList extends AsyncTask<Void, Integer, Void> {
@@ -99,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
                 //mSwipeLayout.setRefreshing(false);
                 adapter = new IconAdapter(MainActivity.this, iconPacksList);
                 recyclerView.setAdapter(adapter);
+
+                if(iconPacksList.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
+                }
             } catch (Exception e) {
                 // nothing
                 if (plsWait != null) {

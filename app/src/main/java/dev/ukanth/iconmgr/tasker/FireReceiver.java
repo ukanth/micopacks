@@ -13,16 +13,13 @@
 package dev.ukanth.iconmgr.tasker;
 
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.content.IntentCompat;
 import android.widget.Toast;
 
-import com.stericson.roottools.RootTools;
 
 /**
  * This is the "fire" BroadcastReceiver for a Locale Plug-in setting.
@@ -32,8 +29,8 @@ public final class FireReceiver extends BroadcastReceiver {
 
     /**
      * @param context {@inheritDoc}.
-     * @param intent  the incoming {@link dev.ukanth.iconmgr.tasker.Intent#ACTION_FIRE_SETTING} Intent. This
-     *                should contain the {@link dev.ukanth.iconmgr.tasker.Intent#EXTRA_BUNDLE} that was saved by
+     * @param intent  the incoming {@link com.twofortyfouram.locale.Intent#ACTION_FIRE_SETTING} Intent. This
+     *                should contain the {@link com.twofortyfouram.locale.Intent#EXTRA_BUNDLE} that was saved by
      *                {@link } and later broadcast by Locale.
      */
     @Override
@@ -47,7 +44,7 @@ public final class FireReceiver extends BroadcastReceiver {
         /*
          * Locale guarantees that the Intent action will be ACTION_FIRE_SETTING
          */
-        if (!dev.ukanth.iconmgr.tasker.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
+        if (!com.twofortyfouram.locale.Intent.ACTION_FIRE_SETTING.equals(intent.getAction())) {
             return;
         }
 
@@ -55,8 +52,8 @@ public final class FireReceiver extends BroadcastReceiver {
          * A hack to prevent a private serializable classloader attack
          */
         BundleScrubber.scrub(intent);
-        BundleScrubber.scrub(intent.getBundleExtra(dev.ukanth.iconmgr.tasker.Intent.EXTRA_BUNDLE));
-        final Bundle bundle = intent.getBundleExtra(dev.ukanth.iconmgr.tasker.Intent.EXTRA_BUNDLE);
+        BundleScrubber.scrub(intent.getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
+        final Bundle bundle = intent.getBundleExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
 
         final Handler toaster = new Handler() {
             public void handleMessage(Message msg) {

@@ -24,7 +24,7 @@ public class LocaleEdit extends AppCompatActivity {
 
         BundleScrubber.scrub(getIntent());
         BundleScrubber.scrub(getIntent().getBundleExtra(
-                dev.ukanth.iconmgr.tasker.Intent.EXTRA_BUNDLE));
+                com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
 
         //setContentView(R.layout.tasker_profile);
 

@@ -17,7 +17,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 /**
- * Class for managing the {@link dev.ukanth.iconmgr.tasker.Intent#EXTRA_BUNDLE} for this plug-in.
+ * Class for managing the {@link com.twofortyfouram.locale.Intent#EXTRA_BUNDLE} for this plug-in.
  */
 public final class PluginBundleManager {
     /**

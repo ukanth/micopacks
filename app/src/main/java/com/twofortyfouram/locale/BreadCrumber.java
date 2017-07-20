@@ -10,11 +10,13 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package dev.ukanth.iconmgr.tasker;
+package com.twofortyfouram.locale;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import dev.ukanth.iconmgr.R;
 
 
 /**
@@ -37,6 +39,7 @@ public final class BreadCrumber
     /**
      * Static helper method to generate bread crumbs. Bread crumb strings will be properly formatted for the
      * current language, including right-to-left languages, as long as the proper
+     * string
      * resources have been created.
      * 
      * @param context {@code Context} for loading platform resources. Cannot be null.
@@ -72,10 +75,10 @@ public final class BreadCrumber
             /*
              * Note: this is vulnerable to a private serializable attack, but the try-catch will solve that.
              */
-            final String breadcrumbString = intent.getStringExtra(dev.ukanth.iconmgr.tasker.Intent.EXTRA_STRING_BREADCRUMB);
+            final String breadcrumbString = intent.getStringExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BREADCRUMB);
             if (null != breadcrumbString)
             {
-                //return context.getString(R.string.twofortyfouram_locale_breadcrumb_format, breadcrumbString, context.getString(R.string.twofortyfouram_locale_breadcrumb_separator), currentCrumb);
+                return context.getString(R.string.twofortyfouram_locale_breadcrumb_format, breadcrumbString, context.getString(R.string.twofortyfouram_locale_breadcrumb_separator), currentCrumb);
             }
             return currentCrumb;
         }

@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="dev.ukanth.iconmgr">
+
+    <!-- Screen support -->
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <activity
+        android:name=".tasker.LocaleEdit"
+        android:exported="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/tasker_label"
+        android:uiOptions="splitActionBarWhenNarrow"
+        android:windowSoftInputMode="adjustResize"
+        tools:ignore="ExportedActivity">
+        <intent-filter>
+            <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+        </intent-filter>
+    </activity>
 
     <application
         android:allowBackup="true"
@@ -9,11 +31,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="dev.ukanth.iconmgr.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
     </application>
 

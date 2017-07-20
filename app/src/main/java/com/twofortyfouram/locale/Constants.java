@@ -10,7 +10,7 @@
  * See the License for the specific language governing permissions and limitations under the License.
  */
 
-package dev.ukanth.iconmgr.tasker;
+package com.twofortyfouram.locale;
 
 /**
  * Utility class containing constants for the Locale Developer Platform.
@@ -18,13 +18,15 @@ package dev.ukanth.iconmgr.tasker;
 /*
  * This class is NOT part of the public API.
  */
-/* package */final class Constants {
+/* package */final class Constants
+{
     /**
      * Private constructor prevents instantiation
-     *
+     * 
      * @throws UnsupportedOperationException because this class cannot be instantiated.
      */
-    private Constants() {
+    private Constants()
+    {
         throw new UnsupportedOperationException("This class is non-instantiable"); //$NON-NLS-1$
     }
 
