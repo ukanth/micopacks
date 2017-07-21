@@ -20,6 +20,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
+import dev.ukanth.iconmgr.util.Util;
+
 
 /**
  * This is the "fire" BroadcastReceiver for a Locale Plug-in setting.
@@ -71,12 +73,9 @@ public final class FireReceiver extends BroadcastReceiver {
                 String[] msg = index.split(":");
                 iconName = msg[0];
                 iconPackage = msg[1];
-
+                Util.changeSharedPreferences(context, "com.teslacoilsw.launcher", iconName + ":GO:" + iconPackage);
+                Util.restartLauncher(context, "com.teslacoilsw.launcher");
             }
-
-
-            //restart activity
-
         }
     }
 }

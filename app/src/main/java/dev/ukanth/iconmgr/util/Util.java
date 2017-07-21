@@ -1,10 +1,13 @@
 package dev.ukanth.iconmgr.util;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
+import android.support.v4.content.IntentCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -43,7 +46,7 @@ import eu.chainfire.libsuperuser.Shell;
 public class Util {
 
     public static final String CMD_FIND_XML_FILES = "find /data/data/%s -type f -name \\*.xml";
-    private static final String TAG = "IPM";
+    private static final String TAG = "MICOPACK";
 
     public static final String FILE_SEPARATOR = System.getProperty("file.separator");
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -55,15 +58,32 @@ public class Util {
     public static final String TMP_FILE = ".temp";
 
 
-    public static String readFile(String file) {
-        Log.d(TAG, String.format("readFile(%s)", file));
+    public static String readFile(final String fileName, final String packageName, final String updateValue, final Context ctx) {
         final StringBuilder sb = new StringBuilder();
-        List<String> lines = Shell.SU.run(String.format(CMD_CAT_FILE, file));
-        if (lines != null) {
-            for (String line : lines) {
-                sb.append(line).append(LINE_SEPARATOR);
+        Log.d(TAG, String.format("readFile(%s)", fileName));
+        new AsyncTask<Object, Object, StringBuilder>() {
+            @Override
+            public StringBuilder doInBackground(Object... args) {
+                StringBuilder temp = new StringBuilder();
+                List<String> lines = Shell.SU.run(String.format(CMD_CAT_FILE, fileName));
+                if (lines != null) {
+                    for (String line : lines) {
+                        temp.append(line).append(LINE_SEPARATOR);
+                    }
+                }
+                return temp;
             }
-        }
+            @Override
+            public void onPostExecute(StringBuilder res) {
+                String fileContent = res.toString();
+                if(fileContent != null && !fileContent.isEmpty()) {
+                    PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
+                    preferenceFile.updateValue("theme_icon_pack", updateValue);
+                    savePreferences(preferenceFile, fileName, packageName, ctx);
+                    Log.i(TAG, "preferenceFile: " + preferenceFile.getList().size());
+                }
+            }
+        }.execute();
         return sb.toString();
     }
 
@@ -181,10 +201,16 @@ public class Util {
         }
     }
 
-    public static void restartLauncher(Context context, String packageName) {
-        RootTools.killProcess(packageName);
-        Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-        context.startActivity(LaunchIntent);
+    public static void restartLauncher(final Context context, final String packageName) {
+        new AsyncTask<Object, Object, Void>() {
+            @Override
+            public Void doInBackground(Object... args) {
+                RootTools.killProcess(packageName);
+                Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+                context.startActivity(LaunchIntent);
+                return null;
+            }
+        }.execute();
     }
 
     public static List<String> findXmlFiles(final String packageName) {
@@ -194,17 +220,15 @@ public class Util {
         return files;
     }
 
-    public static boolean changeSharedPreferences(Context ctx, String packageName, String updateName) {
+    public static boolean changeSharedPreferences(Context ctx, String packageName, String updateValue) {
         boolean res = false;
         try {
             String fileName = getDataDir(ctx, packageName) + File.separator + "shared_prefs" + File.separator + packageName + "_preferences.xml";
-            String shared_prefs = readFile(fileName);
-            PreferenceFile preferenceFile = PreferenceFile.fromXml(shared_prefs);
-            preferenceFile.updateValue("theme_icon_pack", updateName);
-            savePreferences(preferenceFile, fileName, packageName, ctx);
-            Log.i(TAG, "preferenceFile: " + preferenceFile.getList().size());
+            Log.d(TAG, String.format("readTextFile(%s)", fileName));
+            readFile(fileName,packageName,updateValue, ctx);
         } catch (Exception e) {
-
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
         }
         return res;
     }
