@@ -20,6 +20,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
+import com.stericson.roottools.RootTools;
+
+import dev.ukanth.iconmgr.LauncherHelper;
+import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.util.Util;
 
 
@@ -73,8 +77,33 @@ public final class FireReceiver extends BroadcastReceiver {
                 String[] msg = index.split(":");
                 iconName = msg[0];
                 iconPackage = msg[1];
-                Util.changeSharedPreferences(context, "com.teslacoilsw.launcher", iconName + ":GO:" + iconPackage);
-                Util.restartLauncher(context, "com.teslacoilsw.launcher");
+                String launcherPack = LauncherHelper.getLauncherPackage(context);
+                if (launcherPack == null || launcherPack.equals("android")) {
+                    Toast.makeText(context, R.string.nodefault, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                String launcherName = LauncherHelper.getLauncherName(context,launcherPack);
+                switch (LauncherHelper.getLauncherId(launcherPack)) {
+                    case LauncherHelper.NOVA:
+                        if (RootTools.isRootAvailable()) {
+                            Util.changeSharedPreferences(context, "com.teslacoilsw.launcher", iconName + ":GO:" + iconPackage);
+                            Util.restartLauncher(context, "com.teslacoilsw.launcher");
+                        } else {
+                            Toast.makeText(context, R.string.rootrequired, Toast.LENGTH_LONG).show();
+                        }
+                        break;
+                    case LauncherHelper.SOLO:
+                    case LauncherHelper.ZERO:
+                    case LauncherHelper.V:
+                    case LauncherHelper.ABC:
+                    case LauncherHelper.NEXT:
+                    case LauncherHelper.GO:
+                        LauncherHelper.apply(context, iconPackage, launcherPack);
+                        break;
+                    default:
+                        Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                }
             }
         }
     }

@@ -1,9 +1,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
+    <!--<SwitchPreference
         android:defaultValue="false"
         android:key="use_root"
         android:summary="@string/use_root_desk"
-        android:title="@string/use_root" />
+        android:title="@string/use_root" />-->
 
 </PreferenceScreen>

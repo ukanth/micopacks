@@ -23,8 +23,6 @@
     <string name="no_data_available">No compatible icon packs found</string>
     <string name="title_activity_settings">Settings</string>
     <string name="pref_header_general">General</string>
-    <string name="use_root">Use root</string>
-    <string name="use_root_desk">Root mode will enable to apply icon packs without user interaction</string>
     <string name="help">Help</string>
     <string name="about">About</string>
     <string name="saverules">Save</string>
@@ -34,13 +32,19 @@
         Libraries Used: \n
         RootTools by Stericson \n
         libsuperuser by Chainfire \n
-        material-dialogs by afollestad \n\n
+        material-dialogs by afollestad \n
+
+        Special Credits: \n
+        preferences-manager by SimonMarquis \n
+        Candybar-library by danimahardhika \n\n
+
 
         Developed by ukanth@github  \n
     </string>
 
-    <string name="about_help">Help will be updated later
-    </string>
+    <string name="about_help">Tasker plugin - Requires ROOT for Nova Launcher</string>
+    <string name="notsupported">Detected %s, Sorry not supported for tasker yet!</string>
+    <string name="rootrequired">Root requires to apply the change</string>
 
 
 </resources>

@@ -5,6 +5,8 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
@@ -32,33 +34,33 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 public class LauncherHelper {
 
-    private static final int UNKNOWN = -1;
-    private static final int ACTION = 1;
-    private static final int ADW = 2;
-    private static final int APEX = 3;
-    private static final int ATOM = 4;
-    private static final int AVIATE = 5;
-    private static final int CMTHEME = 6;
-    private static final int GO = 7;
-    private static final int HOLO = 8;
-    private static final int HOLOHD = 9;
-    private static final int LGHOME = 10;
-    private static final int LGHOME3 = 11;
-    private static final int LUCID = 12;
-    private static final int MINI = 13;
-    private static final int NEXT = 14;
-    private static final int NOVA = 15;
-    private static final int SMART = 16;
-    private static final int SOLO = 17;
-    private static final int ZENUI = 18;
-    private static final int NOUGAT = 19;
-    private static final int M = 20;
-    private static final int ZERO = 21;
-    private static final int V = 22;
-    private static final int ABC = 23;
-    private static final int EVIE = 24;
+    public static final int UNKNOWN = -1;
+    public static final int ACTION = 1;
+    public static final int ADW = 2;
+    public static final int APEX = 3;
+    public static final int ATOM = 4;
+    public static final int AVIATE = 5;
+    public static final int CMTHEME = 6;
+    public static final int GO = 7;
+    public static final int HOLO = 8;
+    public static final int HOLOHD = 9;
+    public static final int LGHOME = 10;
+    public static final int LGHOME3 = 11;
+    public static final int LUCID = 12;
+    public static final int MINI = 13;
+    public static final int NEXT = 14;
+    public static final int NOVA = 15;
+    public static final int SMART = 16;
+    public static final int SOLO = 17;
+    public static final int ZENUI = 18;
+    public static final int NOUGAT = 19;
+    public static final int M = 20;
+    public static final int ZERO = 21;
+    public static final int V = 22;
+    public static final int ABC = 23;
+    public static final int EVIE = 24;
 
-    private static int getLauncherId(String packageName) {
+    public static int getLauncherId(String packageName) {
         if (packageName == null) return UNKNOWN;
         switch (packageName) {
             case "com.actionlauncher.playstore":
@@ -119,6 +121,30 @@ public class LauncherHelper {
             default:
                 return UNKNOWN;
         }
+    }
+
+    public static String getLauncherPackage(Context context) {
+        PackageManager localPackageManager = context.getPackageManager();
+        Intent intent = new Intent("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.HOME");
+        String packageName = localPackageManager.resolveActivity(intent,
+                PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName;
+        return packageName;
+    }
+
+    public static String getLauncherName(Context context, String pkgName) {
+        PackageManager pm = context.getPackageManager();
+        ApplicationInfo ai;
+        try {
+            ai = pm.getApplicationInfo(pkgName, 0);
+        } catch (final PackageManager.NameNotFoundException e) {
+            ai = null;
+        }
+        return (String) (ai != null ? pm.getApplicationLabel(ai) : "Unknown");
+    }
+
+    public static int getLauncherId(Context context) {
+        return getLauncherId(getLauncherPackage(context));
     }
 
     public static void apply(@NonNull Context context, String packageName, String launcherName) {
@@ -258,7 +284,6 @@ public class LauncherHelper {
                     nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_PACKAGE", launcherPackage);
                     nova.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(nova);
-                    //restart NOVA
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
@@ -401,9 +426,9 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
-            case EVIE:
+            /*case EVIE:
                 applyEvie(context, launcherPackage, launcherName);
-                break;
+                break;*/
         }
     }
 
@@ -438,37 +463,41 @@ public class LauncherHelper {
                 .show();
     }
 
-    private static void applyEvie(final Context context, final String launcherPackage, final String launcherName) {
-        new MaterialDialog.Builder(context)
-                .typeface("Font-Medium.ttf", "Font-Regular.ttf")
-                .title(launcherName)
-                .content(context.getResources().getString(R.string.apply_manual,
-                        launcherName,
-                        context.getResources().getString(R.string.app_name)) + "\n\n" +
-                        context.getResources().getString(R.string.apply_manual_evie,
-                                context.getResources().getString(R.string.app_name)))
-                .positiveText(context.getResources().getString(R.string.ok))
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        try {
-                            final Intent intent = new Intent(Intent.ACTION_MAIN);
-                            intent.setComponent(new ComponentName(launcherPackage,
-                                    "com.voxel.launcher3.Launcher"));
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                            context.startActivity(intent);
+    /*private static void applyEvie(final Context context, final String launcherPackage, final String launcherName) {
+        try {
+            new MaterialDialog.Builder(context)
+                    .typeface("Font-Medium.ttf", "Font-Regular.ttf")
+                    .title(launcherName)
+                    .content(context.getResources().getString(R.string.apply_manual,
+                            launcherName,
+                            context.getResources().getString(R.string.app_name)) + "\n\n" +
+                            context.getResources().getString(R.string.apply_manual_evie,
+                                    context.getResources().getString(R.string.app_name)))
+                    .positiveText(context.getResources().getString(R.string.ok))
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            try {
+                                final Intent intent = new Intent(Intent.ACTION_MAIN);
+                                intent.setComponent(new ComponentName(launcherPackage,
+                                        "com.voxel.launcher3.Launcher"));
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                context.startActivity(intent);
 
-                        } catch (ActivityNotFoundException | NullPointerException e) {
-                            openGooglePlay(context, launcherPackage, launcherName);
-                        } catch (SecurityException | IllegalArgumentException e) {
-                            Toast.makeText(context, String.format(context.getResources().getString(
-                                    R.string.apply_launch_failed), launcherName),
-                                    Toast.LENGTH_LONG).show();
+                            } catch (ActivityNotFoundException | NullPointerException e) {
+                                openGooglePlay(context, launcherPackage, launcherName);
+                            } catch (SecurityException | IllegalArgumentException e) {
+                                Toast.makeText(context, String.format(context.getResources().getString(
+                                        R.string.apply_launch_failed), launcherName),
+                                        Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
-                }).negativeText(context.getResources().getString(R.string.cancel))
-                .show();
-    }
+                    }).negativeText(context.getResources().getString(R.string.cancel))
+                    .show();
+        } catch(Exception e) {
+               // Toast.makeText(context,R.string.unexceptec)
+        }
+    }*/
 
     private static void openGooglePlay(final Context context, final String packageName, final String launcherName) {
         new MaterialDialog.Builder(context)
