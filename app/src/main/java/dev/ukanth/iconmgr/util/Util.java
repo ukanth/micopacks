@@ -22,13 +22,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import dev.ukanth.iconmgr.IconPack;
+import dev.ukanth.iconmgr.IconPackManager;
 import eu.chainfire.libsuperuser.Shell;
 
 /**
@@ -103,6 +108,25 @@ public class Util {
         }
         Log.d(TAG, "Preferences correctly updated");
         return true;
+    }
+
+    public static List<IconPack> getListOfPacks(Context ctx) {
+        ArrayList<IconPack> iconPacksList = new ArrayList<>();
+        IconPackManager iconPackManager = new IconPackManager(ctx);
+        HashMap<String, IconPack> iconPack = iconPackManager.getAvailableIconPacks();
+        for (Map.Entry<String, IconPack> entry : iconPack.entrySet()) {
+            iconPacksList.add(entry.getValue());
+        }
+        return iconPacksList;
+    }
+
+    public static int getUid(Context ctx, String packageName) {
+        int uid = 0;
+        try {
+            uid = ctx.getPackageManager().getApplicationInfo(packageName, 0).uid;
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+        return uid;
     }
 
     public static String extractFileName(String s) {

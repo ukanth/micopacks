@@ -41,5 +41,6 @@
     <string name="use_root_desk">Root mode will enable to apply icon packs without user interaction</string>
     <string name="help">Help</string>
     <string name="about">About</string>
+    <string name="saverules">Save</string>
 
 </resources>

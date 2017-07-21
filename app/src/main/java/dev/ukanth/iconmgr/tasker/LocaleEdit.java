@@ -6,17 +6,19 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import java.util.List;
+import java.util.Random;
+
+import dev.ukanth.iconmgr.IconPack;
+import dev.ukanth.iconmgr.R;
+import dev.ukanth.iconmgr.util.Util;
 
 public class LocaleEdit extends AppCompatActivity {
-    //public static final String LOCALE_BRIGHTNESS = "dev.ukanth.ufirewall.plugin.LocaleEdit.ACTIVE_PROFLE";
-
     private boolean mIsCancelled = false;
 
     protected void onCreate(Bundle paramBundle) {
@@ -26,13 +28,40 @@ public class LocaleEdit extends AppCompatActivity {
         BundleScrubber.scrub(getIntent().getBundleExtra(
                 com.twofortyfouram.locale.Intent.EXTRA_BUNDLE));
 
-        //setContentView(R.layout.tasker_profile);
-
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.tasker_toolbar);
-
-        //setSupportActionBar(toolbar);
+        setContentView(R.layout.tasker_main);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
+        List<IconPack> iconPacks = Util.getListOfPacks(getApplicationContext());
+
+
+        for (IconPack pack : iconPacks) {
+            RadioButton rdbtn = new RadioButton(this);
+            int uid = Util.getUid(getApplicationContext(),pack.packageName);
+            rdbtn.setId(uid);
+            rdbtn.setText(pack.name+ ":" + pack.packageName);
+            groupPacks.addView(rdbtn);
+        }
+
+        setupTitleApi11();
+
+        if (null == paramBundle) {
+            final Bundle forwardedBundle = getIntent().getBundleExtra(
+                    com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
+            if (PluginBundleManager.isBundleValid(forwardedBundle)) {
+                String index = forwardedBundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
+                if (index.contains(":")) {
+                    index = index.split(":")[2];
+                }
+                if (index != null) {
+                    RadioButton btn = (RadioButton) findViewById(Integer.parseInt(index));
+                    if (btn != null) {
+                        btn.setChecked(true);
+                    }
+                }
+            }
+        }
 
     }
 
@@ -59,43 +88,38 @@ public class LocaleEdit extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
-           /* case R.id.twofortyfouram_locale_menu_dontsave:
+            case R.id.twofortyfouram_locale_menu_dontsave:
                 mIsCancelled = true;
                 finish();
                 return true;
             case R.id.twofortyfouram_locale_menu_save:
                 finish();
-                return true;*/
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    /*@Override
+    @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.twofortyfouram_locale_help_save_dontsave, menu);
+        getMenuInflater().inflate(R.menu.tasker_menu, menu);
         return true;
-    }*/
+    }
 
     @Override
     public void finish() {
         if (mIsCancelled) {
             setResult(RESULT_CANCELED);
         } else {
-            /*RadioGroup group = (RadioGroup) findViewById(R.id.radioProfiles);
+            RadioGroup group = (RadioGroup) findViewById(R.id.radioPacks);
             int selectedId = group.getCheckedRadioButtonId();
             RadioButton radioButton = (RadioButton) findViewById(selectedId);
             String action = radioButton.getText().toString();
             final Intent resultIntent = new Intent();
-            if (!G.isProfileMigrated()) {
-                int idx = group.indexOfChild(radioButton);
-                resultIntent.putExtra(dev.ukanth.iconmgr.tasker.Intent.EXTRA_BUNDLE, PluginBundleManager.generateBundle(getApplicationContext(), idx + "::" + action));
-            } else {
-                resultIntent.putExtra(dev.ukanth.iconmgr.tasker.Intent.EXTRA_BUNDLE, PluginBundleManager.generateBundle(getApplicationContext(), selectedId + "::" + action));
-            }
-            resultIntent.putExtra(dev.ukanth.iconmgr.tasker.Intent.EXTRA_STRING_BLURB, action);
-            setResult(RESULT_OK, resultIntent);*/
+            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE, PluginBundleManager.generateBundle(getApplicationContext(), action + ":" + selectedId));
+            resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BLURB, action);
+            setResult(RESULT_OK, resultIntent);
         }
         super.finish();
     }

@@ -20,7 +20,7 @@ public class IconPackManager {
         mContext = c;
     }
 
-    public HashMap<String, IconPack> getAvailableIconPacks(boolean forceReload) {
+    public HashMap<String, IconPack> getAvailableIconPacks() {
         HashMap<String, IconPack> iconPacks = new HashMap<String, IconPack>();
         PackageManager pm = mContext.getPackageManager();
         loadIconPack("GO", iconPacks, pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA), pm);

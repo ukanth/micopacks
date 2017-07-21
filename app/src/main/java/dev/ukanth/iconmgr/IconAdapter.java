@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,15 +22,12 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.List;
 
-import dev.ukanth.iconmgr.util.Util;
-
 public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
 
     private Context ctx;
 
 
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
-        CardView cv;
         IconPack currentItem;
         TextView ipackName;
         TextView ipackCount;
@@ -51,23 +47,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                    switch (which) {
-                                        case 0:
-                                            determineApply(ctx, currentItem);
-                                            break;
-                                        case 1:
-                                            openPlay(ctx, currentItem);
-                                            //Util.changeSharedPreferences(ctx, "com.teslacoilsw.launcher", currentItem.name + ":GO:" + currentItem.packageName);
-                                            //Util.restartLauncher(ctx, "com.teslacoilsw.launcher");
-                                            break;
-                                        case 2:
-                                            openApp(ctx, currentItem);
-                                            break;
-                                        case 3:
-                                            uninstall(ctx, currentItem);
-                                            break;
-
-                                    }
+                                    performAction(which, currentItem);
                                 }
                             })
                             .show();
@@ -76,6 +56,27 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             });
         }
     }
+
+    private void performAction(int which, IconPack currentItem) {
+        switch (which) {
+            case 0:
+                determineApply(ctx, currentItem);
+                break;
+            case 1:
+                openPlay(ctx, currentItem);
+                //Util.changeSharedPreferences(ctx, "com.teslacoilsw.launcher", currentItem.name + ":GO:" + currentItem.packageName);
+                //Util.restartLauncher(ctx, "com.teslacoilsw.launcher");
+                break;
+            case 2:
+                openApp(ctx, currentItem);
+                break;
+            case 3:
+                uninstall(ctx, currentItem);
+                break;
+
+        }
+    }
+
 
     private void openApp(Context ctx, IconPack currentItem) {
         Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.packageName);

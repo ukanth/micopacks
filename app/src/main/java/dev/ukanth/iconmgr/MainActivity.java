@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dev.ukanth.iconmgr.util.Util;
+
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView emptyView;
@@ -66,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.pref:
-                Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(myIntent);
+            case R.id.help:
+                //Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+                //startActivity(myIntent);
                 return true;
 
             default:
@@ -99,13 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-
-            IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
-            HashMap<String, IconPack> iconPack = iconPackManager.getAvailableIconPacks(false);
-            for (Map.Entry<String, IconPack> entry : iconPack.entrySet()) {
-                iconPacksList.add(entry.getValue());
-            }
-
+            iconPacksList = Util.getListOfPacks(getApplicationContext());
             if (isCancelled())
                 return null;
             //publishProgress(-1);

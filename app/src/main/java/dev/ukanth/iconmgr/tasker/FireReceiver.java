@@ -65,7 +65,14 @@ public final class FireReceiver extends BroadcastReceiver {
          */
         if (PluginBundleManager.isBundleValid(bundle)) {
             String index = bundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
+            String iconName = null, iconPackage = null;
 
+            if (index.contains(":")) {
+                String[] msg = index.split(":");
+                iconName = msg[0];
+                iconPackage = msg[1];
+
+            }
 
 
             //restart activity

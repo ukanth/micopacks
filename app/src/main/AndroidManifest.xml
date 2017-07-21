@@ -11,19 +11,6 @@
         android:smallScreens="true"
         android:xlargeScreens="true" />
 
-    <activity
-        android:name=".tasker.LocaleEdit"
-        android:exported="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/tasker_label"
-        android:uiOptions="splitActionBarWhenNarrow"
-        android:windowSoftInputMode="adjustResize"
-        tools:ignore="ExportedActivity">
-        <intent-filter>
-            <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
-        </intent-filter>
-    </activity>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -46,6 +33,31 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
+
+
+        <activity
+            android:name=".tasker.LocaleEdit"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/tasker_label"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="ExportedActivity">
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".tasker.FireReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+
+            <!-- this Intent filter allows the plug-in to discovered by Locale -->
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
