@@ -68,14 +68,32 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
+            case R.id.about:
+                showAbout();
+                return true;
             case R.id.help:
-                //Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
-                //startActivity(myIntent);
+                showHelp();
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showHelp() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.app_name)
+                .content(R.string.about_help)
+                .positiveText(R.string.ok)
+                .show();
+    }
+
+    private void showAbout() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.app_name)
+                .content(R.string.about_content)
+                .positiveText(R.string.ok)
+                .show();
     }
 
     public class LoadAppList extends AsyncTask<Void, Integer, Void> {

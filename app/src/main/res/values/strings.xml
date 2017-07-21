@@ -1,4 +1,4 @@
-<resources>
+<resources android:autoLink="web" xmlns:android="http://schemas.android.com/tools">
     <string name="app_name">MicoPack</string>
     <string name="loading">Filter Icon Packs...</string>
     <string name="title">Action</string>
@@ -28,5 +28,19 @@
     <string name="help">Help</string>
     <string name="about">About</string>
     <string name="saverules">Save</string>
+    <string name="about_content">Little program to manage local icon packs.
+        Also helps in applying icon packs using tasker/locale plugin. Support various launchers and icon packs.\n\n
+
+        Libraries Used: \n
+        RootTools by Stericson \n
+        libsuperuser by Chainfire \n
+        material-dialogs by afollestad \n\n
+
+        Developed by ukanth@github  \n
+    </string>
+
+    <string name="about_help">Help will be updated later
+    </string>
+
 
 </resources>
