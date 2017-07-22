@@ -1,7 +1,7 @@
 <resources android:autoLink="web" xmlns:android="http://schemas.android.com/tools">
     <string name="app_name">MicoPacks</string>
     <string name="loading">Filter Icon Packs...</string>
-    <string name="title">Action</string>
+    <string name="title">Action for </string>
     <string name="preferences">Preferences</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
@@ -45,6 +45,7 @@
     <string name="about_help">Tasker plugin - Requires ROOT for Nova Launcher</string>
     <string name="notsupported">Detected %s, Sorry not supported for tasker yet!</string>
     <string name="rootrequired">Root requires to apply the change</string>
+    <string name="noicons">Icon count:</string>
 
 
 </resources>

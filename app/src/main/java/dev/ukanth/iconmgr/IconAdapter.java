@@ -42,7 +42,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 @Override
                 public void onClick(View v) {
                     new MaterialDialog.Builder(ctx)
-                            .title(R.string.title)
+                            .title(ctx.getString(R.string.title) +  " " + currentItem.name)
                             .items(R.array.items)
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
@@ -150,7 +150,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     public void onBindViewHolder(IconPackViewHolder personViewHolder, int i) {
         personViewHolder.currentItem = iconPacks.get(i);
         personViewHolder.ipackName.setText(iconPacks.get(i).name);
-        personViewHolder.ipackCount.setText("Total Icons: " + Integer.toString(iconPacks.get(i).getCount()));
+        personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons)+ Integer.toString(iconPacks.get(i).getCount()));
         PackageManager pm = ctx.getPackageManager();
         try {
             Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).packageName);

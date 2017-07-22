@@ -41,6 +41,8 @@
 
             <TextView
                 android:id="@+id/ipack_icon_count"
+                android:textStyle="italic"
+                android:textAlignment="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/ipack_name"

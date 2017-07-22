@@ -1,9 +1,9 @@
 package dev.ukanth.iconmgr;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,18 +16,18 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import dev.ukanth.iconmgr.util.Util;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyView;
 
     private IconAdapter adapter;
     private List<IconPack> iconPacksList;
+
+    private SwipeRefreshLayout mSwipeLayout;
 
     private MaterialDialog plsWait;
 
@@ -47,13 +47,25 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(llm);
         recyclerView.setHasFixedSize(true);
 
+        mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeLayout.setOnRefreshListener(this);
 
+        loadApp();
+
+    }
+
+    private void loadApp() {
         LoadAppList getAppList = new LoadAppList();
         if (plsWait == null && (getAppList.getStatus() == AsyncTask.Status.PENDING ||
                 getAppList.getStatus() == AsyncTask.Status.FINISHED)) {
             getAppList.setContext(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
+    }
 
+    @Override
+    public void onRefresh() {
+        loadApp();
+        mSwipeLayout.setRefreshing(false);
     }
 
     @Override
@@ -146,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
                 adapter = new IconAdapter(MainActivity.this, iconPacksList);
                 recyclerView.setAdapter(adapter);
 
-                if(iconPacksList.isEmpty()) {
+                if (iconPacksList.isEmpty()) {
                     recyclerView.setVisibility(View.GONE);
                     emptyView.setVisibility(View.VISIBLE);
                 } else {
@@ -159,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
                     plsWait.dismiss();
                     plsWait = null;
                 }
+                mSwipeLayout.setRefreshing(false);
             }
         }
 
