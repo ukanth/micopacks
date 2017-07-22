@@ -429,6 +429,8 @@ public class LauncherHelper {
             /*case EVIE:
                 applyEvie(context, launcherPackage, launcherName);
                 break;*/
+            default:
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
         }
     }
 

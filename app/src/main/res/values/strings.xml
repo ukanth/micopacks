@@ -1,11 +1,11 @@
 <resources android:autoLink="web" xmlns:android="http://schemas.android.com/tools">
-    <string name="app_name">MicoPack</string>
+    <string name="app_name">MicoPacks</string>
     <string name="loading">Filter Icon Packs...</string>
     <string name="title">Action</string>
     <string name="preferences">Preferences</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
-    <string name="tasker_label">My Icon Packs - Plugin</string>
+    <string name="tasker_label">MicoPacks Plugin</string>
     <string name="install">Install</string>
     <string name="no_browser">No browser</string>
     <string name="close">Close</string>
