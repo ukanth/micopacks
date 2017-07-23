@@ -42,12 +42,12 @@ public class LauncherHelper {
     public static final int AVIATE = 5;
     public static final int CMTHEME = 6;
     public static final int GO = 7;
-    public static final int HOLO = 8;
-    public static final int HOLOHD = 9;
-    public static final int LGHOME = 10;
-    public static final int LGHOME3 = 11;
+   // public static final int HOLO = 8;
+    //public static final int HOLOHD = 9;
+    //public static final int LGHOME = 10;
+    //public static final int LGHOME3 = 11;
     public static final int LUCID = 12;
-    public static final int MINI = 13;
+   // public static final int MINI = 13;
     public static final int NEXT = 14;
     public static final int NOVA = 15;
     public static final int SMART = 16;
@@ -80,18 +80,18 @@ public class LauncherHelper {
                 return CMTHEME;
             case "com.gau.go.launcherex":
                 return GO;
-            case "com.mobint.hololauncher":
+           /* case "com.mobint.hololauncher":
                 return HOLO;
             case "com.mobint.hololauncher.hd":
                 return HOLOHD;
             case "com.lge.launcher2":
-                return LGHOME;
+               return LGHOME;
             case "com.lge.launcher3":
-                return LGHOME3;
+               return LGHOME3;*/
             case "com.powerpoint45.launcher":
                 return LUCID;
-            case "com.jiubang.go.mini.launcher":
-                return MINI;
+            /*case "com.jiubang.go.mini.launcher":
+                return MINI;*/
             case "com.gtp.nextlauncher":
             case "com.gtp.nextlauncher.trial":
                 return NEXT;
@@ -239,12 +239,12 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
-            case HOLO:
+            /*case HOLO:
                 applyManual(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
                 break;
             case HOLOHD:
                 applyManual(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
-                break;
+                break;*/
             case LUCID:
                 try {
                     final Intent lucid = new Intent("com.powerpoint45.action.APPLY_THEME", null);
@@ -255,10 +255,10 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
-            case MINI:
+           /* case MINI:
                 applyManual(context, launcherPackage, launcherName,
                         "com.jiubang.go.mini.launcher.setting.MiniLauncherSettingActivity");
-                break;
+                break;*/
             case NEXT:
                 try {
                     Intent next = context.getPackageManager().getLaunchIntentForPackage("com.gtp.nextlauncher");

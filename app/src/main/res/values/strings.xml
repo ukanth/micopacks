@@ -26,26 +26,30 @@
     <string name="help">Help</string>
     <string name="about">About</string>
     <string name="saverules">Save</string>
-    <string name="about_content">Little program to manage local icon packs.
-        Also helps in applying icon packs using tasker/locale plugin. Support various launchers and icon packs.\n\n
+    <string name="about_content">
+        Micopacks helps managing installed icon packs on the device.
+        Also helps auto applying icon packs using tasker/locale plugin. Support various launchers and icon packs.\n\n
 
         Libraries Used: \n
+        ------------------ \n
         RootTools by Stericson \n
         libsuperuser by Chainfire \n
-        material-dialogs by afollestad \n
+        material-dialogs by afollestad \n\n
 
         Special Credits: \n
+        ---------------------- \n
         preferences-manager by SimonMarquis \n
         Candybar-library by danimahardhika \n\n
 
 
-        Developed by ukanth@github  \n
+        Developed by github.com/ukanth  \n
     </string>
 
     <string name="about_help">Tasker plugin - Requires ROOT for Nova Launcher</string>
     <string name="notsupported">Detected %s, Sorry not supported for tasker yet!</string>
     <string name="rootrequired">Root requires to apply the change</string>
     <string name="noicons">Icon count:</string>
+    <string name="report">Report a problem</string>
 
 
 </resources>

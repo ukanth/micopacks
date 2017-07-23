@@ -1,6 +1,9 @@
 package dev.ukanth.iconmgr;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -12,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -36,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.content_main);
+        //getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //getSupportActionBar().setIcon(R.drawable.iconpack);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         emptyView = (TextView) findViewById(R.id.empty_view);
@@ -86,7 +92,26 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             case R.id.help:
                 showHelp();
                 return true;
+            case R.id.report:
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
 
+                String version = "";
+                PackageInfo pInfo = null;
+                try {
+                    pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
+                    version = pInfo.versionName;
+                } catch (PackageManager.NameNotFoundException e) {
+
+                }
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"uzoftinc@gmail.com"});
+                i.putExtra(Intent.EXTRA_SUBJECT, "Report Issue: " +  getString(R.string.app_name) + " " + version);
+                i.putExtra(Intent.EXTRA_TEXT   , "");
+                try {
+                    startActivity(Intent.createChooser(i, "Send mail..."));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -101,8 +126,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private void showAbout() {
+        String version = "";
+        PackageInfo pInfo = null;
+        try {
+            pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
+            version = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+
+        }
+
         new MaterialDialog.Builder(this)
-                .title(R.string.app_name)
+                .title(getApplicationContext().getString(R.string.app_name) + " " + version)
                 .content(R.string.about_content)
                 .positiveText(R.string.ok)
                 .show();

@@ -2,6 +2,7 @@ package dev.ukanth.iconmgr.tasker;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -35,13 +36,13 @@ public class LocaleEdit extends AppCompatActivity {
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
         List<IconPack> iconPacks = Util.getListOfPacks(getApplicationContext());
 
-
         for (IconPack pack : iconPacks) {
-            RadioButton rdbtn = new RadioButton(this);
+            RadioButton button = new RadioButton(this);
             int uid = Util.getUid(getApplicationContext(),pack.packageName);
-            rdbtn.setId(uid);
-            rdbtn.setText(pack.name+ ":" + pack.packageName);
-            groupPacks.addView(rdbtn);
+            button.setId(uid);
+            button.setText(pack.name+ ":" + pack.packageName);
+            button.setTextSize(24);
+            groupPacks.addView(button);
         }
 
         setupTitleApi11();
