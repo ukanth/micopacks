@@ -1,9 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--<SwitchPreference
+    <SwitchPreference
         android:defaultValue="false"
-        android:key="use_root"
-        android:summary="@string/use_root_desk"
-        android:title="@string/use_root" />-->
-
+        android:key="dark_theme"
+        android:title="@string/use_dark" />
 </PreferenceScreen>

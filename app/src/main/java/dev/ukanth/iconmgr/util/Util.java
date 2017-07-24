@@ -3,10 +3,12 @@ package dev.ukanth.iconmgr.util;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.content.IntentCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -129,6 +131,7 @@ public class Util {
         Log.d(TAG, "Preferences correctly updated");
         return true;
     }
+
 
     public static List<IconPack> getListOfPacks(Context ctx) {
         ArrayList<IconPack> iconPacksList = new ArrayList<>();

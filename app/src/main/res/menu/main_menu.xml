@@ -1,16 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-   <!-- <item android:id="@+id/pref"
+
+
+    <item
+        android:id="@+id/menu_sort"
+        android:icon="@drawable/sort"
+        android:title="@string/access_sort"
+        app:showAsAction="always">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/sort_alpha"
+                    android:checked="true"
+                    android:title="@string/alphabet"
+                    app:showAsAction="always"></item>
+                <item
+                    android:id="@+id/sort_lastupdate"
+                    android:title="@string/lastupdated"
+                    app:showAsAction="always"></item>
+                <item
+                    android:id="@+id/sort_count"
+                    android:title="@string/iconcount"
+                    app:showAsAction="always"></item>
+            </group>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/pref"
         android:title="@string/preferences"
-        app:showAsAction="collapseActionView"/>-->
-    <item android:id="@+id/help"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/help"
         android:title="@string/help"
-        app:showAsAction="collapseActionView"/>
-    <item android:id="@+id/report"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/report"
         android:title="@string/report"
-        app:showAsAction="collapseActionView"/>
-    <item android:id="@+id/about"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/about"
         android:title="@string/about"
-        app:showAsAction="collapseActionView"/>
+        app:showAsAction="collapseActionView" />
 </menu>

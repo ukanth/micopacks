@@ -2,7 +2,7 @@
     <string name="app_name">MicoPacks</string>
     <string name="loading">Filter Icon Packs...</string>
     <string name="title">Action for </string>
-    <string name="preferences">Preferences</string>
+    <string name="preferences">Settings</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
     <string name="tasker_label">MicoPacks Plugin</string>
@@ -50,6 +50,11 @@
     <string name="rootrequired">Root requires to apply the change</string>
     <string name="noicons">Icon count:</string>
     <string name="report">Report a problem</string>
+    <string name="use_dark">Dark theme</string>
+    <string name="access_sort">Sort</string>
+    <string name="alphabet">By alphabet</string>
+    <string name="lastupdated">By last update</string>
+    <string name="iconcount">By icon count</string>
 
 
 </resources>

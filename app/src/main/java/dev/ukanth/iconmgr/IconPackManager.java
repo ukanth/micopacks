@@ -36,6 +36,7 @@ public class IconPackManager {
             ApplicationInfo ai = null;
             try {
                 ai = pm.getApplicationInfo(ip.packageName, PackageManager.GET_META_DATA);
+                ip.installTime = pm.getPackageInfo(ip.packageName,0).firstInstallTime;
                 ip.name = mContext.getPackageManager().getApplicationLabel(ai).toString();
                 iconPacks.put(ip.packageName, ip);
             } catch (PackageManager.NameNotFoundException e) {

@@ -20,13 +20,13 @@ public class IconPack {
     public String packageName;
     public String name;
     public String type;
+    public long installTime;
     Resources iconPackres = null;
     HashSet<String> totalDraw = new HashSet<>();
 
     public int getCount() {
         return totalDraw.size();
     }
-
 
     public IconPack(String packageName, Context mContext) {
         PackageManager pm = mContext.getPackageManager();

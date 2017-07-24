@@ -64,8 +64,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 break;
             case 1:
                 openPlay(ctx, currentItem);
-                //Util.changeSharedPreferences(ctx, "com.teslacoilsw.launcher", currentItem.name + ":GO:" + currentItem.packageName);
-                //Util.restartLauncher(ctx, "com.teslacoilsw.launcher");
                 break;
             case 2:
                 openApp(ctx, currentItem);
@@ -79,8 +77,10 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
 
     private void openApp(Context ctx, IconPack currentItem) {
-        Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.packageName);
-        ctx.startActivity(i);
+        if(currentItem != null && currentItem.packageName != null ) {
+            Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.packageName);
+            ctx.startActivity(i);
+        }
     }
 
     private void uninstall(Context ctx, IconPack currentItem) {

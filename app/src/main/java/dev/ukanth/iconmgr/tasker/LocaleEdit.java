@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 import dev.ukanth.iconmgr.IconPack;
+import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -23,6 +24,10 @@ public class LocaleEdit extends AppCompatActivity {
     private boolean mIsCancelled = false;
 
     protected void onCreate(Bundle paramBundle) {
+
+        if(Prefs.isDarkTheme(getApplicationContext())) {
+            setTheme(R.style.AppTheme_Dark);
+        }
         super.onCreate(paramBundle);
 
         BundleScrubber.scrub(getIntent());

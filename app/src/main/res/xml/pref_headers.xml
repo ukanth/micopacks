@@ -2,9 +2,9 @@
 
     <!-- These settings headers are only used on tablets. -->
 
-    <header
+    <!--<header
         android:fragment="dev.ukanth.iconmgr.SettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/pref_header_general" />
+        android:title="@string/pref_header_general" />-->
 
 </preference-headers>
