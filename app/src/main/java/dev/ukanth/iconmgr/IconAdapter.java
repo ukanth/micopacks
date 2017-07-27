@@ -11,9 +11,11 @@ import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,7 +44,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 @Override
                 public void onClick(View v) {
                     new MaterialDialog.Builder(ctx)
-                            .title(ctx.getString(R.string.title) +  " " + currentItem.name)
+                            .title(ctx.getString(R.string.title) + " " + currentItem.name)
                             .items(R.array.items)
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
@@ -51,11 +53,11 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                                 }
                             })
                             .show();
-
                 }
             });
         }
     }
+
 
     private void performAction(int which, IconPack currentItem) {
         switch (which) {
@@ -77,7 +79,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
 
     private void openApp(Context ctx, IconPack currentItem) {
-        if(currentItem != null && currentItem.packageName != null ) {
+        if (currentItem != null && currentItem.packageName != null) {
             Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.packageName);
             ctx.startActivity(i);
         }
@@ -150,12 +152,14 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     public void onBindViewHolder(IconPackViewHolder personViewHolder, int i) {
         personViewHolder.currentItem = iconPacks.get(i);
         personViewHolder.ipackName.setText(iconPacks.get(i).name);
-        personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons)+ Integer.toString(iconPacks.get(i).getCount()));
+        personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons) + Integer.toString(iconPacks.get(i).getCount()));
         PackageManager pm = ctx.getPackageManager();
         try {
             Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).packageName);
             personViewHolder.ipackIcon.setImageDrawable(drawable);
-        } catch (PackageManager.NameNotFoundException e) {
+            personViewHolder.ipackIcon.getLayoutParams().width = 140;
+            personViewHolder.ipackIcon.getLayoutParams().height = 140;
+        } catch (Exception exception) {
         }
     }
 
