@@ -17,6 +17,8 @@ public  class Prefs {
 
     public static final String CAL_PERCENT = "calc_perc";
 
+    public static final String TOTAL_ICONS = "total_icons";
+
 
     public static boolean isDarkTheme(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -26,6 +28,11 @@ public  class Prefs {
     public static boolean isCalcPercent(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(CAL_PERCENT, false);
+    }
+
+    public static boolean isTotalIcons(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(TOTAL_ICONS, false);
     }
 
     public static String sortBy(Context context) {

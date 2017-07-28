@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
@@ -34,14 +36,14 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         TextView ipackName;
         TextView ipackCount;
         TextView iPackMatch;
-        ImageView ipackIcon;
+        ImageView icon;
 
         public IconPackViewHolder(View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.cv);
             ipackName = (TextView) view.findViewById(R.id.ipack_name);
             ipackCount = (TextView) view.findViewById(R.id.ipack_icon_count);
-            ipackIcon = (ImageView) view.findViewById(R.id.ipack_icon);
+            icon = (ImageView) view.findViewById(R.id.ipack_icon);
             iPackMatch = (TextView) view.findViewById(R.id.ipack_icon_match);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -155,19 +157,33 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     public void onBindViewHolder(IconPackViewHolder personViewHolder, int i) {
         personViewHolder.currentItem = iconPacks.get(i);
         personViewHolder.ipackName.setText(iconPacks.get(i).name);
-        personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons) + " " + Integer.toString(iconPacks.get(i).getCount()));
+        if (Prefs.isTotalIcons(ctx)) {
+            personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons) + " " + Integer.toString(iconPacks.get(i).getCount()));
+        } else {
+            personViewHolder.ipackCount.setVisibility(View.GONE);
+        }
+
         if (Prefs.isCalcPercent(ctx)) {
-            personViewHolder.iPackMatch.setText(ctx.getString(R.string.match) + iconPacks.get(i).getMatch());
+            personViewHolder.iPackMatch.setText(ctx.getString(R.string.match) + iconPacks.get(i).getMatchStr());
         } else {
             personViewHolder.iPackMatch.setVisibility(View.GONE);
         }
         PackageManager pm = ctx.getPackageManager();
         try {
             Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).packageName);
-            personViewHolder.ipackIcon.setImageDrawable(drawable);
-            personViewHolder.ipackIcon.getLayoutParams().width = 160;
-            personViewHolder.ipackIcon.getLayoutParams().height = 160;
+            personViewHolder.icon.setImageDrawable(resize(drawable));
+
         } catch (Exception exception) {
+        }
+    }
+
+    private Drawable resize(Drawable image) {
+        if(image instanceof  BitmapDrawable) {
+            Bitmap b = ((BitmapDrawable)image).getBitmap();
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 120, 120, false);
+            return new BitmapDrawable(ctx.getResources(), bitmapResized);
+        } else {
+            return image;
         }
     }
 

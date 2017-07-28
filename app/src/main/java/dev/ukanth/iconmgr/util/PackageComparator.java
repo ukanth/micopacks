@@ -30,6 +30,8 @@ public class PackageComparator implements Comparator<IconPack> {
                 return (o1.installTime > o2.installTime) ? -1: (o1.installTime < o2.installTime) ? 1 : 0;
             case "s2":
                 return (o1.getCount() > o2.getCount()) ? -1: (o1.getCount() < o2.getCount()) ? 1 : 0;
+            case "s3":
+                return (o1.getMatch() > o2.getMatch()) ? -1: (o1.getMatch() < o2.getMatch()) ? 1 : 0;
         }
         return 1;
     }

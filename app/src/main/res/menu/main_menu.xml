@@ -24,6 +24,11 @@
                     android:id="@+id/sort_count"
                     android:title="@string/iconcount"
                     app:showAsAction="always"></item>
+
+                <item
+                    android:id="@+id/sort_percent"
+                    android:title="@string/iconpercent"
+                    app:showAsAction="always"></item>
             </group>
         </menu>
     </item>

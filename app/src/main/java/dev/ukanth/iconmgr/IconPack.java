@@ -34,39 +34,40 @@ public class IconPack {
     public IconPack(String packageName, Context mContext, ArrayList installedPackages) {
         totalInstall = installedPackages.size();
         boolean calcPercent = Prefs.isCalcPercent(mContext);
-        PackageManager pm = mContext.getPackageManager();
-        try {
-            XmlPullParser xpp = null;
-            String comp;
-            iconPackres = pm.getResourcesForApplication(packageName);
-            int appfilter = iconPackres.getIdentifier("appfilter", "xml", packageName);
-            if (appfilter > 0) {
-                xpp = iconPackres.getXml(appfilter);
-            } else {
-                try {
-                    InputStream appfilterstream = iconPackres.getAssets().open("appfilter.xml");
-                    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                    factory.setNamespaceAware(true);
-                    xpp = factory.newPullParser();
-                    xpp.setInput(appfilterstream, "utf-8");
-                } catch (IOException e1) {
+        boolean isTotalIcons = Prefs.isTotalIcons(mContext);
+        if (isTotalIcons) {
+            PackageManager pm = mContext.getPackageManager();
+            try {
+                XmlPullParser xpp = null;
+                String comp;
+                iconPackres = pm.getResourcesForApplication(packageName);
+                int appfilter = iconPackres.getIdentifier("appfilter", "xml", packageName);
+                if (appfilter > 0) {
+                    xpp = iconPackres.getXml(appfilter);
+                } else {
+                    try {
+                        InputStream appfilterstream = iconPackres.getAssets().open("appfilter.xml");
+                        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                        factory.setNamespaceAware(true);
+                        xpp = factory.newPullParser();
+                        xpp.setInput(appfilterstream, "utf-8");
+                    } catch (IOException e1) {
+                    }
                 }
-            }
-            if (xpp != null) {
-                int eventType = xpp.getEventType();
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_TAG) {
-                        if (xpp.getName().equals("item")) {
-                            String component = xpp.getAttributeValue(null, "component");
-                            String drawable = xpp.getAttributeValue(null, "drawable");
-                            totalDraw.add(drawable);
-                            if (calcPercent && component != null) {
-                                int startTag = component.indexOf("{") + 1;
-                                int endTag = component.indexOf("}");
-                                if (startTag >= 0 && endTag > startTag) {
-                                    component = component.substring(startTag, endTag);
-                                }
-                                try {
+                if (xpp != null) {
+                    int eventType = xpp.getEventType();
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        if (eventType == XmlPullParser.START_TAG) {
+                            if (xpp.getName().equals("item")) {
+                                String component = xpp.getAttributeValue(null, "component");
+                                String drawable = xpp.getAttributeValue(null, "drawable");
+                                totalDraw.add(drawable);
+                                if (calcPercent && component != null) {
+                                    int startTag = component.indexOf("{") + 1;
+                                    int endTag = component.indexOf("}");
+                                    if (startTag >= 0 && endTag > startTag) {
+                                        component = component.substring(startTag, endTag);
+                                    }
                                     if (component.contains("/")) {
                                         comp = component.split("/")[0];
                                     } else {
@@ -75,23 +76,27 @@ public class IconPack {
                                     if (installedPackages.contains(comp)) {
                                         matchPackage.add(comp);
                                     }
-                                } catch (Exception e) {
-
                                 }
                             }
                         }
+                        eventType = xpp.next();
                     }
-                    eventType = xpp.next();
                 }
+            } catch (PackageManager.NameNotFoundException | XmlPullParserException | IOException e) {
             }
-        } catch (PackageManager.NameNotFoundException | XmlPullParserException | IOException e) {
         }
+
     }
 
-    public String getMatch() {
+    public double getMatch() {
         double matchIcons = matchPackage.size();
         double data = matchIcons / (double) totalInstall;
-        data = data * 100;
-        return " " + (int) data + "%";
+        data = (int) (data * 100);
+        return data;
     }
+
+    public String getMatchStr() {
+        return " " + getMatch() + "%";
+    }
+
 }

@@ -1,6 +1,6 @@
 <resources android:autoLink="web" xmlns:android="http://schemas.android.com/tools">
     <string name="app_name">MicoPacks</string>
-    <string name="loading">Filter Icon Packs...</string>
+    <string name="loading">Listing Icon Packs</string>
     <string name="title">Action for </string>
     <string name="preferences">Settings</string>
     <string name="ok">Ok</string>
@@ -56,7 +56,10 @@
     <string name="alphabet">By alphabet</string>
     <string name="lastupdated">By last update</string>
     <string name="iconcount">By icon count</string>
+    <string name="iconpercent">By match percent</string>
+    <string name="total_icons">Calculate total icons</string>
     <string name="match">Match:</string>
+    <string name="please_wait">Please wait ...</string>
 
 
 </resources>

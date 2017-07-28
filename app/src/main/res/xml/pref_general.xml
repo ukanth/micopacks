@@ -9,4 +9,9 @@
         android:defaultValue="false"
         android:key="calc_perc"
         android:title="@string/calculate_percent" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="total_icons"
+        android:title="@string/total_icons" />
 </PreferenceScreen>

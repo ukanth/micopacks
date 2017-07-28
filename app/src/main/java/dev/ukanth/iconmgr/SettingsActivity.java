@@ -23,6 +23,7 @@ import dev.ukanth.iconmgr.util.Util;
 
 import static dev.ukanth.iconmgr.Prefs.CAL_PERCENT;
 import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
+import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -182,7 +183,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             //seems like theme changed
             if(key.equals(THEME_RES_ID)) {
                 MainActivity.setReloadTheme(true);
-            } if(key.equals(CAL_PERCENT)) {
+            } if(key.equals(CAL_PERCENT) || key.equals(TOTAL_ICONS)) {
                 MainActivity.setReloadApp(true);
             }
         }

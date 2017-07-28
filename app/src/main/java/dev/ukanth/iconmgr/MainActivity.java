@@ -12,6 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,8 +33,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private RecyclerView recyclerView;
     private TextView emptyView;
 
-    private IconAdapter adapter;
-    private List<IconPack> iconPacksList;
+    public static IconAdapter getAdapter() {
+        return adapter;
+    }
+
+    private static IconAdapter adapter;
+
+    public static List<IconPack> getIconPacksList() {
+        return iconPacksList;
+    }
+
+    private static List<IconPack> iconPacksList;
 
     private SwipeRefreshLayout mSwipeLayout;
 
@@ -135,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     case "s2":
                         mainMenu.findItem(R.id.sort_count).setChecked(true);
                         break;
+                    case "s3":
+                        mainMenu.findItem(R.id.sort_percent).setChecked(true);
+                        break;
                 }
             }
         });
@@ -190,6 +203,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 item.setChecked(true);
                 loadApp();
                 return true;
+            case R.id.sort_percent:
+                Prefs.sortBy(getApplicationContext(), "s3");
+                item.setChecked(true);
+                loadApp();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -228,6 +246,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public class LoadAppList extends AsyncTask<Void, Integer, Void> {
 
         Context context = null;
+        long startTime;
 
         public LoadAppList setContext(Context context) {
             this.context = context;
@@ -236,9 +255,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
         @Override
         protected void onPreExecute() {
-            plsWait = new MaterialDialog.Builder(context).cancelable(false).
-                    title(context.getString(R.string.loading)).progress(false, context.getPackageManager().getInstalledApplications(0)
-                    .size(), true).show();
+            plsWait = new MaterialDialog.Builder(context).cancelable(false).title(context.getString(R.string.loading)).content(R.string.please_wait).progress(true, 0).show();
+            startTime = System.currentTimeMillis();
             doProgress(0);
         }
 
@@ -283,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                 }
+                Log.i("MICO","Total time:" + (System.currentTimeMillis() - startTime) / 1000 + " sec" );
             } catch (Exception e) {
                 // nothing
                 if (plsWait != null) {
