@@ -21,6 +21,9 @@ import java.util.List;
 
 import dev.ukanth.iconmgr.util.Util;
 
+import static dev.ukanth.iconmgr.Prefs.CAL_PERCENT;
+import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
+
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -177,8 +180,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             //seems like theme changed
-            if(key.equals("dark_theme")) {
+            if(key.equals(THEME_RES_ID)) {
                 MainActivity.setReloadTheme(true);
+            } if(key.equals(CAL_PERCENT)) {
+                MainActivity.setReloadApp(true);
             }
         }
     }

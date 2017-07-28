@@ -41,15 +41,17 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     private Menu mainMenu;
 
-    public static boolean isReloadTheme() {
-        return reloadTheme;
-    }
 
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
     }
 
+    public static void setReloadApp(boolean b) {
+        MainActivity.reloadApp = b;
+    }
+
     private static boolean reloadTheme = false;
+    private static boolean reloadApp = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +87,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         super.onResume();
         if(reloadTheme) {
             reloadTheme = false;
-            Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
+            restartActivity();
         }
+        if(reloadApp) {
+            reloadApp = false;
+            restartActivity();
+        }
+    }
+
+    private void restartActivity() {
+        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
     }
 
     private void loadApp() {

@@ -13,12 +13,19 @@ public  class Prefs {
 
     private static final String SORT_BY = "sort_option";
 
-    private static final String THEME_RES_ID = "dark_theme";
+    public static final String THEME_RES_ID = "dark_theme";
+
+    public static final String CAL_PERCENT = "calc_perc";
 
 
     public static boolean isDarkTheme(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(THEME_RES_ID, false);
+    }
+
+    public static boolean isCalcPercent(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(CAL_PERCENT, false);
     }
 
     public static String sortBy(Context context) {

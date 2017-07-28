@@ -48,13 +48,15 @@
     <string name="about_help">Tasker plugin - Requires ROOT for Nova Launcher</string>
     <string name="notsupported">Detected %s, Sorry not supported for tasker yet!</string>
     <string name="rootrequired">Root requires to apply the change</string>
-    <string name="noicons">Icon count:</string>
+    <string name="noicons">Icons: </string>
     <string name="report">Report a problem</string>
     <string name="use_dark">Dark theme</string>
+    <string name="calculate_percent">Calculate match percentage</string>
     <string name="access_sort">Sort</string>
     <string name="alphabet">By alphabet</string>
     <string name="lastupdated">By last update</string>
     <string name="iconcount">By icon count</string>
+    <string name="match">Match:</string>
 
 
 </resources>

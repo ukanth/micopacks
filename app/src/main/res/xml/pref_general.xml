@@ -4,4 +4,9 @@
         android:defaultValue="false"
         android:key="dark_theme"
         android:title="@string/use_dark" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="calc_perc"
+        android:title="@string/calculate_percent" />
 </PreferenceScreen>

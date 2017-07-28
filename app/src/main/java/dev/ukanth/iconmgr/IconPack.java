@@ -33,6 +33,7 @@ public class IconPack {
 
     public IconPack(String packageName, Context mContext, ArrayList installedPackages) {
         totalInstall = installedPackages.size();
+        boolean calcPercent = Prefs.isCalcPercent(mContext);
         PackageManager pm = mContext.getPackageManager();
         try {
             XmlPullParser xpp = null;
@@ -52,7 +53,6 @@ public class IconPack {
                 }
             }
             if (xpp != null) {
-
                 int eventType = xpp.getEventType();
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
@@ -60,7 +60,7 @@ public class IconPack {
                             String component = xpp.getAttributeValue(null, "component");
                             String drawable = xpp.getAttributeValue(null, "drawable");
                             totalDraw.add(drawable);
-                            if (component != null) {
+                            if (calcPercent && component != null) {
                                 int startTag = component.indexOf("{") + 1;
                                 int endTag = component.indexOf("}");
                                 if (startTag >= 0 && endTag > startTag) {
@@ -92,6 +92,6 @@ public class IconPack {
         double matchIcons = matchPackage.size();
         double data = matchIcons / (double) totalInstall;
         data = data * 100;
-        return " " + (int) data + " %";
+        return " " + (int) data + "%";
     }
 }
