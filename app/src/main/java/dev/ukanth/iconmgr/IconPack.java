@@ -10,6 +10,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -21,18 +22,21 @@ public class IconPack {
     public String name;
     public String type;
     public long installTime;
-    Resources iconPackres = null;
-    HashSet<String> totalDraw = new HashSet<>();
+    int totalInstall;
+    private Resources iconPackres = null;
+    private HashSet<String> totalDraw = new HashSet<>();
+    private HashSet<String> matchPackage = new HashSet<>();
 
     public int getCount() {
         return totalDraw.size();
     }
 
-    public IconPack(String packageName, Context mContext) {
+    public IconPack(String packageName, Context mContext, ArrayList installedPackages) {
+        totalInstall = installedPackages.size();
         PackageManager pm = mContext.getPackageManager();
         try {
             XmlPullParser xpp = null;
-
+            String comp;
             iconPackres = pm.getResourcesForApplication(packageName);
             int appfilter = iconPackres.getIdentifier("appfilter", "xml", packageName);
             if (appfilter > 0) {
@@ -48,13 +52,31 @@ public class IconPack {
                 }
             }
             if (xpp != null) {
+
                 int eventType = xpp.getEventType();
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
                         if (xpp.getName().equals("item")) {
-                            for (int i = 0; i < xpp.getAttributeCount(); i++) {
-                                if (xpp.getAttributeName(i).equals("drawable")) {
-                                    totalDraw.add(xpp.getAttributeValue(i));
+                            String component = xpp.getAttributeValue(null, "component");
+                            String drawable = xpp.getAttributeValue(null, "drawable");
+                            totalDraw.add(drawable);
+                            if (component != null) {
+                                int startTag = component.indexOf("{") + 1;
+                                int endTag = component.indexOf("}");
+                                if (startTag >= 0 && endTag > startTag) {
+                                    component = component.substring(startTag, endTag);
+                                }
+                                try {
+                                    if (component.contains("/")) {
+                                        comp = component.split("/")[0];
+                                    } else {
+                                        comp = component;
+                                    }
+                                    if (installedPackages.contains(comp)) {
+                                        matchPackage.add(comp);
+                                    }
+                                } catch (Exception e) {
+
                                 }
                             }
                         }
@@ -66,4 +88,10 @@ public class IconPack {
         }
     }
 
+    public String getMatch() {
+        double matchIcons = matchPackage.size();
+        double data = matchIcons / (double) totalInstall;
+        data = data * 100;
+        return " " + (int) data + " %";
+    }
 }

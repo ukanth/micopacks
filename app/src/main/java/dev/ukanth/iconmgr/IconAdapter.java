@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
@@ -33,6 +35,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         IconPack currentItem;
         TextView ipackName;
         TextView ipackCount;
+        TextView iPackMatch;
         ImageView ipackIcon;
 
         public IconPackViewHolder(View view) {
@@ -40,6 +43,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             ipackName = (TextView) view.findViewById(R.id.ipack_name);
             ipackCount = (TextView) view.findViewById(R.id.ipack_icon_count);
             ipackIcon = (ImageView) view.findViewById(R.id.ipack_icon);
+            iPackMatch = (TextView) view.findViewById(R.id.ipack_icon_match);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -153,6 +157,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         personViewHolder.currentItem = iconPacks.get(i);
         personViewHolder.ipackName.setText(iconPacks.get(i).name);
         personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons) + Integer.toString(iconPacks.get(i).getCount()));
+        personViewHolder.iPackMatch.setText("Match:" + iconPacks.get(i).getMatch());
         PackageManager pm = ctx.getPackageManager();
         try {
             Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).packageName);

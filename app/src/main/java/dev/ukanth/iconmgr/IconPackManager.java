@@ -10,7 +10,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class IconPackManager {
@@ -23,14 +26,19 @@ public class IconPackManager {
     public HashMap<String, IconPack> getAvailableIconPacks() {
         HashMap<String, IconPack> iconPacks = new HashMap<String, IconPack>();
         PackageManager pm = mContext.getPackageManager();
-        loadIconPack("GO", iconPacks, pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA), pm);
-        loadIconPack("GO", iconPacks, pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA), pm);
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        ArrayList<String> packageList = new ArrayList<>();
+        for(ApplicationInfo info: packages) {
+            packageList.add(info.packageName);
+        }
+        loadIconPack("GO", iconPacks, pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA), pm,packageList);
+        loadIconPack("GO", iconPacks, pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA), pm,packageList);
         return iconPacks;
     }
 
-    private void loadIconPack(String key, HashMap<String, IconPack> iconPacks, List<ResolveInfo> rinfo, PackageManager pm) {
+    private void loadIconPack(String key, HashMap<String, IconPack> iconPacks, List<ResolveInfo> rinfo, PackageManager pm,ArrayList packageList) {
         for (ResolveInfo ri : rinfo) {
-            IconPack ip = new IconPack(ri.activityInfo.packageName, mContext);
+            IconPack ip = new IconPack(ri.activityInfo.packageName, mContext,packageList);
             ip.packageName = ri.activityInfo.packageName;
             ip.type = key;
             ApplicationInfo ai = null;
