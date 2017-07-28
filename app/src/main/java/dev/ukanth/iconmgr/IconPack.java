@@ -22,7 +22,12 @@ public class IconPack {
     public String name;
     public String type;
     public long installTime;
-    int totalInstall;
+
+    public String  getTotalInstall() {
+        return totalInstall + "";
+    }
+
+    public int totalInstall;
     private Resources iconPackres = null;
     private HashSet<String> totalDraw = new HashSet<>();
     private HashSet<String> matchPackage = new HashSet<>();
@@ -93,6 +98,10 @@ public class IconPack {
         double data = matchIcons / (double) totalInstall;
         data = (int) (data * 100);
         return data;
+    }
+
+    public String getMatchNumber() {
+       return matchPackage.size() + "";
     }
 
     public String getMatchStr() {

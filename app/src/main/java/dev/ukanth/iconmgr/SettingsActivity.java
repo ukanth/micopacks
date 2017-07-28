@@ -12,16 +12,14 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import java.util.List;
 
-import dev.ukanth.iconmgr.util.Util;
-
 import static dev.ukanth.iconmgr.Prefs.CAL_PERCENT;
+import static dev.ukanth.iconmgr.Prefs.INCLUDE_SYS;
 import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
 import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
 
@@ -138,7 +136,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
 
-
     /**
      * This fragment shows general preferences only. It is used when the
      * activity is showing a two-pane settings UI.
@@ -181,9 +178,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             //seems like theme changed
-            if(key.equals(THEME_RES_ID)) {
+            if (key.equals(THEME_RES_ID)) {
                 MainActivity.setReloadTheme(true);
-            } if(key.equals(CAL_PERCENT) || key.equals(TOTAL_ICONS)) {
+            }
+            if (key.equals(CAL_PERCENT) || key.equals(TOTAL_ICONS) || key.equals(INCLUDE_SYS)) {
                 MainActivity.setReloadApp(true);
             }
         }

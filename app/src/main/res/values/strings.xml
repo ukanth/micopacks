@@ -51,15 +51,14 @@
     <string name="noicons">Icons: </string>
     <string name="report">Report a problem</string>
     <string name="use_dark">Dark theme</string>
-    <string name="calculate_percent">Calculate match percentage</string>
+    <string name="calculate_percent">Calculate matching icons</string>
+    <string name="include_system">Include system applications</string>
     <string name="access_sort">Sort</string>
     <string name="alphabet">By alphabet</string>
     <string name="lastupdated">By last update</string>
     <string name="iconcount">By icon count</string>
     <string name="iconpercent">By match percent</string>
     <string name="total_icons">Calculate total icons</string>
-    <string name="match">Match:</string>
+    <string name="match" formatted="false">Supports %s of %s apps(%s)</string>
     <string name="please_wait">Please wait ...</string>
-
-
 </resources>

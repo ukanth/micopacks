@@ -26,10 +26,23 @@ public class IconPackManager {
     public HashMap<String, IconPack> getAvailableIconPacks() {
         HashMap<String, IconPack> iconPacks = new HashMap<String, IconPack>();
         PackageManager pm = mContext.getPackageManager();
-        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        int flags = PackageManager.GET_META_DATA |
+                PackageManager.GET_SHARED_LIBRARY_FILES |
+                PackageManager.GET_UNINSTALLED_PACKAGES;
+
+        List<ApplicationInfo> packages = pm.getInstalledApplications(flags);
         ArrayList<String> packageList = new ArrayList<>();
         for(ApplicationInfo info: packages) {
-            packageList.add(info.packageName);
+            if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
+                // System application
+                if(Prefs.isIncludeSystem(mContext)) {
+                    packageList.add(info.packageName);
+                }
+            } else {
+                // Installed by user
+                packageList.add(info.packageName);
+            }
+
         }
         loadIconPack("GO", iconPacks, pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA), pm,packageList);
         loadIconPack("GO", iconPacks, pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA), pm,packageList);

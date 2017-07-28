@@ -163,8 +163,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             personViewHolder.ipackCount.setVisibility(View.GONE);
         }
 
-        if (Prefs.isCalcPercent(ctx)) {
-            personViewHolder.iPackMatch.setText(ctx.getString(R.string.match) + iconPacks.get(i).getMatchStr());
+        if (Prefs.isTotalIcons(ctx) && Prefs.isCalcPercent(ctx)) {
+            personViewHolder.iPackMatch.setText(String.format(ctx.getString(R.string.match),
+                    iconPacks.get(i).getMatchNumber(), iconPacks.get(i).getTotalInstall(), iconPacks.get(i).getMatchStr()));
         } else {
             personViewHolder.iPackMatch.setVisibility(View.GONE);
         }
@@ -178,8 +179,8 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     }
 
     private Drawable resize(Drawable image) {
-        if(image instanceof  BitmapDrawable) {
-            Bitmap b = ((BitmapDrawable)image).getBitmap();
+        if (image instanceof BitmapDrawable) {
+            Bitmap b = ((BitmapDrawable) image).getBitmap();
 
             int SIZE_DP = 60;
             final float scale = ctx.getResources().getDisplayMetrics().density;
