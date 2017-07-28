@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 } catch (android.content.ActivityNotFoundException ex) {
                     Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                 }
+                return true;
             case R.id.sort_count:
                 Prefs.sortBy(getApplicationContext(), "s2");
                 item.setChecked(true);
