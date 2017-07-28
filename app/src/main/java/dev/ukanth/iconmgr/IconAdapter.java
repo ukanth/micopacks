@@ -180,7 +180,12 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     private Drawable resize(Drawable image) {
         if(image instanceof  BitmapDrawable) {
             Bitmap b = ((BitmapDrawable)image).getBitmap();
-            Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 120, 120, false);
+
+            int SIZE_DP = 60;
+            final float scale = ctx.getResources().getDisplayMetrics().density;
+            int p = (int) (SIZE_DP * scale + 0.5f);
+
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(b, p, p, false);
             return new BitmapDrawable(ctx.getResources(), bitmapResized);
         } else {
             return image;
