@@ -17,18 +17,21 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
+public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder>  {
 
     private Context ctx;
-
+    protected List<IconPack> iconPacks;
 
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -70,15 +73,25 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 determineApply(ctx, currentItem);
                 break;
             case 1:
-                openPlay(ctx, currentItem);
+                stats(ctx, currentItem);
                 break;
             case 2:
-                openApp(ctx, currentItem);
+                openPlay(ctx, currentItem);
                 break;
             case 3:
+                openApp(ctx, currentItem);
+                break;
+            case 4:
                 uninstall(ctx, currentItem);
                 break;
 
+        }
+    }
+
+    private void stats(Context ctx, IconPack currentItem) {
+        if (currentItem != null && currentItem.packageName != null) {
+            Intent myIntent = new Intent(ctx, DetailsActivity.class);
+            ctx.startActivity(myIntent);
         }
     }
 
@@ -133,7 +146,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         return name;
     }
 
-    List<IconPack> iconPacks;
+
 
     IconAdapter(Context ctx, List<IconPack> ipacks) {
         this.ctx = ctx;

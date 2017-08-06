@@ -2,6 +2,7 @@
 <resources>
     <string-array name="items">
         <item>Apply</item>
+        <item>Stats</item>
         <item>Open Playstore</item>
         <item>Launch App</item>
         <item>Uninstall</item>

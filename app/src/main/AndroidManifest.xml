@@ -33,8 +33,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
-
-
         <activity
             android:name=".tasker.LocaleEdit"
             android:exported="true"
@@ -58,13 +56,15 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".UninstallReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".DetailsActivity"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-<resources android:autoLink="web" xmlns:android="http://schemas.android.com/tools">
+<resources xmlns:android="http://schemas.android.com/tools" android:autoLink="web">
     <string name="app_name">MicoPacks</string>
     <string name="loading">Listing Icon Packs</string>
     <string name="title">Action for </string>
@@ -61,4 +61,5 @@
     <string name="total_icons">Calculate total icons</string>
     <string name="match" formatted="false">Supports %s of %s apps(%s)</string>
     <string name="please_wait">Please wait ...</string>
+    <string name="action_search">Search</string>
 </resources>

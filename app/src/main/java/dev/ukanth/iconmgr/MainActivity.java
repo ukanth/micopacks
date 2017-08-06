@@ -2,16 +2,16 @@ package dev.ukanth.iconmgr;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +29,7 @@ import java.util.List;
 import dev.ukanth.iconmgr.util.PackageComparator;
 import dev.ukanth.iconmgr.util.Util;
 
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyView;
 
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(Prefs.isDarkTheme(getApplicationContext())) {
+        if (Prefs.isDarkTheme(getApplicationContext())) {
             setTheme(R.style.AppTheme_Dark);
         }
 
@@ -95,18 +95,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     @Override
     protected void onResume() {
         super.onResume();
-        if(reloadTheme) {
+        if (reloadTheme) {
             reloadTheme = false;
             restartActivity();
         }
-        if(reloadApp) {
+        if (reloadApp) {
             reloadApp = false;
             restartActivity();
         }
     }
 
     private void restartActivity() {
-        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage( getBaseContext().getPackageName() );
+        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
     }
@@ -151,6 +151,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 }
             }
         });
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView;
+
+
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+            searchView.setOnQueryTextListener(this);
+            searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus) {
+                        searchView.setIconified(true);
+                    }
+                }
+            });
+        }
         return true;
     }
 
@@ -244,6 +261,33 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 .show();
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        List<IconPack> filteredModelList = filter(query);
+        Collections.sort(filteredModelList, new PackageComparator().setCtx(getApplicationContext()));
+        adapter = new IconAdapter(MainActivity.this, filteredModelList);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+        return true;
+    }
+
+    private List<IconPack> filter(String query) {
+        List<IconPack> filteredPack = new ArrayList<>();
+        if (query.length() >= 1) {
+            for (IconPack ipack : iconPacksList) {
+                if (ipack.name.toLowerCase().contains(query.toLowerCase())) {
+                    filteredPack.add(ipack);
+                }
+            }
+        }
+        return filteredPack.size() > 0 ? filteredPack : iconPacksList;
+    }
+
     public class LoadAppList extends AsyncTask<Void, Integer, Void> {
 
         Context context = null;
@@ -302,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                 }
-                Log.i("MICO","Total time:" + (System.currentTimeMillis() - startTime) / 1000 + " sec" );
+                Log.i("MICO", "Total time:" + (System.currentTimeMillis() - startTime) / 1000 + " sec");
             } catch (Exception e) {
                 // nothing
                 if (plsWait != null) {
