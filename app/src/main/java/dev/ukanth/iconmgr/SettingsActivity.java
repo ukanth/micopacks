@@ -18,8 +18,6 @@ import android.view.MenuItem;
 
 import java.util.List;
 
-import static dev.ukanth.iconmgr.Prefs.CAL_PERCENT;
-import static dev.ukanth.iconmgr.Prefs.INCLUDE_SYS;
 import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
 import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
 
@@ -179,7 +177,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (key.equals(THEME_RES_ID)) {
                 MainActivity.setReloadTheme(true);
             }
-            if (key.equals(CAL_PERCENT) || key.equals(TOTAL_ICONS) || key.equals(INCLUDE_SYS)) {
+            if ( key.equals(TOTAL_ICONS)) {
                 MainActivity.setReloadApp(true);
             }
         }

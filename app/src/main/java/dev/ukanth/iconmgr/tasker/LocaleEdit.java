@@ -12,16 +12,24 @@ import android.view.MenuItem;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import org.greenrobot.greendao.query.Query;
+
 import java.util.List;
 import java.util.Random;
 
-import dev.ukanth.iconmgr.IconPack;
+import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
+import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.Util;
 
 public class LocaleEdit extends AppCompatActivity {
     private boolean mIsCancelled = false;
+    private IPObjDao ipObjDao;
+    private Query<IPObj> ipObjQuery;
+
 
     protected void onCreate(Bundle paramBundle) {
 
@@ -36,16 +44,22 @@ public class LocaleEdit extends AppCompatActivity {
 
         setContentView(R.layout.tasker_main);
 
+        DaoSession daoSession = ((App) getApplication()).getDaoSession();
+        ipObjDao = daoSession.getIPObjDao();
+
+        ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
+
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
-        List<IconPack> iconPacks = Util.getListOfPacks(getApplicationContext());
+        List<IPObj> iPacksList = ipObjQuery.list();
 
-        for (IconPack pack : iconPacks) {
+        for (IPObj pack : iPacksList) {
             RadioButton button = new RadioButton(this);
-            int uid = Util.getUid(getApplicationContext(),pack.packageName);
+            int uid = Util.getUid(getApplicationContext(),pack.getIconPkg());
             button.setId(uid);
-            button.setText(pack.name+ ":" + pack.packageName);
+            button.setText(pack.getIconName()+ ":" + pack.getIconPkg());
             button.setTextSize(24);
             groupPacks.addView(button);
         }
@@ -121,7 +135,10 @@ public class LocaleEdit extends AppCompatActivity {
             RadioGroup group = (RadioGroup) findViewById(R.id.radioPacks);
             int selectedId = group.getCheckedRadioButtonId();
             RadioButton radioButton = (RadioButton) findViewById(selectedId);
-            String action = radioButton.getText().toString();
+            String action = "";
+            if( radioButton.getText() != null) {
+                action = radioButton.getText().toString();
+            }
             final Intent resultIntent = new Intent();
             resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_BUNDLE, PluginBundleManager.generateBundle(getApplicationContext(), action + ":" + selectedId));
             resultIntent.putExtra(com.twofortyfouram.locale.Intent.EXTRA_STRING_BLURB, action);

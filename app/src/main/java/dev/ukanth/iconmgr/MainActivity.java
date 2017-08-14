@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,12 +21,16 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import org.greenrobot.greendao.query.Query;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.PackageComparator;
-import dev.ukanth.iconmgr.util.Util;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
@@ -39,11 +42,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private static IconAdapter adapter;
 
-    public static List<IconPack> getIconPacksList() {
+    private IPObjDao ipObjDao;
+    private Query<IPObj> ipObjQuery;
+
+    public static List<IPObj> getIconPacksList() {
         return iconPacksList;
     }
 
-    private static List<IconPack> iconPacksList;
+    private static List<IPObj> iconPacksList;
 
     private SwipeRefreshLayout mSwipeLayout;
 
@@ -72,8 +78,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         setContentView(R.layout.content_main);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
-        //getSupportActionBar().setIcon(R.drawable.iconpack);
+
+        DaoSession daoSession = ((App) getApplication()).getDaoSession();
+        ipObjDao = daoSession.getIPObjDao();
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         emptyView = (TextView) findViewById(R.id.empty_view);
@@ -145,9 +152,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     case "s2":
                         mainMenu.findItem(R.id.sort_count).setChecked(true);
                         break;
-                    case "s3":
+                   /* case "s3":
                         mainMenu.findItem(R.id.sort_percent).setChecked(true);
-                        break;
+                        break;*/
                 }
             }
         });
@@ -181,6 +188,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 return true;
             case R.id.about:
                 showAbout();
+                return true;
+            case R.id.changelog:
+                showChangelog();
                 return true;
             case R.id.help:
                 showHelp();
@@ -221,14 +231,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 item.setChecked(true);
                 loadApp();
                 return true;
-            case R.id.sort_percent:
+            /*case R.id.sort_percent:
                 Prefs.sortBy(getApplicationContext(), "s3");
                 item.setChecked(true);
                 loadApp();
-                return true;
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showChangelog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.app_name)
+                .customView(R.layout.activity_changelog, false)
+                .positiveText(R.string.ok)
+                .show();
     }
 
     private void showPreference() {
@@ -268,19 +286,20 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextChange(String query) {
-        List<IconPack> filteredModelList = filter(query);
-        Collections.sort(filteredModelList, new PackageComparator().setCtx(getApplicationContext()));
+        List<IPObj> filteredModelList = filter(query);
+
+        Collections.sort(new ArrayList(filteredModelList), new PackageComparator().setCtx(getApplicationContext()));
         adapter = new IconAdapter(MainActivity.this, filteredModelList);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         return true;
     }
 
-    private List<IconPack> filter(String query) {
-        List<IconPack> filteredPack = new ArrayList<>();
+    private List<IPObj> filter(String query) {
+        List<IPObj> filteredPack = new ArrayList<>();
         if (query.length() >= 1) {
-            for (IconPack ipack : iconPacksList) {
-                if (ipack.name.toLowerCase().contains(query.toLowerCase())) {
+            for (IPObj ipack : iconPacksList) {
+                if (ipack.getIconName().toLowerCase().contains(query.toLowerCase())) {
                     filteredPack.add(ipack);
                 }
             }
@@ -311,7 +330,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         @Override
         protected Void doInBackground(Void... params) {
-            iconPacksList = Util.getListOfPacks(getApplicationContext());
+
+            // query all notes, sorted a-z by their text
+            ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
+            List<IPObj> iPacksList = ipObjQuery.list();
+            if (iPacksList.size() == 0) {
+                IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
+                iconPacksList = iconPackManager.updateIconPacks(ipObjDao);
+            } else {
+                iconPacksList = iPacksList;
+            }
             if (isCancelled())
                 return null;
             //publishProgress(-1);
@@ -335,6 +363,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     plsWait = null;
                 }
                 //mSwipeLayout.setRefreshing(false);
+
                 Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
                 adapter = new IconAdapter(MainActivity.this, iconPacksList);
                 recyclerView.setAdapter(adapter);

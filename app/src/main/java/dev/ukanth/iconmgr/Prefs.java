@@ -15,11 +15,7 @@ public  class Prefs {
 
     public static final String THEME_RES_ID = "dark_theme";
 
-    public static final String CAL_PERCENT = "calc_perc";
-
     public static final String TOTAL_ICONS = "total_icons";
-
-    public static final String INCLUDE_SYS = "include_system";
 
 
     public static boolean isDarkTheme(Context context) {
@@ -27,7 +23,7 @@ public  class Prefs {
         return prefs.getBoolean(THEME_RES_ID, false);
     }
 
-    public static boolean isCalcPercent(Context context) {
+    /*public static boolean isCalcPercent(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(CAL_PERCENT, false);
     }
@@ -35,7 +31,7 @@ public  class Prefs {
     public static boolean isIncludeSystem(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(INCLUDE_SYS, false);
-    }
+    }*/
 
     public static boolean isTotalIcons(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

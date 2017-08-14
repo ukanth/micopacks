@@ -29,10 +29,10 @@
                     android:title="@string/iconcount"
                     app:showAsAction="always"></item>
 
-                <item
+               <!-- <item
                     android:id="@+id/sort_percent"
                     android:title="@string/iconpercent"
-                    app:showAsAction="always"></item>
+                    app:showAsAction="always"></item>-->
             </group>
         </menu>
     </item>
@@ -43,6 +43,11 @@
     <item
         android:id="@+id/help"
         android:title="@string/help"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/changelog"
+        android:title="@string/changelog"
         app:showAsAction="collapseActionView" />
     <item
         android:id="@+id/report"

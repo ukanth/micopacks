@@ -17,28 +17,28 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder>  {
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.util.LauncherHelper;
+import dev.ukanth.iconmgr.util.Util;
+
+public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
 
     private Context ctx;
-    protected List<IconPack> iconPacks;
+    protected List<IPObj> iconPacks;
 
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        IconPack currentItem;
+        IPObj currentItem;
         TextView ipackName;
         TextView ipackCount;
-        TextView iPackMatch;
         ImageView icon;
 
         public IconPackViewHolder(View view) {
@@ -47,12 +47,11 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             ipackName = (TextView) view.findViewById(R.id.ipack_name);
             ipackCount = (TextView) view.findViewById(R.id.ipack_icon_count);
             icon = (ImageView) view.findViewById(R.id.ipack_icon);
-            iPackMatch = (TextView) view.findViewById(R.id.ipack_icon_match);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new MaterialDialog.Builder(ctx)
-                            .title(ctx.getString(R.string.title) + " " + currentItem.name)
+                            .title(ctx.getString(R.string.title) + " " + currentItem.getIconName())
                             .items(R.array.items)
                             .itemsCallback(new MaterialDialog.ListCallback() {
                                 @Override
@@ -67,7 +66,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     }
 
 
-    private void performAction(int which, IconPack currentItem) {
+    private void performAction(int which, IPObj currentItem) {
         switch (which) {
             case 0:
                 determineApply(ctx, currentItem);
@@ -88,44 +87,44 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         }
     }
 
-    private void stats(Context ctx, IconPack currentItem) {
-        if (currentItem != null && currentItem.packageName != null) {
+    private void stats(Context ctx, IPObj currentItem) {
+        if (currentItem != null && currentItem.getIconPkg() != null) {
             Intent myIntent = new Intent(ctx, DetailsActivity.class);
             ctx.startActivity(myIntent);
         }
     }
 
 
-    private void openApp(Context ctx, IconPack currentItem) {
-        if (currentItem != null && currentItem.packageName != null) {
-            Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.packageName);
+    private void openApp(Context ctx, IPObj currentItem) {
+        if (currentItem != null && currentItem.getIconPkg() != null) {
+            Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.getIconPkg());
             ctx.startActivity(i);
         }
     }
 
-    private void uninstall(Context ctx, IconPack currentItem) {
+    private void uninstall(Context ctx, IPObj currentItem) {
         Intent intent = new Intent();
         intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setData(Uri.fromParts("package", currentItem.packageName, null));
+        intent.setData(Uri.fromParts("package", currentItem.getIconPkg(), null));
         if (intent.resolveActivity(ctx.getPackageManager()) != null) {
             ctx.startActivity(intent);
         }
     }
 
-    private void openPlay(Context ctx, IconPack currentItem) {
+    private void openPlay(Context ctx, IPObj currentItem) {
         try {
-            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentItem.packageName)));
+            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + currentItem.getIconPkg())));
         } catch (android.content.ActivityNotFoundException anfe) {
-            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + currentItem.packageName)));
+            ctx.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + currentItem.getIconPkg())));
         }
     }
 
-    private void determineApply(Context ctx, IconPack currentItem) {
+    private void determineApply(Context ctx, IPObj currentItem) {
         String currentLauncher = getCurrentLauncher(ctx);
         if (currentLauncher != null) {
-            LauncherHelper.apply(ctx, currentItem.packageName, currentLauncher);
+            LauncherHelper.apply(ctx, currentItem.getIconPkg(), currentLauncher);
         } else {
             Toast.makeText(ctx, ctx.getString(R.string.nodefault), Toast.LENGTH_LONG).show();
         }
@@ -147,8 +146,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     }
 
 
-
-    IconAdapter(Context ctx, List<IconPack> ipacks) {
+    IconAdapter(Context ctx, List<IPObj> ipacks) {
         this.ctx = ctx;
         this.iconPacks = ipacks;
     }
@@ -169,24 +167,16 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     @Override
     public void onBindViewHolder(IconPackViewHolder personViewHolder, int i) {
         personViewHolder.currentItem = iconPacks.get(i);
-        personViewHolder.ipackName.setText(iconPacks.get(i).name);
+        personViewHolder.ipackName.setText(iconPacks.get(i).getIconName());
         if (Prefs.isTotalIcons(ctx)) {
-            personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons) + " " + Integer.toString(iconPacks.get(i).getCount()));
+            personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons) + " " + Integer.toString(iconPacks.get(i).getTotal()));
         } else {
             personViewHolder.ipackCount.setVisibility(View.GONE);
         }
-
-        if (Prefs.isTotalIcons(ctx) && Prefs.isCalcPercent(ctx)) {
-            personViewHolder.iPackMatch.setText(String.format(ctx.getString(R.string.match),
-                    iconPacks.get(i).getMatchNumber(), iconPacks.get(i).getTotalInstall(), iconPacks.get(i).getMatchStr()));
-        } else {
-            personViewHolder.iPackMatch.setVisibility(View.GONE);
-        }
         PackageManager pm = ctx.getPackageManager();
         try {
-            Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).packageName);
+            Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).getIconPkg());
             personViewHolder.icon.setImageDrawable(resize(drawable));
-
         } catch (Exception exception) {
         }
     }

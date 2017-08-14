@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<changelog bulletedList="false">
+
+    <changelogversion versionName="1.3" changeDate="">
+        <changelogtext>Search IconPacks</changelogtext>
+        <changelogtext>Changelog view</changelogtext>
+        <changelogtext>Advance Stats View</changelogtext>
+    </changelogversion>
+
+    <changelogversion versionName="1.2" changeDate="Jul 28,2017">
+        <changelogtext>Calculates and shows percentage of icons supported by icon pack</changelogtext>
+        <changelogtext>Sort by percentage</changelogtext>
+        <changelogtext>Uninstall icon pack refresh the list</changelogtext>
+        <changelogtext>More cleaner UI</changelogtext>
+        <changelogtext>Few bug fixes</changelogtext>
+    </changelogversion>
+
+    <changelogversion  versionName="1.1" changeDate="Jul 24,2017">
+        <changelogtext>Now support dark theme</changelogtext>
+        <changelogtext>Sort list by icon count/updated date/alphabetical order</changelogtext>
+        <changelogtext>Reported crash fix.</changelogtext>
+    </changelogversion>
+
+    <changelogversion versionName="1.0" changeDate="Jul 22,2017">
+        <changelogtext>Initial release</changelogtext>
+    </changelogversion>
+
+</changelog>

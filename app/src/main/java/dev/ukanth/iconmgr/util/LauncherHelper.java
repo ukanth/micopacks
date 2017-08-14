@@ -1,4 +1,4 @@
-package dev.ukanth.iconmgr;
+package dev.ukanth.iconmgr.util;
 
 
 import android.content.ActivityNotFoundException;
@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+
+import dev.ukanth.iconmgr.R;
 
 /*
  * CandyBar - Material Dashboard

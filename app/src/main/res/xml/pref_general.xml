@@ -10,16 +10,5 @@
         android:key="total_icons"
         android:title="@string/total_icons" />
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:dependency="total_icons"
-        android:key="calc_perc"
-        android:title="@string/calculate_percent" />
-
-    <SwitchPreference
-        android:defaultValue="false"
-        android:dependency="calc_perc"
-        android:key="include_system"
-        android:title="@string/include_system" />
 
 </PreferenceScreen>

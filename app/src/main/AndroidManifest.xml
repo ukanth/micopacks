@@ -12,6 +12,7 @@
         android:xlargeScreens="true" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -64,7 +65,15 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".DetailsActivity"></activity>
+        <receiver android:name=".InstallReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".DetailsActivity" />
     </application>
 
 </manifest>

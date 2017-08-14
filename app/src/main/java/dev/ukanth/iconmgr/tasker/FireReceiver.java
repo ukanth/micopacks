@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.stericson.roottools.RootTools;
 
-import dev.ukanth.iconmgr.LauncherHelper;
+import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.util.Util;
 

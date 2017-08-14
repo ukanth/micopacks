@@ -1,15 +1,14 @@
 package dev.ukanth.iconmgr.util;
 
-import android.content.ComponentName;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.support.v4.content.IntentCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -27,19 +26,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import dev.ukanth.iconmgr.IconPack;
-import dev.ukanth.iconmgr.IconPackManager;
+import dev.ukanth.iconmgr.DetailsActivity;
+import dev.ukanth.iconmgr.R;
 import eu.chainfire.libsuperuser.Shell;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by ukanth on 20/7/17.
@@ -75,10 +73,11 @@ public class Util {
                 }
                 return temp;
             }
+
             @Override
             public void onPostExecute(StringBuilder res) {
                 String fileContent = res.toString();
-                if(fileContent != null && !fileContent.isEmpty()) {
+                if (fileContent != null && !fileContent.isEmpty()) {
                     PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
                     preferenceFile.updateValue("theme_icon_pack", updateValue);
                     savePreferences(preferenceFile, fileName, packageName, ctx);
@@ -132,15 +131,10 @@ public class Util {
         return true;
     }
 
-
-    public static List<IconPack> getListOfPacks(Context ctx) {
-        ArrayList<IconPack> iconPacksList = new ArrayList<>();
-        IconPackManager iconPackManager = new IconPackManager(ctx);
-        HashMap<String, IconPack> iconPack = iconPackManager.getAvailableIconPacks();
-        for (Map.Entry<String, IconPack> entry : iconPack.entrySet()) {
-            iconPacksList.add(entry.getValue());
-        }
-        return iconPacksList;
+    public static double getPercent(int totalInstall, double matchIcons) {
+        double data = matchIcons / (double) totalInstall;
+        data = (int) (data * 100);
+        return data;
     }
 
     public static int getUid(Context ctx, String packageName) {
@@ -228,7 +222,7 @@ public class Util {
         try {
             String fileName = getDataDir(ctx, packageName) + File.separator + "shared_prefs" + File.separator + packageName + "_preferences.xml";
             Log.d(TAG, String.format("readTextFile(%s)", fileName));
-            readFile(fileName,packageName,updateValue, ctx);
+            readFile(fileName, packageName, updateValue, ctx);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
@@ -292,6 +286,22 @@ public class Util {
         } catch (IOException e) {
         }
         return doc;
+
+    }
+
+    public static void showNotification(Context context, String packageName) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(),  new Intent(context, DetailsActivity.class), 0);
+        Notification.Builder noti = new Notification.Builder(context)
+                .setContentTitle("MicoPacks")
+                .setContentText("New Icon Pack Detected")
+                .setSmallIcon(R.drawable.iconpack)
+                .setContentIntent(pIntent)
+                .setAutoCancel(true)
+                .addAction(R.drawable.iconpack, "Call", pIntent);
+
+        notificationManager.notify(0, noti.build());
 
     }
 }
