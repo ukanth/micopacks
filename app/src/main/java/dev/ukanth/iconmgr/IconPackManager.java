@@ -78,7 +78,7 @@ public class IconPackManager {
                     obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
                     ipObjDao.insert(obj);
                     Util.showNotification(mContext, packageName);
-                    IconRequest.start(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR);
+                    IconRequest.start(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null);
                 } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
                 }
                 break;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
@@ -73,7 +74,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } catch (Exception e) {
         }
 
-        IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
+        final IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
 
         App app = ((App) mContext.getApplicationContext());
         DaoSession daoSession = app.getDaoSession();
@@ -81,40 +82,58 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         int installed = 0;
         int missed = 0;
 
-
         IPObj obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).unique();
         missed = obj.getMissed();
         List<String> missPackage;
+        //refresh package
         if (missed == 0) {
-            IconPackUtil ip = new IconPackUtil();
-            missPackage = ip.getMissingApps(mContext, packageName);
-            if (missPackage != null) {
-                missed = missPackage.size();
-                obj.setMissed(missed);
-                //make sure we store the information back
-                ipObjDao.save(obj);
-            }
+            IconRequest.start(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, new IconRequest.AsyncResponse() {
+                @Override
+                public void processFinish(List<String> output) {
+                    if (output != null) {
+                        PackageManager pm = mContext.getPackageManager();
+                        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+                        int installed = packages.size();
+                        int missed = output.size();
+                        int themed = installed - output.size();
+
+                        iconRequestViewHolder.installedApps.setText(String.format(
+                                mContext.getResources().getString(R.string.icon_request_installed_apps),
+                                installed));
+                        iconRequestViewHolder.missedApps.setText(String.format(
+                                mContext.getResources().getString(R.string.icon_request_missed_apps),
+                                missed));
+                        iconRequestViewHolder.themedApps.setText(String.format(
+                                mContext.getResources().getString(R.string.icon_request_themed_apps),
+                                themed));
+
+                        iconRequestViewHolder.progress.setMax(installed);
+                        iconRequestViewHolder.progress.setProgress(themed);
+                    }
+                }
+            });
+        } else {
+
+            PackageManager pm = mContext.getPackageManager();
+            List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+            installed = packages.size();
+            int themed = installed - missed;
+
+            iconRequestViewHolder.installedApps.setText(String.format(
+                    mContext.getResources().getString(R.string.icon_request_installed_apps),
+                    installed));
+            iconRequestViewHolder.missedApps.setText(String.format(
+                    mContext.getResources().getString(R.string.icon_request_missed_apps),
+                    missed));
+            iconRequestViewHolder.themedApps.setText(String.format(
+                    mContext.getResources().getString(R.string.icon_request_themed_apps),
+                    themed));
+
+            iconRequestViewHolder.progress.setMax(installed);
+            iconRequestViewHolder.progress.setProgress(themed);
         }
 
-        PackageManager pm = mContext.getPackageManager();
-        //get a list of installed apps.
-        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-        installed = packages.size();
 
-        int themed = installed - missed;
-
-        iconRequestViewHolder.installedApps.setText(String.format(
-                mContext.getResources().getString(R.string.icon_request_installed_apps),
-                installed));
-        iconRequestViewHolder.missedApps.setText(String.format(
-                mContext.getResources().getString(R.string.icon_request_missed_apps),
-                missed));
-        iconRequestViewHolder.themedApps.setText(String.format(
-                mContext.getResources().getString(R.string.icon_request_themed_apps),
-                themed));
-
-        iconRequestViewHolder.progress.setMax(installed);
-        iconRequestViewHolder.progress.setProgress(themed);
     }
 
     @Override
