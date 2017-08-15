@@ -35,7 +35,7 @@ public class IconPackUtil {
     @NonNull
     public int calcTotal(@NonNull Context mContext, String packageName) {
         Set icons = new HashSet();
-        XmlPullParser parser = getXmlParser(mContext, packageName);
+        XmlPullParser parser = getXmlParser(mContext, packageName,"drawable");
         try {
             if (parser != null) {
                 int eventType = parser.getEventType();
@@ -51,18 +51,18 @@ public class IconPackUtil {
         return icons.size();
     }
 
-    private XmlPullParser getXmlParser(Context mContext, String packageName) {
+    private XmlPullParser getXmlParser(Context mContext, String packageName, String type) {
         XmlPullParser parser = null;
         try {
             PackageManager pm = mContext.getPackageManager();
             iconPackres = pm.getResourcesForApplication(packageName);
 
-            int appfilter = iconPackres.getIdentifier("drawable", "xml", packageName);
+            int appfilter = iconPackres.getIdentifier(type, "xml", packageName);
             if (appfilter > 0) {
                 parser = iconPackres.getXml(appfilter);
             } else {
                 try {
-                    InputStream appfilterstream = iconPackres.getAssets().open("drawable.xml");
+                    InputStream appfilterstream = iconPackres.getAssets().open(type + ".xml");
                     XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                     factory.setNamespaceAware(true);
                     parser = factory.newPullParser();
@@ -82,7 +82,7 @@ public class IconPackUtil {
         HashMap<String, String> activities = new HashMap<>();
 
         try {
-            XmlPullParser xpp = getXmlParser(mContext, packageName);
+            XmlPullParser xpp = getXmlParser(mContext, packageName,"appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("item")) {
@@ -125,6 +125,7 @@ public class IconPackUtil {
         }
         return null;
     }
+
     @NonNull
     public List<String> getMissingApps(@NonNull Context context, String currentPackage) {
         List<String> requests = new ArrayList<>();

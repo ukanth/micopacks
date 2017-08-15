@@ -7,15 +7,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
+import org.greenrobot.greendao.query.Query;
+
 import java.util.List;
 import java.util.concurrent.Executor;
+
+import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 
 /**
  * Created by ukanth on 14/8/17.
  */
 
 
-public class IconRequest extends AsyncTask<Void, Void, Boolean> {
+public class IconRequest extends AsyncTask<Void, Void, Integer> {
 
     private Context mContext;
     private String packageName;
@@ -34,32 +40,28 @@ public class IconRequest extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(Void... voids) {
+    protected Integer doInBackground(Void... voids) {
         while (!isCancelled()) {
             try {
                 IconPackUtil ip = new IconPackUtil();
                 List<String> missPackage = ip.getMissingApps(mContext, packageName);
-                return true;
+                return missPackage.size();
             } catch (Exception e) {
-                return false;
+                return 0;
             }
         }
-        return false;
+        return 0;
     }
 
     @Override
-    protected void onPostExecute(Boolean aBoolean) {
-        super.onPostExecute(aBoolean);
-        if (aBoolean) {
-            if (mContext == null) return;
-
-            FragmentManager fm = ((AppCompatActivity) mContext).getSupportFragmentManager();
-            if (fm == null) return;
-
-            Fragment fragment = fm.findFragmentByTag("home");
-            if (fragment == null) return;
-
-        } else {
-        }
+    protected void onPostExecute(Integer count) {
+        super.onPostExecute(count);
+        App app = ((App) mContext.getApplicationContext());
+        DaoSession daoSession = app.getDaoSession();
+        IPObjDao ipObjDao = daoSession.getIPObjDao();
+        IPObj ipobj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).build().uniqueOrThrow();
+        ipobj.setMissed(count);
+        ipObjDao.update(ipobj);
+        //do something with the count and package.
     }
 }

@@ -64,4 +64,9 @@
     <string name="please_wait">Please wait ...</string>
     <string name="action_search">Search</string>
     <string name="changelog">Changelog</string>
+    <string name="icon_progress">Icons Supported</string>
+
+    <string name="icon_request_installed_apps">Total\n%d installed apps</string>
+    <string name="icon_request_themed_apps">Themed\n%d apps</string>
+    <string name="icon_request_missed_apps">Missed\n%d apps</string>
 </resources>

@@ -24,13 +24,17 @@ public class IPObj {
     private long installTime;
     private int total;
 
-    @Generated(hash = 1244982231)
-    public IPObj(String iconPkg, @NotNull String iconName, String iconType, long installTime, int total) {
+    private int missed;
+
+    @Generated(hash = 1623016430)
+    public IPObj(String iconPkg, @NotNull String iconName, String iconType, long installTime, int total,
+            int missed) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
         this.iconType = iconType;
         this.installTime = installTime;
         this.total = total;
+        this.missed = missed;
     }
 
     @Generated(hash = 66213617)
@@ -75,6 +79,14 @@ public class IPObj {
 
     public void setTotal(int total) {
         this.total = total;
+    }
+
+    public int getMissed() {
+        return missed;
+    }
+
+    public void setMissed(int missed) {
+        this.missed = missed;
     }
 
 }

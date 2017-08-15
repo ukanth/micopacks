@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.os.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -77,6 +78,7 @@ public class IconPackManager {
                     obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
                     ipObjDao.insert(obj);
                     Util.showNotification(mContext, packageName);
+                    IconRequest.start(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR);
                 } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
                 }
                 break;

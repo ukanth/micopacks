@@ -27,7 +27,6 @@ import java.util.List;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.util.LauncherHelper;
-import dev.ukanth.iconmgr.util.Util;
 
 public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
 
@@ -89,8 +88,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
     private void stats(Context ctx, IPObj currentItem) {
         if (currentItem != null && currentItem.getIconPkg() != null) {
-            Intent myIntent = new Intent(ctx, DetailsActivity.class);
-            ctx.startActivity(myIntent);
+            Intent intent = new Intent(ctx, DetailsActivity.class);
+            intent.putExtra("pkg", currentItem.getIconPkg());
+            ctx.startActivity(intent);
         }
     }
 

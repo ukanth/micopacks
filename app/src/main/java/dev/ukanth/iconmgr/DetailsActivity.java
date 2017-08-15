@@ -5,9 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -29,15 +26,10 @@ public class DetailsActivity extends AppCompatActivity {
                 StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(staggeredGridLayoutManager);
 
-        List<ItemObject> sList = getListItemData();
+        Bundle bundle = getIntent().getExtras();
+        String pkgName = bundle.getString("pkg");
 
-        DetailsRecyclerViewAdapter rcAdapter = new DetailsRecyclerViewAdapter(
-                DetailsActivity.this, sList);
+        DetailViewAdapter rcAdapter = new DetailViewAdapter(getApplicationContext(), pkgName, 1);
         recyclerView.setAdapter(rcAdapter);
-    }
-
-    private List<ItemObject> getListItemData() {
-        List<ItemObject> listViewItems = new ArrayList<ItemObject>();
-        return listViewItems;
     }
 }
