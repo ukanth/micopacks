@@ -1,6 +1,5 @@
 package dev.ukanth.iconmgr.util;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -8,7 +7,9 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -33,6 +34,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import dev.ukanth.iconmgr.ActionReceiver;
 import dev.ukanth.iconmgr.DetailsActivity;
 import dev.ukanth.iconmgr.R;
 import eu.chainfire.libsuperuser.Shell;
@@ -289,21 +291,47 @@ public class Util {
 
     }
 
+    public static String getCurrentLauncher(Context ctx) {
+        String name = null;
+        final Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        final ResolveInfo res = ctx.getPackageManager().resolveActivity(intent, 0);
+        if (res.activityInfo == null) {
+            // should not happen. A home is always installed, isn't it?
+        } else if ("android".equals(res.activityInfo.packageName)) {
+            // No default selected
+        } else {
+            name = res.activityInfo.packageName;
+        }
+        return name;
+    }
+
     public static void showNotification(Context context, String packageName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
         Intent intent = new Intent(context, DetailsActivity.class);
         intent.putExtra("pkg", packageName);
-        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
-        Notification.Builder noti = new Notification.Builder(context)
+        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        Intent yesReceive = new Intent();
+        yesReceive.putExtra("pkg", packageName);
+        yesReceive.setAction(ActionReceiver.APPLY_ACTION);
+        PendingIntent pendingIntentYes = PendingIntent.getBroadcast(context, 12345, yesReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        NotificationCompat.Action applyAction =
+                new NotificationCompat.Action.Builder(R.drawable.ic_apply, "Apply", pendingIntentYes).build();
+
+        NotificationCompat.Builder noti = new NotificationCompat.Builder(context)
                 .setContentTitle("MicoPacks")
-                .setContentText("New Icon Pack Detected")
+                .setContentText("Icon Pack Detected")
                 .setSmallIcon(R.drawable.iconpack)
                 .setContentIntent(pIntent)
                 .setAutoCancel(true)
-                .addAction(R.drawable.iconpack, "Call", pIntent);
+                .addAction(applyAction);
 
-        notificationManager.notify(0, noti.build());
+        notificationManager.notify(90297, noti.build());
 
     }
 }

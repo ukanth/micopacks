@@ -1,5 +1,6 @@
 package dev.ukanth.iconmgr;
 
+import android.app.NotificationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +26,11 @@ public class DetailsActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
+
+        // Create Notification Manager
+        NotificationManager notificationmanager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // Dismiss Notification
+        notificationmanager.cancel(90297);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_details);
         recyclerView.setHasFixedSize(true);

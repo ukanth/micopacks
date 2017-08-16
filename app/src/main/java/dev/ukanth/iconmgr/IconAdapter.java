@@ -7,7 +7,6 @@ package dev.ukanth.iconmgr;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -27,6 +26,8 @@ import java.util.List;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.util.LauncherHelper;
+
+import static dev.ukanth.iconmgr.util.Util.getCurrentLauncher;
 
 public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
 
@@ -130,20 +131,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         }
     }
 
-    private String getCurrentLauncher(Context ctx) {
-        String name = null;
-        final Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        final ResolveInfo res = ctx.getPackageManager().resolveActivity(intent, 0);
-        if (res.activityInfo == null) {
-            // should not happen. A home is always installed, isn't it?
-        } else if ("android".equals(res.activityInfo.packageName)) {
-            // No default selected
-        } else {
-            name = res.activityInfo.packageName;
-        }
-        return name;
-    }
+
 
 
     IconAdapter(Context ctx, List<IPObj> ipacks) {

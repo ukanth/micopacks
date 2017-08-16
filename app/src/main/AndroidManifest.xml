@@ -74,6 +74,12 @@
         </receiver>
 
         <activity android:name=".DetailsActivity" />
+
+        <receiver android:name=".ActionReceiver">
+            <intent-filter>
+                <action android:name="APPLY_ACTION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
