@@ -50,6 +50,7 @@ dependencies {
     //material dialog
     compile 'com.afollestad.material-dialogs:core:0.9.4.1'
 
+    compile 'me.grantland:autofittextview:0.2.1'
     //changelib
     compile 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
     testCompile 'junit:junit:4.12'

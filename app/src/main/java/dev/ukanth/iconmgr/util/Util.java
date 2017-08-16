@@ -292,7 +292,9 @@ public class Util {
     public static void showNotification(Context context, String packageName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
-        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(),  new Intent(context, DetailsActivity.class), 0);
+        Intent intent = new Intent(context, DetailsActivity.class);
+        intent.putExtra("pkg", packageName);
+        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, 0);
         Notification.Builder noti = new Notification.Builder(context)
                 .setContentTitle("MicoPacks")
                 .setContentText("New Icon Pack Detected")
