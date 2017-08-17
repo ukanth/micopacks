@@ -104,8 +104,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     }
 
     private void uninstall(Context ctx, IPObj currentItem) {
-        Intent intent = new Intent();
-        intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
+        Intent intent  = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.fromParts("package", currentItem.getIconPkg(), null));

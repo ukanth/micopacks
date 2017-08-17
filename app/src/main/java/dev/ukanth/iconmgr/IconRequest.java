@@ -3,6 +3,7 @@ package dev.ukanth.iconmgr;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -27,9 +28,6 @@ public class IconRequest extends AsyncTask<Void, Void, List<String>> {
     private Context mContext;
     private String packageName;
 
-    public IconRequest() {
-
-    }
 
     public IconRequest(Context context, String packageName, AsyncResponse response) {
         this.delegate = response;
@@ -62,16 +60,23 @@ public class IconRequest extends AsyncTask<Void, Void, List<String>> {
     @Override
     protected void onPostExecute(List<String> listPkg) {
         super.onPostExecute(listPkg);
-        App app = ((App) mContext.getApplicationContext());
-        DaoSession daoSession = app.getDaoSession();
-        IPObjDao ipObjDao = daoSession.getIPObjDao();
-        IPObj ipobj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).build().uniqueOrThrow();
-        ipobj.setMissed(listPkg.size());
-        ipObjDao.update(ipobj);
-        if(delegate != null) {
-            delegate.processFinish(listPkg);
+        if(packageName != null) {
+            Log.i("MICO", "PackageName: " + packageName);
+            App app = ((App) mContext.getApplicationContext());
+            DaoSession daoSession = app.getDaoSession();
+            IPObjDao ipObjDao = daoSession.getIPObjDao();
+            IPObj ipObj = new IPObj();
+            ipObj.setIconPkg(packageName);
+            if(ipObjDao.hasKey(ipObj)) {
+                Log.i("MICO", "Exist in DB: " + packageName);
+                IPObj ipobj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).build().unique();
+                ipobj.setMissed(listPkg.size());
+                ipObjDao.update(ipobj);
+                if(delegate != null) {
+                    delegate.processFinish(listPkg);
+                }
+            }
         }
-        //do something with the count and package.
     }
 
     private List<String> returnData(List<String> listPkg) {

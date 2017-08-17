@@ -34,7 +34,6 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final Context mContext;
     private final List<Detail> mHomes;
     private final Detail.Style mImageStyle;
-    private String packageName;
 
     private int mItemsCount;
     private int mOrientation;
@@ -130,7 +129,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             List<String> missPackage;
             //refresh package
             if (missed == 0) {
-                IconRequest.start(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, new IconRequest.AsyncResponse() {
+                IconRequest.start(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconRequest.AsyncResponse() {
                     @Override
                     public void processFinish(List<String> output) {
                         if (output != null) {
