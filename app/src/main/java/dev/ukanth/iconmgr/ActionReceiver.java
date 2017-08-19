@@ -28,12 +28,8 @@ public class ActionReceiver extends BroadcastReceiver {
         String pkgName = bundle.getString("pkg");
 
         if (APPLY_ACTION.equals(action)) {
-
-            // Create Notification Manager
             NotificationManager notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-            // Dismiss Notification
             notificationmanager.cancel(90297);
-
             String currentLauncher = getCurrentLauncher(context);
             if (currentLauncher != null) {
                 LauncherHelper.apply(context, pkgName, currentLauncher);

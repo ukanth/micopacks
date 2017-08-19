@@ -60,19 +60,19 @@ public class IconRequest extends AsyncTask<Void, Void, List<String>> {
     @Override
     protected void onPostExecute(List<String> listPkg) {
         super.onPostExecute(listPkg);
-        if(packageName != null) {
+        if (packageName != null) {
             Log.i("MICO", "PackageName: " + packageName);
             App app = ((App) mContext.getApplicationContext());
             DaoSession daoSession = app.getDaoSession();
             IPObjDao ipObjDao = daoSession.getIPObjDao();
             IPObj ipObj = new IPObj();
             ipObj.setIconPkg(packageName);
-            if(ipObjDao.hasKey(ipObj)) {
+            if (ipObjDao.hasKey(ipObj)) {
                 Log.i("MICO", "Exist in DB: " + packageName);
                 IPObj ipobj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).build().unique();
                 ipobj.setMissed(listPkg.size());
                 ipObjDao.update(ipobj);
-                if(delegate != null) {
+                if (delegate != null) {
                     delegate.processFinish(listPkg);
                 }
             }

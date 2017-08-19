@@ -59,7 +59,8 @@
     <string name="lastupdated">By last update</string>
     <string name="iconcount">By icon count</string>
     <string name="iconpercent">By match percent</string>
-    <string name="total_icons">Calculate total icons</string>
+    <string name="total_icons">Show icon count</string>
+    <string name="show_notification">Notify on new icon pack install</string>
     <string name="match" formatted="false">Supports %s of %s apps(%s)</string>
     <string name="please_wait">Please wait ...</string>
     <string name="action_search">Search</string>

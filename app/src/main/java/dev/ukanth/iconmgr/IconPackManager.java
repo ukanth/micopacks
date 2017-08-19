@@ -28,10 +28,10 @@ public class IconPackManager {
         mContext = c;
     }
 
-    public List<IPObj> updateIconPacks(IPObjDao ipObjDao) {
+    public List<IPObj> updateIconPacks(IPObjDao ipObjDao, boolean delete) {
 
         //make sure we delete existing regards
-        ipObjDao.deleteAll();
+        if (delete) ipObjDao.deleteAll();
 
         returnList = new ArrayList<>();
         PackageManager pm = mContext.getPackageManager();

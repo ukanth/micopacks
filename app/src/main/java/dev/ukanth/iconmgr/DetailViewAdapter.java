@@ -63,7 +63,6 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         View view = LayoutInflater.from(mContext).inflate(
                 R.layout.details_card, parent, false);
         return new IconRequestViewHolder(view);
-
     }
 
     @Override
@@ -120,6 +119,8 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 contentViewHolder.subtitle.setVisibility(View.VISIBLE);
             }
         } else {
+
+
             final IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
 
             int installed = 0;

@@ -69,15 +69,22 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".DetailsActivity" />
+        <activity
+            android:name=".DetailsActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.ukanth.iconmgr.MainActivity" />
+        </activity>
 
         <receiver android:name=".ActionReceiver">
             <intent-filter>
-                <action android:name="APPLY_ACTION"/>
+                <action android:name="APPLY_ACTION" />
             </intent-filter>
         </receiver>
     </application>

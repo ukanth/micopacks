@@ -1,11 +1,8 @@
 package dev.ukanth.iconmgr.tasker;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +12,6 @@ import android.widget.RadioGroup;
 import org.greenrobot.greendao.query.Query;
 
 import java.util.List;
-import java.util.Random;
 
 import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.Prefs;
@@ -50,20 +46,21 @@ public class LocaleEdit extends AppCompatActivity {
         ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
 
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
         List<IPObj> iPacksList = ipObjQuery.list();
 
-        for (IPObj pack : iPacksList) {
-            RadioButton button = new RadioButton(this);
-            int uid = Util.getUid(getApplicationContext(),pack.getIconPkg());
-            button.setId(uid);
-            button.setText(pack.getIconName()+ ":" + pack.getIconPkg());
-            button.setTextSize(24);
-            groupPacks.addView(button);
+        if(iPacksList != null) {
+            for (IPObj pack : iPacksList) {
+                RadioButton button = new RadioButton(this);
+                int uid = Util.getUid(getApplicationContext(),pack.getIconPkg());
+                button.setId(uid);
+                button.setText(pack.getIconName()+ ":" + pack.getIconPkg());
+                button.setTextSize(24);
+                groupPacks.addView(button);
+            }
         }
-
         setupTitleApi11();
 
         if (null == paramBundle) {

@@ -2,6 +2,7 @@ package dev.ukanth.iconmgr;
 
 import android.app.NotificationManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -27,10 +28,14 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        // Create Notification Manager
-        NotificationManager notificationmanager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // Dismiss Notification
-        notificationmanager.cancel(90297);
+        setupActionBar();
+
+        if (Prefs.isNotify(getApplicationContext())) {
+            // Create Notification Manager
+            NotificationManager notificationmanager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            // Dismiss Notification
+            notificationmanager.cancel(90297);
+        }
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_details);
         recyclerView.setHasFixedSize(true);
@@ -55,5 +60,13 @@ public class DetailsActivity extends AppCompatActivity {
 
         DetailViewAdapter rcAdapter = new DetailViewAdapter(getApplicationContext(), homes, 1, pkgObj);
         recyclerView.setAdapter(rcAdapter);
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }

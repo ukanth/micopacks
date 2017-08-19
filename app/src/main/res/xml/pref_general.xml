@@ -10,5 +10,9 @@
         android:key="total_icons"
         android:title="@string/total_icons" />
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="notify_install"
+        android:title="@string/show_notification" />
 
 </PreferenceScreen>

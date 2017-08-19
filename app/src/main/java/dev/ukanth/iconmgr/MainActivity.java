@@ -321,11 +321,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         protected void onPreExecute() {
             plsWait = new MaterialDialog.Builder(context).cancelable(false).title(context.getString(R.string.loading)).content(R.string.please_wait).progress(true, 0).show();
             startTime = System.currentTimeMillis();
-            doProgress(0);
-        }
-
-        public void doProgress(int value) {
-            publishProgress(value);
         }
 
         @Override
@@ -336,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             List<IPObj> iPacksList = ipObjQuery.list();
             if (iPacksList.size() == 0) {
                 IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
-                iconPacksList = iconPackManager.updateIconPacks(ipObjDao);
+                iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
             } else {
                 iconPacksList = iPacksList;
             }
@@ -348,7 +343,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         @Override
         protected void onPostExecute(Void result) {
-            doProgress(-1);
             try {
                 try {
                     if (plsWait != null && plsWait.isShowing()) {
@@ -383,18 +377,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     plsWait = null;
                 }
                 mSwipeLayout.setRefreshing(false);
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-
-            if (progress[0] == 0 || progress[0] == -1) {
-                //do nothing
-            } else {
-                if (plsWait != null) {
-                    plsWait.incrementProgress(progress[0]);
-                }
             }
         }
     }

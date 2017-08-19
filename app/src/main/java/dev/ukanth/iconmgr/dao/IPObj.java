@@ -23,22 +23,32 @@ public class IPObj {
     private String iconType;
     private long installTime;
     private int total;
+    private String additional;
 
     private int missed;
 
     @Generated(hash = 1623016430)
     public IPObj(String iconPkg, @NotNull String iconName, String iconType, long installTime, int total,
-            int missed) {
+                 int missed, String additional) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
         this.iconType = iconType;
         this.installTime = installTime;
         this.total = total;
         this.missed = missed;
+        this.additional = additional;
     }
 
     @Generated(hash = 66213617)
     public IPObj() {
+    }
+
+    public String getAdditional() {
+        return additional;
+    }
+
+    public void setAdditional(String additional) {
+        this.additional = additional;
     }
 
     public String getIconPkg() {
