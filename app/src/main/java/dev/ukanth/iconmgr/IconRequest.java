@@ -8,9 +8,9 @@ import android.util.Log;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.Util;
 
 /**
  * Created by ukanth on 14/8/17.
@@ -62,12 +62,10 @@ public class IconRequest extends AsyncTask<Void, Void, List<String>> {
         super.onPostExecute(listPkg);
         if (packageName != null) {
             Log.i("MICO", "PackageName: " + packageName);
-            App app = ((App) mContext.getApplicationContext());
-            DaoSession daoSession = app.getDaoSession();
-            IPObjDao ipObjDao = daoSession.getIPObjDao();
+            IPObjDao ipObjDao = Util.getDAO(mContext);
             IPObj ipObj = new IPObj();
             ipObj.setIconPkg(packageName);
-            if (ipObjDao.hasKey(ipObj)) {
+            if (ipObjDao != null && ipObjDao.hasKey(ipObj)) {
                 Log.i("MICO", "Exist in DB: " + packageName);
                 IPObj ipobj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).build().unique();
                 ipobj.setMissed(listPkg.size());

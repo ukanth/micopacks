@@ -10,9 +10,9 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.Util;
 
 
 public class DetailsActivity extends AppCompatActivity {
@@ -29,6 +29,7 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
 
         setupActionBar();
+
 
         if (Prefs.isNotify(getApplicationContext())) {
             // Create Notification Manager
@@ -49,15 +50,16 @@ public class DetailsActivity extends AppCompatActivity {
 
         List<Detail> homes = new ArrayList<>();
 
-        App app = ((App) getApplicationContext());
-        DaoSession daoSession = app.getDaoSession();
-        IPObjDao ipObjDao = daoSession.getIPObjDao();
-        IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+        IPObjDao ipObjDao = Util.getDAO(getApplicationContext());
+        IPObj pkgObj = null;
+        if (ipObjDao != null) {
+            pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
 
-        homes.add(new Detail(-1, String.valueOf(pkgObj.getTotal()),
-                getResources().getString(R.string.iconCount),
-                Detail.Type.ICONS));
-
+            homes.add(new Detail(-1, String.valueOf(pkgObj.getTotal()),
+                    getResources().getString(R.string.iconCount),
+                    Detail.Type.ICONS));
+            setTitle(pkgObj.getIconName());
+        }
         DetailViewAdapter rcAdapter = new DetailViewAdapter(getApplicationContext(), homes, 1, pkgObj);
         recyclerView.setAdapter(rcAdapter);
     }

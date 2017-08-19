@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -21,9 +20,7 @@ public class InstallReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String packageName = intent.getData().getSchemeSpecificPart();
         try {
-            App app = ((App) context.getApplicationContext());
-            DaoSession daoSession = app.getDaoSession();
-            ipObjDao = daoSession.getIPObjDao();
+            ipObjDao = Util.getDAO(context.getApplicationContext());
             IconPackManager iconPackManager = new IconPackManager(context);
             iconPackManager.insertIconPack(ipObjDao, packageName);
         } catch (Exception e) {

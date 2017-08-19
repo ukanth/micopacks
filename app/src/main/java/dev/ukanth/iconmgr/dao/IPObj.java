@@ -23,13 +23,11 @@ public class IPObj {
     private String iconType;
     private long installTime;
     private int total;
+    private int missed;
     private String additional;
 
-    private int missed;
-
-    @Generated(hash = 1623016430)
-    public IPObj(String iconPkg, @NotNull String iconName, String iconType, long installTime, int total,
-                 int missed, String additional) {
+    @Generated(hash = 86537239)
+    public IPObj(String iconPkg, @NotNull String iconName, String iconType, long installTime, int total, int missed, String additional) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
         this.iconType = iconType;
