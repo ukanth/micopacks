@@ -329,7 +329,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             // query all notes, sorted a-z by their text
             ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
             List<IPObj> iPacksList = ipObjQuery.list();
-            if (iPacksList.size() == 0) {
+
+            //update if not match
+            if (iPacksList.size() == 0 || IconPackUtil.getInstalledIconPacks(getApplicationContext()).size() != iPacksList.size()) {
                 IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
                 iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
             } else {

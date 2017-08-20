@@ -1,11 +1,14 @@
 <resources>
 
+    <attr format="reference" name="cardStyle"/>
+
     <!-- Base application theme. -->
     <style name="AppTheme.Light" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccentDark</item>
+        <item name="cardStyle">@style/CardView.Light</item>
     </style>
 
 
@@ -14,6 +17,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="cardStyle">@style/CardView.Dark</item>
     </style>
 
 </resources>

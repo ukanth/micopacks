@@ -7,6 +7,9 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 
@@ -35,7 +38,7 @@ public class IconPackUtil {
     @NonNull
     public int calcTotal(@NonNull Context mContext, String packageName) {
         Set icons = new HashSet();
-        XmlPullParser parser = getXmlParser(mContext, packageName,"drawable");
+        XmlPullParser parser = getXmlParser(mContext, packageName, "drawable");
         try {
             if (parser != null) {
                 int eventType = parser.getEventType();
@@ -78,11 +81,64 @@ public class IconPackUtil {
 
     }
 
+
+    private Bitmap loadBitmap(String drawableName, String packageName) {
+        int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
+        if (id > 0) {
+            Drawable bitmap = iconPackres.getDrawable(id);
+            if (bitmap instanceof BitmapDrawable)
+                return ((BitmapDrawable) bitmap).getBitmap();
+        }
+        return null;
+    }
+
+    public List<Bitmap> getIcons(Context mContext, String packageName) {
+        List<Bitmap> mBackImages = new ArrayList<Bitmap>();
+
+        Bitmap mMaskImage;
+        Bitmap mFrontImage;
+        try {
+            XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (xpp.getEventType() == XmlPullParser.START_TAG) {
+                    if (xpp.getName().equals("iconback")) {
+                        for (int i = 0; i < xpp.getAttributeCount(); i++) {
+                            if (xpp.getAttributeName(i).startsWith("img")) {
+                                String drawableName = xpp.getAttributeValue(i);
+                                Bitmap iconback = loadBitmap(drawableName, packageName);
+                                if (iconback != null)
+                                    mBackImages.add(iconback);
+                            }
+                        }
+                    } else if (xpp.getName().equals("iconmask")) {
+                        if (xpp.getAttributeCount() > 0 && xpp.getAttributeName(0).equals("img1")) {
+                            String drawableName = xpp.getAttributeValue(0);
+                            mMaskImage = loadBitmap(drawableName, packageName);
+                            if (mMaskImage != null)
+                                mBackImages.add(mMaskImage);
+                        }
+                    } else if (xpp.getName().equals("iconupon")) {
+                        if (xpp.getAttributeCount() > 0 && xpp.getAttributeName(0).equals("img1")) {
+                            String drawableName = xpp.getAttributeValue(0);
+                            mFrontImage = loadBitmap(drawableName, packageName);
+                            if (mFrontImage != null)
+                                mBackImages.add(mFrontImage);
+
+                        }
+                    }
+                }
+                xpp.next();
+            }
+        } catch (XmlPullParserException | IOException e) {
+        }
+        return mBackImages;
+    }
+
     public HashMap<String, String> getAppFilter(String packageName, Context mContext, Key key) {
         HashMap<String, String> activities = new HashMap<>();
 
         try {
-            XmlPullParser xpp = getXmlParser(mContext, packageName,"appfilter");
+            XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("item")) {
@@ -155,6 +211,35 @@ public class IconPackUtil {
             }
         }
         return requests;
+    }
+
+
+    public static Set<String> getInstalledIconPacks(Context mContext) {
+
+        HashSet returnList = new HashSet<>();
+        PackageManager pm = mContext.getPackageManager();
+        int flags = PackageManager.GET_META_DATA |
+                PackageManager.GET_SHARED_LIBRARY_FILES;
+
+        List<ApplicationInfo> packages = pm.getInstalledApplications(flags);
+        ArrayList<String> packageList = new ArrayList<>();
+        for (ApplicationInfo info : packages) {
+            if ((info.flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
+                // System application
+                packageList.add(info.packageName);
+            } else {
+                // Installed by user
+                packageList.add(info.packageName);
+            }
+        }
+        List<ResolveInfo> rinfo = pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA);
+        rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
+        rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
+
+        for (ResolveInfo ri : rinfo) {
+            returnList.add(ri.activityInfo.packageName);
+        }
+        return returnList;
     }
 
     public enum Key {

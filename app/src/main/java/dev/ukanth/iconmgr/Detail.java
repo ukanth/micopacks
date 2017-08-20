@@ -1,8 +1,11 @@
 package dev.ukanth.iconmgr;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+
+import java.util.List;
 
 /**
  * Created by ukanth on 15/8/17.
@@ -14,6 +17,9 @@ public class Detail {
     private String mTitle;
     private final String mSubtitle;
     private final Detail.Type mType;
+
+
+    private List<Bitmap> listIcons;
 
     public Detail(@DrawableRes int icon, String title, String subtitle, @NonNull Detail.Type type) {
         mIcon = icon;
@@ -43,11 +49,21 @@ public class Detail {
         mTitle = title;
     }
 
+
+    public List<Bitmap> getListIcons() {
+        return listIcons;
+    }
+
+    public void setListIcons(List<Bitmap> listIcons) {
+        this.listIcons = listIcons;
+    }
+
+
     public enum Type {
         PERCENT,
         APPLY,
         TOTAL,
-        DIMENSION
+        MASK
     }
 
     public static class Style {

@@ -15,9 +15,9 @@
         android:paddingStart="@dimen/content_padding"
         android:paddingTop="@dimen/content_padding" />
 
-    <View
+    <!--<View
         android:id="@+id/shadow"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_shadow" />
+        android:layout_height="@dimen/toolbar_shadow" />-->
 
 </FrameLayout>

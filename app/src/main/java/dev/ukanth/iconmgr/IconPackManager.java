@@ -10,6 +10,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -72,23 +73,15 @@ public class IconPackManager {
                 obj.setIconPkg(packageName);
                 try {
                     ApplicationInfo ai = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-                    if (ipObjDao.hasKey(obj)) {
-                        obj.setIconType("GO");
-                        obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
-                        obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
-                        obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
-                        ipObjDao.update(obj);
-                    } else {
-                        obj.setIconType("GO");
-                        obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
-                        obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
-                        obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
-                        ipObjDao.insert(obj);
-                        Util.showNotification(mContext, packageName);
-                    }
-
-                    IconRequest.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null);
-                } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
+                    obj.setIconType("GO");
+                    obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
+                    obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
+                    obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
+                    ipObjDao.insert(obj);
+                    Util.showNotification(mContext, packageName);
+                    IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, true);
+                } catch (Exception e) {
+                    Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());
                 }
                 break;
             }

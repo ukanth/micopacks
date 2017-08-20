@@ -68,12 +68,13 @@
     <string name="changelog">Changelog</string>
     <string name="icon_progress">Icons Supported</string>
 
-    <string name="icon_request_installed_apps">Total\n%d installed apps</string>
+    <string name="icon_request_installed_apps" formatted="false">Total\n%d installed apps - ( %s )</string>
     <string name="icon_request_themed_apps">Themed\n%d apps</string>
     <string name="icon_request_missed_apps">Missed\n%d apps</string>
 
     <string name="iconCount">Total Icons</string>
 
     <string name="iconPercent">Installed icons supported !</string>
-    <string name="iconinstalled">New icon pack installed</string>
+    <string name="iconinstalled">New iconpack installed/updated</string>
+    <string name="iconMask">Preview of Iconmask</string>
 </resources>

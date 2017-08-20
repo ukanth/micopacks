@@ -5,12 +5,13 @@
     android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/content_padding"
-    android:layout_marginEnd="@dimen/content_padding"
-    android:layout_marginRight="@dimen/content_padding"
-    app:cardCornerRadius="@dimen/card_corner_radius"
-    app:cardElevation="@dimen/card_elevation"
-    app:cardUseCompatPadding="@bool/card_use_compat_padding"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="2dp"
+    android:layout_marginTop="2dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:layout_marginBottom="2dp"
+    app:cardPreventCornerOverlap="false"
+    app:cardUseCompatPadding="true"
     tools:ignore="MissingPrefix">
 
     <LinearLayout
@@ -26,8 +27,8 @@
             android:layout_height="wrap_content"
             android:drawablePadding="@dimen/button_margin"
             android:gravity="center_vertical"
-            android:text="@string/icon_progress"
             android:textColor="?android:attr/textColorPrimary"
+            android:text="@string/icon_progress"
             android:textSize="@dimen/text_content_title" />
 
         <LinearLayout
@@ -40,8 +41,8 @@
                 android:id="@+id/installed_apps"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:textColor="?android:attr/textColorPrimary"
+                android:gravity="center_vertical"
                 android:textSize="@dimen/text_content" />
 
             <ProgressBar
@@ -64,17 +65,17 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:gravity="start"
-                    android:textColor="?android:attr/textColorSecondary"
                     android:textSize="@dimen/text_content" />
 
                 <TextView
                     android:id="@+id/missed_apps"
                     android:layout_width="0dp"
+                    android:textColor="?android:attr/textColorPrimary"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="end"
-                    android:textColor="?android:attr/textColorSecondary"
                     android:textSize="@dimen/text_content" />
 
             </LinearLayout>

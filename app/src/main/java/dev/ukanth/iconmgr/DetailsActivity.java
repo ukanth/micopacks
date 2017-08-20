@@ -22,9 +22,11 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         if (Prefs.isDarkTheme(getApplicationContext())) {
             setTheme(R.style.AppTheme_Dark);
         }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
