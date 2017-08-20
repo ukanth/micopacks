@@ -70,14 +70,23 @@ public class IconPackManager {
             if (ri.activityInfo.packageName.equals(packageName)) {
                 IPObj obj = new IPObj();
                 obj.setIconPkg(packageName);
-                obj.setIconType("GO");
                 try {
                     ApplicationInfo ai = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-                    obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
-                    obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
-                    obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
-                    ipObjDao.insert(obj);
-                    Util.showNotification(mContext, packageName);
+                    if (ipObjDao.hasKey(obj)) {
+                        obj.setIconType("GO");
+                        obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
+                        obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
+                        obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
+                        ipObjDao.update(obj);
+                    } else {
+                        obj.setIconType("GO");
+                        obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
+                        obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
+                        obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
+                        ipObjDao.insert(obj);
+                        Util.showNotification(mContext, packageName);
+                    }
+
                     IconRequest.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null);
                 } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
                 }

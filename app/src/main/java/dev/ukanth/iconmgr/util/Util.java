@@ -327,8 +327,8 @@ public class Util {
                     new NotificationCompat.Action.Builder(R.drawable.ic_apply, "Apply", pendingIntentYes).build();
 
             NotificationCompat.Builder noti = new NotificationCompat.Builder(context)
-                    .setContentTitle("MicoPacks")
-                    .setContentText("Icon Pack Detected")
+                    .setContentTitle(context.getString(R.string.app_name))
+                    .setContentText(context.getString(R.string.iconinstalled))
                     .setSmallIcon(R.drawable.iconpack)
                     .setContentIntent(pIntent)
                     .setAutoCancel(true)
