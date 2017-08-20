@@ -44,9 +44,9 @@ public class Detail {
     }
 
     public enum Type {
+        PERCENT,
         APPLY,
-        DONATE,
-        ICONS,
+        TOTAL,
         DIMENSION
     }
 

@@ -35,12 +35,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import dev.ukanth.iconmgr.ActionReceiver;
-import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.DetailsActivity;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
-import dev.ukanth.iconmgr.dao.DaoSession;
-import dev.ukanth.iconmgr.dao.IPObjDao;
 import eu.chainfire.libsuperuser.Shell;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -308,15 +305,6 @@ public class Util {
             name = res.activityInfo.packageName;
         }
         return name;
-    }
-
-    public static IPObjDao getDAO(Context context) {
-        App app = ((App) context);
-        DaoSession daoSession = app.getDaoSession();
-        if(daoSession != null) {
-            return daoSession.getIPObjDao();
-        }
-        return null;
     }
 
     public static void showNotification(Context context, String packageName) {

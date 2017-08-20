@@ -11,14 +11,14 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.List;
 
@@ -32,58 +32,64 @@ import me.grantland.widget.AutofitTextView;
 public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Context mContext;
+    private final Context activityContext;
     private final List<Detail> mHomes;
     private final Detail.Style mImageStyle;
 
-    private int mItemsCount;
     private int mOrientation;
 
-    private IPObj pkgObj;
-    private static final int TYPE_HEADER = 0;
-    private static final int TYPE_CONTENT = 1;
-    private static final int TYPE_ICON_REQUEST = 2;
+    private boolean onBind;
 
-    public DetailViewAdapter(@NonNull Context context, List<Detail> homes, int orientation, @NonNull IPObj pkgName) {
-        mContext = context;
-        mHomes = homes;
+    private IPObj pkgObj;
+    private static final int TYPE_ICON_REQUEST = 0;
+    private static final int TYPE_CONTENT_TOTAL = 1;
+    private static final int TYPE_CONTENT_PERCENT = 2;
+
+    public DetailViewAdapter(@NonNull Context activityContext, @NonNull Context context, List<Detail> homes, int orientation, @NonNull IPObj pkgName) {
+        this.mContext = context;
+        this.activityContext = activityContext;
+        this.mHomes = homes;
         this.pkgObj = pkgName;
-        mOrientation = orientation;
-        mImageStyle = ViewHelper.getHomeImageViewStyle("landscape");
-        mItemsCount = 1;
+        this.mOrientation = orientation;
+        this.mImageStyle = ViewHelper.getHomeImageViewStyle("landscape");
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_CONTENT) {
+        if (viewType == TYPE_ICON_REQUEST) {
+            View view = LayoutInflater.from(mContext).inflate(
+                    R.layout.details_card, parent, false);
+            return new IconRequestViewHolder(view);
+        } else if (viewType == TYPE_CONTENT_TOTAL) {
+            View view = LayoutInflater.from(mContext).inflate(
+                    R.layout.content_card, parent, false);
+            return new ContentViewHolder(view);
+        } else {
             View view = LayoutInflater.from(mContext).inflate(
                     R.layout.content_card, parent, false);
             return new ContentViewHolder(view);
         }
-
-        View view = LayoutInflater.from(mContext).inflate(
-                R.layout.details_card, parent, false);
-        return new IconRequestViewHolder(view);
     }
 
     @Override
     public void onViewRecycled(RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);
-        if (holder.getItemViewType() == TYPE_CONTENT) {
+        /*if (holder.getItemViewType() == TYPE_CONTENT_TOTAL) {
             ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
-
             contentViewHolder.autoFitTitle.setSingleLine(false);
             contentViewHolder.autoFitTitle.setMaxLines(10);
-            contentViewHolder.autoFitTitle.setSizeToFit(false);
+            contentViewHolder.autoFitTitle.setSizeToFit(true);
             contentViewHolder.autoFitTitle.setGravity(Gravity.CENTER_VERTICAL);
             contentViewHolder.autoFitTitle.setIncludeFontPadding(true);
             contentViewHolder.autoFitTitle.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            contentViewHolder.subtitle.setVisibility(View.GONE);
+            contentViewHolder.subtitle.setVisibility(View.VISIBLE);
             contentViewHolder.subtitle.setGravity(Gravity.CENTER_VERTICAL);
-        }
+        }*/
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        onBind = true;
         try {
             if (holder.itemView != null) {
                 StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)
@@ -93,52 +99,45 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         } catch (Exception e) {
         }
 
-        if (holder.getItemViewType() == TYPE_CONTENT) {
+        if (holder.getItemViewType() == TYPE_CONTENT_TOTAL) {
             ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
             int finalPosition = position - 1;
-
-            if (mHomes.get(finalPosition).getType() == Detail.Type.ICONS) {
-                contentViewHolder.autoFitTitle.setSingleLine(true);
-                contentViewHolder.autoFitTitle.setMaxLines(1);
-                contentViewHolder.autoFitTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                        mContext.getResources().getDimension(R.dimen.text_max_size));
-                contentViewHolder.autoFitTitle.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-                contentViewHolder.autoFitTitle.setIncludeFontPadding(false);
-                contentViewHolder.autoFitTitle.setSizeToFit(true);
-
-                contentViewHolder.subtitle.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
-            } else {
-                contentViewHolder.autoFitTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, mContext.getResources()
-                        .getDimension(R.dimen.text_content_title));
-            }
-
             contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
 
             if (mHomes.get(finalPosition).getSubtitle().length() > 0) {
                 contentViewHolder.subtitle.setText(mHomes.get(finalPosition).getSubtitle());
                 contentViewHolder.subtitle.setVisibility(View.VISIBLE);
             }
-        } else {
+        } else if (holder.getItemViewType() == TYPE_CONTENT_PERCENT) {
+            ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
+            int finalPosition = position - 1;
 
-
+            contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
+            if (mHomes.get(finalPosition).getSubtitle().length() > 0) {
+                contentViewHolder.subtitle.setText(mHomes.get(finalPosition).getSubtitle());
+                contentViewHolder.subtitle.setVisibility(View.VISIBLE);
+            }
+        } else if (holder.getItemViewType() == TYPE_ICON_REQUEST) {
             final IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
-
             int installed = 0;
             int missed = 0;
-
             missed = pkgObj.getMissed();
-            List<String> missPackage;
             //refresh package
             if (missed == 0) {
-                IconRequest.start(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconRequest.AsyncResponse() {
+                final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait).progress(true, 0).show();
+                IconRequest.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconRequest.AsyncResponse() {
                     @Override
                     public void processFinish(List<String> output) {
+                        plsWait.dismiss();
                         if (output != null) {
                             PackageManager pm = mContext.getPackageManager();
                             List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
                             int installed = packages.size();
                             int missed = output.size();
                             int themed = installed - output.size();
+
+                            double percent = ((double) themed / installed) * 100;
+                            String result = String.format("%.2f", percent);
 
                             iconRequestViewHolder.installedApps.setText(String.format(
                                     mContext.getResources().getString(R.string.icon_request_installed_apps),
@@ -152,6 +151,12 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                             iconRequestViewHolder.progress.setMax(installed);
                             iconRequestViewHolder.progress.setProgress(themed);
+
+                            //now add new card about details
+                            Detail d = new Detail(-1, String.valueOf(result + "%"),
+                                    mContext.getResources().getString(R.string.iconPercent),
+                                    Detail.Type.PERCENT);
+                            addNewContent(d);
                         }
                     }
                 });
@@ -161,6 +166,10 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
                 installed = packages.size();
                 int themed = installed - missed;
+
+                double percent = ((double) themed / installed) * 100;
+                String result = String.format("%.2f", percent);
+
 
                 iconRequestViewHolder.installedApps.setText(String.format(
                         mContext.getResources().getString(R.string.icon_request_installed_apps),
@@ -175,43 +184,50 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 iconRequestViewHolder.progress.setMax(installed);
                 iconRequestViewHolder.progress.setProgress(themed);
 
+                //now add new card about details
+                Detail d = new Detail(-1, String.valueOf(result + "%"),
+                        mContext.getResources().getString(R.string.iconPercent),
+                        Detail.Type.PERCENT);
+                addNewContent(d);
             }
         }
+        onBind = false;
     }
 
     @Override
     public int getItemCount() {
-        return mHomes.size() + mItemsCount;
+        return mHomes.size() + 1;
     }
+
+    public void addNewContent(@Nullable Detail detail) {
+        if (detail == null) return;
+
+        mHomes.add(detail);
+        new Runnable() {
+            @Override
+            public void run() {
+                notifyItemInserted(mHomes.size());
+            }
+        };
+
+    }
+
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) return TYPE_HEADER;
-        if (position == (mHomes.size() + 1) && true) return TYPE_ICON_REQUEST;
-        return TYPE_CONTENT;
+        if (position == 0) return TYPE_ICON_REQUEST;
+        if (position == 1) return TYPE_CONTENT_TOTAL;
+        if (position == 2) return TYPE_CONTENT_PERCENT;
+        return -1;
     }
 
-    public void setOrientation(int orientation) {
-        mOrientation = orientation;
-        notifyDataSetChanged();
-    }
-
-    public void addNewContent(@Nullable Detail home) {
-        if (home == null) return;
-
-        mHomes.add(home);
-        notifyItemInserted(mHomes.size());
-    }
-
-    private class ContentViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class ContentViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView subtitle;
         private final AutofitTextView autoFitTitle;
-        private final LinearLayout container;
 
         ContentViewHolder(View itemView) {
             super(itemView);
-            container = (LinearLayout) itemView.findViewById(R.id.container_content);
             autoFitTitle = (AutofitTextView) itemView.findViewById(R.id.title_content);
             subtitle = (TextView) itemView.findViewById(R.id.subtitle_content);
 
@@ -227,45 +243,13 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     params.setMarginEnd(margin);
                 }
             }
-
             card.setCardElevation(0);
-
-            container.setOnClickListener(this);
         }
 
-        @Override
-        public void onClick(View view) {
-            int id = view.getId();
-            if (id == R.id.container) {
-                int position = getAdapterPosition() - 1;
-                /*if (position < 0 || position > mHomes.size()) return;
-
-                switch (mHomes.get(position).getType()) {
-                    case APPLY:
-                        ((CandyBarMainActivity) mContext).selectPosition(1);
-                        break;
-                    case DONATE:
-                        if (mContext instanceof CandyBarMainActivity) {
-                            CandyBarMainActivity mainActivity = (CandyBarMainActivity) mContext;
-                            mainActivity.showSupportDevelopmentDialog();
-                        }
-                        break;
-                    case ICONS:
-                        ((CandyBarMainActivity) mContext).selectPosition(2);
-                        break;
-                    case DIMENSION:
-                        Home home = mHomes.get(position);
-                        IconPreviewFragment.showIconPreview(
-                                ((AppCompatActivity) mContext).getSupportFragmentManager(),
-                                home.getTitle(), home.getIcon());
-                        break;
-                }*/
-            }
-        }
     }
 
 
-    private class IconRequestViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class IconRequestViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView title;
         private final TextView installedApps;
@@ -296,44 +280,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     params.setMarginEnd(margin);
                 }
             }
-            container.setOnClickListener(this);
         }
-
-        @Override
-        public void onClick(View view) {
-        }
-    }
-
-
-    public Detail getItem(int position) {
-        return mHomes.get(position - 1);
-    }
-
-    public int getIconsIndex() {
-        int index = -1;
-        for (int i = 0; i < getItemCount(); i++) {
-            int type = getItemViewType(i);
-            if (type == TYPE_CONTENT) {
-                int pos = i - 1;
-                if (mHomes.get(pos).getType() == Detail.Type.ICONS) {
-                    index = i;
-                    break;
-                }
-            }
-        }
-        return index;
-    }
-
-    public int getIconRequestIndex() {
-        int index = -1;
-        for (int i = 0; i < getItemCount(); i++) {
-            int type = getItemViewType(i);
-            if (type == TYPE_ICON_REQUEST) {
-                index = i;
-                break;
-            }
-        }
-        return index;
     }
 
     private boolean isFullSpan(int viewType) {

@@ -54,7 +54,7 @@ public class IconPackManager {
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
 
-        loadIconPack("GO", rinfo, pm, packageList, ipObjDao);
+        loadIconPack("GO", rinfo, pm, ipObjDao);
         return returnList;
     }
 
@@ -78,7 +78,7 @@ public class IconPackManager {
                     obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
                     ipObjDao.insert(obj);
                     Util.showNotification(mContext, packageName);
-                    IconRequest.start(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null);
+                    IconRequest.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null);
                 } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
                 }
                 break;
@@ -87,7 +87,7 @@ public class IconPackManager {
     }
 
 
-    private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, ArrayList packageList, IPObjDao ipObjDao) {
+    private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, IPObjDao ipObjDao) {
         IPObj obj;
         IconPackUtil ip;
         ApplicationInfo ai = null;

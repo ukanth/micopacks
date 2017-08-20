@@ -8,9 +8,9 @@ import android.util.Log;
 import java.util.List;
 import java.util.concurrent.Executor;
 
+import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.util.Util;
 
 /**
  * Created by ukanth on 14/8/17.
@@ -35,11 +35,11 @@ public class IconRequest extends AsyncTask<Void, Void, List<String>> {
         this.packageName = packageName;
     }
 
-    public AsyncTask start(@NonNull Context context, String packageName, AsyncResponse response) {
-        return start(context, packageName, SERIAL_EXECUTOR, response);
+    public AsyncTask process(@NonNull Context context, String packageName, AsyncResponse response) {
+        return process(context, packageName, SERIAL_EXECUTOR, response);
     }
 
-    public static AsyncTask start(@NonNull Context context, String packageName, @NonNull Executor executor, AsyncResponse response) {
+    public static AsyncTask process(@NonNull Context context, String packageName, @NonNull Executor executor, AsyncResponse response) {
         return new IconRequest(context, packageName, response).executeOnExecutor(executor);
     }
 
@@ -62,7 +62,9 @@ public class IconRequest extends AsyncTask<Void, Void, List<String>> {
         super.onPostExecute(listPkg);
         if (packageName != null) {
             Log.i("MICO", "PackageName: " + packageName);
-            IPObjDao ipObjDao = Util.getDAO(mContext);
+            App app = ((App) mContext.getApplicationContext());
+            DaoSession daoSession = app.getDaoSession();
+            IPObjDao ipObjDao = daoSession.getIPObjDao();
             IPObj ipObj = new IPObj();
             ipObj.setIconPkg(packageName);
             if (ipObjDao != null && ipObjDao.hasKey(ipObj)) {
