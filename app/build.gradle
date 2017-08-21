@@ -44,13 +44,10 @@ dependencies {
 
     //database
     compile 'org.greenrobot:greendao:3.2.2'
-    // This is only needed if you want to use encrypted databases
-    compile 'net.zetetic:android-database-sqlcipher:3.5.6'
 
     //material dialog
     compile 'com.afollestad.material-dialogs:core:0.9.4.1'
 
-    compile 'me.grantland:autofittextview:0.2.1'
     //changelib
     compile 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
     testCompile 'junit:junit:4.12'

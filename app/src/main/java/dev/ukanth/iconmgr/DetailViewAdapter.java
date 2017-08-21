@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import dev.ukanth.iconmgr.dao.IPObj;
-import me.grantland.widget.AutofitTextView;
 
 /**
  * Created by ukanth on 15/8/17.
@@ -283,11 +282,11 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private class ContentViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView subtitle;
-        private final AutofitTextView autoFitTitle;
+        private final TextView autoFitTitle;
 
         ContentViewHolder(View itemView) {
             super(itemView);
-            autoFitTitle = (AutofitTextView) itemView.findViewById(R.id.title_content);
+            autoFitTitle = (TextView) itemView.findViewById(R.id.title_content);
             subtitle = (TextView) itemView.findViewById(R.id.subtitle_content);
 
             CardView card = (CardView) itemView.findViewById(R.id.content_card);
@@ -306,13 +305,13 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         private final ImageView image;
         private final LinearLayout layout;
-        private final AutofitTextView autoFitTitle;
+        private final TextView autoFitTitle;
 
         IconViewHolder(View itemView) {
             super(itemView);
             image = (ImageView) itemView.findViewById(R.id.iconview_img);
             layout = (LinearLayout) itemView.findViewById(R.id.iconbase);
-            autoFitTitle = (AutofitTextView) itemView.findViewById(R.id.title_icon);
+            autoFitTitle = (TextView) itemView.findViewById(R.id.title_icon);
 
             CardView card = (CardView) itemView.findViewById(R.id.iconview_card);
             card.setUseCompatPadding(false);
