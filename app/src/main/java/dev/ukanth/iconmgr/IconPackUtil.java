@@ -20,7 +20,6 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +32,6 @@ import java.util.Set;
 
 public class IconPackUtil {
     private Resources iconPackres = null;
-    private HashSet<String> matchPackage = new HashSet<>();
 
     @NonNull
     public int calcTotal(@NonNull Context mContext, String packageName) {
@@ -182,23 +180,14 @@ public class IconPackUtil {
         return null;
     }
 
+
+
     @NonNull
-    public List<String> getMissingApps(@NonNull Context context, String currentPackage) {
+    public List<String> getMissingApps(@NonNull Context context, String currentPackage, List<ResolveInfo> listPackages) {
         List<String> requests = new ArrayList<>();
-        HashMap<String, String> appFilter = getAppFilter(currentPackage, context, Key.ACTIVITY);
         PackageManager packageManager = context.getPackageManager();
-
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> installedApps = packageManager.queryIntentActivities(
-                intent, PackageManager.GET_RESOLVED_FILTER);
-        try {
-            Collections.sort(installedApps,
-                    new ResolveInfo.DisplayNameComparator(packageManager));
-        } catch (Exception ignored) {
-        }
-
-        for (ResolveInfo app : installedApps) {
+        HashMap<String, String> appFilter = getAppFilter(currentPackage, context, Key.ACTIVITY);
+        for (ResolveInfo app : listPackages) {
             String packageName = app.activityInfo.packageName;
             String activity = packageName + "/" + app.activityInfo.name;
             String value = appFilter.get(activity);

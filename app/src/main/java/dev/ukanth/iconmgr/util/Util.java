@@ -337,4 +337,19 @@ public class Util {
             notificationManager.notify(90297, noti.build());
         }
     }
+
+    private static boolean isSystemPackage(ResolveInfo ri) {
+        return ((ri.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
+    }
+
+    public static List<ResolveInfo> getInstalledApps(Context context) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PackageManager packageManager = context.getPackageManager();
+
+        List<ResolveInfo> installedApps = packageManager.queryIntentActivities(
+                intent, PackageManager.GET_RESOLVED_FILTER);
+
+        return installedApps;
+    }
 }

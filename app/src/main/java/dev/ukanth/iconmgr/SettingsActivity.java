@@ -12,12 +12,18 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import org.greenrobot.greendao.query.Query;
+
 import java.util.List;
 
+import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
+
+import static dev.ukanth.iconmgr.Prefs.INCLUDE_SYS;
 import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
 import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
 
@@ -177,8 +183,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (key.equals(THEME_RES_ID)) {
                 MainActivity.setReloadTheme(true);
             }
-            if ( key.equals(TOTAL_ICONS)) {
+            if (key.equals(TOTAL_ICONS)) {
                 MainActivity.setReloadApp(true);
+            }
+            if (key.equals(INCLUDE_SYS)) {
+                App app = ((App) getActivity().getApplicationContext());
+                DaoSession daoSession = app.getDaoSession();
+                IPObjDao ipObjDao = daoSession.getIPObjDao();
+                Query<IPObj> ipObjQuery = ipObjDao.queryBuilder().where(IPObjDao.Properties.Missed.gt(0)).orderAsc(IPObjDao.Properties.IconName).build();
+
+                for (IPObj obj : ipObjQuery.list()) {
+                    obj.setMissed(0);
+                    ipObjDao.update(obj);
+                }
             }
         }
     }

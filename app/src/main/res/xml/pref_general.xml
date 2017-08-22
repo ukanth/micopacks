@@ -10,8 +10,13 @@
         android:key="total_icons"
         android:title="@string/total_icons" />
 
+   <!-- <SwitchPreference
+        android:defaultValue="false"
+        android:key="include_system"
+        android:title="@string/include_system" />-->
+
     <SwitchPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="notify_install"
         android:title="@string/show_notification" />
 

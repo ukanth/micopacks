@@ -1,8 +1,7 @@
 package dev.ukanth.iconmgr;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -148,13 +147,9 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
                 break;
             case TYPE_ICON_REQUEST:
-
             {
                 final IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
                 //refresh package
-                final PackageManager pm = mContext.getPackageManager();
-                final List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-
                 if (pkgObj.getMissed() == 0) {
                     final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait).progress(true, 0).show();
                     IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
@@ -163,7 +158,8 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             plsWait.dismiss();
                             if (output != null) {
                                 List<Bitmap> bitMap = output.get("bitmap");
-                                int installed = packages.size();
+                                List<ResolveInfo> resolveInfos = output.get("install");
+                                int installed = resolveInfos.size();
                                 int missed = output.get("package").size();
                                 int themed = installed - output.get("package").size();
 
@@ -199,34 +195,44 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 }
                             }
                         }
-                    }, true);
+                    }, "MISSED");
                 } else {
+                    final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait).progress(true, 0).show();
+                    IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
+                        @Override
+                        public void processFinish(HashMap<String, List> output) {
+                            if (output != null) {
+                                plsWait.dismiss();
+                                List<ResolveInfo> resolveInfos = output.get("install");
+                                int installed = resolveInfos.size();
+                                int themed = installed - pkgObj.getMissed();
 
-                    int installed = packages.size();
-                    int themed = installed - pkgObj.getMissed();
-
-                    double percent = ((double) themed / installed) * 100;
-                    String result = String.format("%.2f", percent) + "%";
+                                double percent = ((double) themed / installed) * 100;
+                                String result = String.format("%.2f", percent) + "%";
 
 
-                    iconRequestViewHolder.installedApps.setText(String.format(
-                            mContext.getResources().getString(R.string.icon_request_installed_apps),
-                            installed, result));
-                    iconRequestViewHolder.missedApps.setText(String.format(
-                            mContext.getResources().getString(R.string.icon_request_missed_apps),
-                            pkgObj.getMissed()));
-                    iconRequestViewHolder.themedApps.setText(String.format(
-                            mContext.getResources().getString(R.string.icon_request_themed_apps),
-                            themed));
+                                iconRequestViewHolder.installedApps.setText(String.format(
+                                        mContext.getResources().getString(R.string.icon_request_installed_apps),
+                                        installed, result));
+                                iconRequestViewHolder.missedApps.setText(String.format(
+                                        mContext.getResources().getString(R.string.icon_request_missed_apps),
+                                        pkgObj.getMissed()));
+                                iconRequestViewHolder.themedApps.setText(String.format(
+                                        mContext.getResources().getString(R.string.icon_request_themed_apps),
+                                        themed));
 
-                    iconRequestViewHolder.progress.setMax(installed);
-                    iconRequestViewHolder.progress.setProgress(themed);
+                                iconRequestViewHolder.progress.setMax(installed);
+                                iconRequestViewHolder.progress.setProgress(themed);
 
-                    Detail d = new Detail(-1, String.valueOf(result),
-                            mContext.getResources().getString(R.string.iconPercent),
-                            Detail.Type.PERCENT);
+                                Detail d = new Detail(-1, String.valueOf(result),
+                                        mContext.getResources().getString(R.string.iconPercent),
+                                        Detail.Type.PERCENT);
 
-                    addNewContent(d);
+                                addNewContent(d);
+                            }
+                        }
+                    }, "INSTALL");
+
 
                     IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
                         @Override
@@ -242,7 +248,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 }
                             }
                         }
-                    }, false);
+                    }, "BITMAP");
                 }
             }
             break;

@@ -79,7 +79,7 @@ public class IconPackManager {
                     obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
                     ipObjDao.insert(obj);
                     Util.showNotification(mContext, packageName);
-                    IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, true);
+                    IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
                 } catch (Exception e) {
                     Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());
                 }
