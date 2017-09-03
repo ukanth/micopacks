@@ -34,6 +34,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
+
         <activity
             android:name=".tasker.LocaleEdit"
             android:exported="true"
@@ -52,11 +53,12 @@
             android:exported="true"
             tools:ignore="ExportedReceiver">
 
-            <!-- this Intent filter allows the plug-in to discovered by Locale -->
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
+
+
         <receiver android:name=".UninstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
@@ -76,6 +78,14 @@
 
         <activity
             android:name=".DetailsActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.ukanth.iconmgr.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".IconPreview"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

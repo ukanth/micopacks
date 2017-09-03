@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -114,6 +115,12 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 int finalPosition = position - 1;
                 contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
 
+                if(!BuildConfig.PAID) {
+                    float radius = contentViewHolder.autoFitTitle.getTextSize() / 3;
+                    BlurMaskFilter filter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
+                    contentViewHolder.autoFitTitle.getPaint().setMaskFilter(filter);
+                }
+
                 if (mHomes.get(finalPosition).getSubtitle().length() > 0) {
                     contentViewHolder.subtitle.setText(mHomes.get(finalPosition).getSubtitle());
                     contentViewHolder.subtitle.setVisibility(View.VISIBLE);
@@ -124,6 +131,13 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 finalPosition = position - 1;
 
                 contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
+
+                if(!BuildConfig.PAID) {
+                    float radius = contentViewHolder.autoFitTitle.getTextSize() / 3;
+                    BlurMaskFilter filter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
+                    contentViewHolder.autoFitTitle.getPaint().setMaskFilter(filter);
+                }
+
                 if (mHomes.get(finalPosition).getSubtitle().length() > 0) {
                     contentViewHolder.subtitle.setText(mHomes.get(finalPosition).getSubtitle());
                     contentViewHolder.subtitle.setVisibility(View.VISIBLE);

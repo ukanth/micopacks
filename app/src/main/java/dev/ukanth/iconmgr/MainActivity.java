@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -326,21 +326,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected Void doInBackground(Void... params) {
 
-            // query all notes, sorted a-z by their text
-            ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
-            List<IPObj> iPacksList = ipObjQuery.list();
+            try {
+                // query all notes, sorted a-z by their text
+                ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
+                List<IPObj> iPacksList = ipObjQuery.list();
 
-            //update if not match
-            if (iPacksList.size() == 0 || IconPackUtil.getInstalledIconPacks(getApplicationContext()).size() != iPacksList.size()) {
-                IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
-                iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
-            } else {
-                iconPacksList = iPacksList;
-            }
-            if (isCancelled())
+                //update if not match
+                if (iPacksList.size() == 0 || IconPackUtil.getInstalledIconPacks(getApplicationContext()).size() != iPacksList.size()) {
+                    IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
+                    iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
+                } else {
+                    iconPacksList = iPacksList;
+                }
+                if (isCancelled())
+                    return null;
+                //publishProgress(-1);
                 return null;
-            //publishProgress(-1);
-            return null;
+            } catch (SQLiteException sqe) {
+                return null;
+            }
+
         }
 
         @Override
@@ -358,20 +363,21 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     plsWait.dismiss();
                     plsWait = null;
                 }
-                //mSwipeLayout.setRefreshing(false);
+                mSwipeLayout.setRefreshing(false);
+                if (iconPacksList != null) {
+                    Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
+                    adapter = new IconAdapter(MainActivity.this, iconPacksList);
+                    recyclerView.setAdapter(adapter);
 
-                Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
-                adapter = new IconAdapter(MainActivity.this, iconPacksList);
-                recyclerView.setAdapter(adapter);
-
-                if (iconPacksList.isEmpty()) {
-                    recyclerView.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                } else {
-                    recyclerView.setVisibility(View.VISIBLE);
-                    emptyView.setVisibility(View.GONE);
+                    if (iconPacksList.isEmpty()) {
+                        recyclerView.setVisibility(View.GONE);
+                        emptyView.setVisibility(View.VISIBLE);
+                    } else {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        emptyView.setVisibility(View.GONE);
+                    }
                 }
-                Log.i("MICO", "Total time:" + (System.currentTimeMillis() - startTime) / 1000 + " sec");
+                //Log.i("MICO", "Total time:" + (System.currentTimeMillis() - startTime) / 1000 + " sec");
             } catch (Exception e) {
                 // nothing
                 if (plsWait != null) {

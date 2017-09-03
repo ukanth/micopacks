@@ -1,6 +1,8 @@
 <resources xmlns:android="http://schemas.android.com/tools" android:autoLink="web">
     <string name="app_name">MicoPacks</string>
+    <string name="app_name_free">MicoPacks Free</string>
     <string name="loading">Listing Icon Packs</string>
+    <string name="loading_preview">Generate preview</string>
     <string name="loading_stats">Calculating stats</string>
     <string name="title">Action for </string>
     <string name="preferences">Settings</string>
@@ -37,8 +39,11 @@
         RootTools by Stericson \n
         libsuperuser by Chainfire \n
         material-dialogs by afollestad \n\n
+        greenDAO \n\n
+        changeloglib \n\n
 
-        Special Credits: \n
+
+        Special - Credits: \n
         ---------------------- \n
         preferences-manager by SimonMarquis \n
         Candybar-library by danimahardhika \n\n
@@ -53,6 +58,7 @@
     <string name="noicons">Icons: </string>
     <string name="report">Report a problem</string>
     <string name="use_dark">Dark theme</string>
+    <string name="use_dark_paid">Dark theme(Paid only)</string>
     <string name="calculate_percent">Calculate matching icons</string>
     <string name="include_system">Include system applications</string>
     <string name="access_sort">Sort</string>
@@ -62,6 +68,7 @@
     <string name="iconpercent">By match percent</string>
     <string name="total_icons">Show icon count</string>
     <string name="show_notification">Notify on new icon pack install</string>
+    <string name="show_notification_paid">Notify on new icon pack install(Paid only)</string>
     <string name="match" formatted="false">Supports %s of %s apps(%s)</string>
     <string name="please_wait">Please wait ...</string>
     <string name="action_search">Search</string>

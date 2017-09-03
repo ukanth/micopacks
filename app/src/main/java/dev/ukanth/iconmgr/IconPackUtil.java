@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -25,6 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+
+import dev.ukanth.iconmgr.util.Util;
+
+import static dev.ukanth.iconmgr.util.DrawableHelper.getResourceId;
 
 /**
  * Created by ukanth on 17/7/17.
@@ -132,6 +137,39 @@ public class IconPackUtil {
         return mBackImages;
     }
 
+    public Set<Icon> getListIcons(Context mContext, String packageName) {
+        Set<Icon> icons = new HashSet<>();
+        Key key = Key.ACTIVITY;
+
+        List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
+        try {
+            XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (xpp.getEventType() == XmlPullParser.START_TAG) {
+                    if (xpp.getName().equals("item")) {
+
+                        String sKey = xpp.getAttributeValue(null, key.getKey());
+                        String sValue = xpp.getAttributeValue(null, key.getValue());
+
+                        if (sKey != null && sValue != null) {
+                            sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
+                            if (isSupported(mContext, packageName, listPackages, sKey)) {
+                                String name = xpp.getAttributeValue(null, "drawable");
+                                Bitmap iconBitmap = loadBitmap(name, packageName);
+                                int id = getResourceId(mContext, name);
+                                icons.add(new Icon(name, id, iconBitmap));
+                            }
+                        }
+                    }
+                }
+                xpp.next();
+            }
+        } catch (Exception e) {
+            Log.e("MICO", e.getMessage());
+        }
+        return icons;
+    }
+
     public HashMap<String, String> getAppFilter(String packageName, Context mContext, Key key) {
         HashMap<String, String> activities = new HashMap<>();
 
@@ -180,7 +218,15 @@ public class IconPackUtil {
         return null;
     }
 
-
+    public boolean isSupported(@NonNull Context context, String currentPackage, List<ResolveInfo> listPackages, String currentActivity) {
+        for (ResolveInfo app : listPackages) {
+            String activity = app.activityInfo.packageName + "/" + app.activityInfo.name;
+            if (currentActivity.equals(activity)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     @NonNull
     public List<String> getMissingApps(@NonNull Context context, String currentPackage, List<ResolveInfo> listPackages) {

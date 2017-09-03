@@ -2,9 +2,11 @@
 <changelog bulletedList="false">
 
     <changelogversion versionName="1.3" changeDate="">
+        <changelogtext>Improved overall performance</changelogtext>
+        <changelogtext>Notify on new iconpack install with apply action</changelogtext>
         <changelogtext>Search IconPacks</changelogtext>
-        <changelogtext>Changelog view</changelogtext>
-        <changelogtext>Advance Stats View</changelogtext>
+        <changelogtext>Added Changelog </changelogtext>
+        <changelogtext>Detail view with more stats</changelogtext>
     </changelogversion>
 
     <changelogversion versionName="1.2" changeDate="Jul 28,2017">

@@ -15,15 +15,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
-import org.greenrobot.greendao.query.Query;
-
 import java.util.List;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
-import dev.ukanth.iconmgr.dao.IPObj;
-import dev.ukanth.iconmgr.dao.IPObjDao;
-
-import static dev.ukanth.iconmgr.Prefs.INCLUDE_SYS;
 import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
 import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
 
@@ -149,6 +142,13 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
+
+            if(!BuildConfig.PAID) {
+                getPreferenceScreen().findPreference("dark_theme").setEnabled(false);
+                getPreferenceScreen().findPreference("dark_theme").setTitle(getString(R.string.use_dark_paid));
+                getPreferenceScreen().findPreference("notify_install").setEnabled(false);
+                getPreferenceScreen().findPreference("notify_install").setTitle(getString(R.string.show_notification_paid));
+            }
             setHasOptionsMenu(true);
         }
 
@@ -186,18 +186,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (key.equals(TOTAL_ICONS)) {
                 MainActivity.setReloadApp(true);
             }
-            if (key.equals(INCLUDE_SYS)) {
-                App app = ((App) getActivity().getApplicationContext());
-                DaoSession daoSession = app.getDaoSession();
-                IPObjDao ipObjDao = daoSession.getIPObjDao();
-                Query<IPObj> ipObjQuery = ipObjDao.queryBuilder().where(IPObjDao.Properties.Missed.gt(0)).orderAsc(IPObjDao.Properties.IconName).build();
-
-                for (IPObj obj : ipObjQuery.list()) {
-                    obj.setMissed(0);
-                    ipObjDao.update(obj);
-                }
-            }
         }
     }
-
 }

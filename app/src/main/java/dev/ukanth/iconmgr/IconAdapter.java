@@ -26,6 +26,7 @@ import java.util.List;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.util.LauncherHelper;
+import dev.ukanth.iconmgr.util.Util;
 
 import static dev.ukanth.iconmgr.util.Util.getCurrentLauncher;
 
@@ -47,6 +48,18 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             ipackName = (TextView) view.findViewById(R.id.ipack_name);
             ipackCount = (TextView) view.findViewById(R.id.ipack_icon_count);
             icon = (ImageView) view.findViewById(R.id.ipack_icon);
+            icon.setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    if (currentItem != null && currentItem.getIconPkg() != null) {
+                        Intent intent = new Intent(ctx, IconPreview.class);
+                        intent.putExtra("pkg", currentItem.getIconPkg());
+                        ctx.startActivity(intent);
+                    }
+
+                }
+            });
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -97,14 +110,15 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
 
     private void openApp(Context ctx, IPObj currentItem) {
-        if (currentItem != null && currentItem.getIconPkg() != null) {
+        if (currentItem != null && currentItem.getIconPkg() != null
+                && Util.isPackageExisted(ctx, currentItem.getIconPkg())) {
             Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.getIconPkg());
             ctx.startActivity(i);
         }
     }
 
     private void uninstall(Context ctx, IPObj currentItem) {
-        Intent intent  = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
+        Intent intent = new Intent(Intent.ACTION_UNINSTALL_PACKAGE);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setData(Uri.fromParts("package", currentItem.getIconPkg(), null));
@@ -129,8 +143,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             Toast.makeText(ctx, ctx.getString(R.string.nodefault), Toast.LENGTH_LONG).show();
         }
     }
-
-
 
 
     IconAdapter(Context ctx, List<IPObj> ipacks) {
