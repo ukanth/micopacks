@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -21,6 +22,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import dev.ukanth.iconmgr.util.LauncherHelper;
+
 /**
  * Created by ukanth on 3/9/17.
  */
@@ -29,6 +32,8 @@ public class IconPreviewActivity extends AppCompatActivity {
 
 
     private MaterialDialog plsWait;
+
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,17 @@ public class IconPreviewActivity extends AppCompatActivity {
 
 
         Bundle bundle = getIntent().getExtras();
-        String pkgName = bundle.getString("pkg");
+        final String pkgName = bundle.getString("pkg");
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
+                LauncherHelper.apply(getApplicationContext(), pkgName, launcherPack);
+            }
+        });
+
 
         IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreviewActivity.this, pkgName);
 
@@ -111,7 +126,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                 DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
                 int screenWidth = metrics.widthPixels;
 
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth/5, screenWidth/5);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / 5, screenWidth / 5);
 
                 Resources res = mContext.getResources();
                 for (final Icon icon : list) {

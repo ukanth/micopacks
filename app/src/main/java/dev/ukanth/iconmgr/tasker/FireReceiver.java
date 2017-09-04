@@ -22,8 +22,8 @@ import android.widget.Toast;
 
 import com.stericson.roottools.RootTools;
 
-import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.R;
+import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.Util;
 
 
@@ -83,7 +83,7 @@ public final class FireReceiver extends BroadcastReceiver {
                     return;
                 }
 
-                String launcherName = LauncherHelper.getLauncherName(context,launcherPack);
+                String launcherName = LauncherHelper.getLauncherName(context, launcherPack);
                 switch (LauncherHelper.getLauncherId(launcherPack)) {
                     case LauncherHelper.NOVA:
                         if (RootTools.isRootAvailable()) {
