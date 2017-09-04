@@ -30,6 +30,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import dev.ukanth.iconmgr.util.Util;
 
@@ -146,40 +150,77 @@ public class IconPackUtil {
         return mBackImages;
     }
 
+    class Attrb {
+        String key;
+        String value;
+
+        Attrb(String k, String v) {
+            this.key = k;
+            this.value = v;
+        }
+    }
+
     public Set<Icon> getListIcons(Context mContext, String packageName) {
         Set<Icon> icons = new HashSet<>();
-        //Set<String> unique = new HashSet<>();
         Key key = Key.ACTIVITY;
-
-        List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
+        List<Attrb> items = new ArrayList<>();
         try {
             XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("item")) {
-
                         String sKey = xpp.getAttributeValue(null, key.getKey());
-                        String sValue = xpp.getAttributeValue(null, key.getValue());
-
-                        if (sKey != null && sValue != null) {
-                            sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
-                            if (isSupported(mContext, packageName, listPackages, sKey)) {
-                                String name = xpp.getAttributeValue(null, "drawable");
-                                Bitmap iconBitmap = loadBitmap(name, packageName);
-                                if (iconBitmap != null) {
-                                    icons.add(new Icon(name, iconBitmap));
-                                }
-                            }
+                        sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
+                        if (sKey != null) {
+                            String name = xpp.getAttributeValue(null, "drawable");
+                            items.add(new Attrb(sKey, name));
                         }
                     }
                 }
                 xpp.next();
             }
+            icons = processXpp(mContext, packageName, items);
         } catch (Exception e) {
             Log.e("MICO", e.getMessage());
+            e.printStackTrace();
         }
         return icons;
     }
+
+    public Set<Icon> processXpp(final Context mContext, final String packageName, List<Attrb> input) {
+        try {
+            int threads = Runtime.getRuntime().availableProcessors();
+            ExecutorService service = Executors.newFixedThreadPool(threads);
+
+            final List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
+            List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
+            for (final Attrb attr : input) {
+                Callable<Icon> callable = new Callable<Icon>() {
+                    public Icon call() throws Exception {
+                        if (isSupported(mContext, packageName, listPackages, attr.key)) {
+                            Bitmap iconBitmap = loadBitmap(attr.value, packageName);
+                            if (iconBitmap != null) {
+                                return new Icon(attr.value, iconBitmap);
+                            }
+                        }
+                        return new Icon("");
+                    }
+                };
+                futures.add(service.submit(callable));
+            }
+            service.shutdown();
+
+            Set<Icon> outputs = new HashSet<>();
+            for (Future<Icon> future : futures) {
+                outputs.add(future.get());
+            }
+            return outputs;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new HashSet<>();
+    }
+
 
     public HashMap<String, String> getAppFilter(String packageName, Context mContext, Key key) {
         HashMap<String, String> activities = new HashMap<>();

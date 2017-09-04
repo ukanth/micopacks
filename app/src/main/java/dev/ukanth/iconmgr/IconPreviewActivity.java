@@ -21,6 +21,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import dev.ukanth.iconmgr.util.LauncherHelper;
 
@@ -121,7 +125,7 @@ public class IconPreviewActivity extends AppCompatActivity {
 
             if (themed_icons != null) {
                 List<Icon> list = new ArrayList<Icon>(themed_icons);
-                if(nonthemed_icons != null) {
+                if (nonthemed_icons != null) {
                     List<Icon> listNonTheme = new ArrayList<Icon>(nonthemed_icons);
                     list.addAll(listNonTheme);
                 }
@@ -131,34 +135,52 @@ public class IconPreviewActivity extends AppCompatActivity {
                     }
                 });
                 GridLayout gridLayout = (GridLayout) findViewById(R.id.iconpreview);
-
                 gridLayout.invalidate();
-
                 int colNumber = 6;
                 gridLayout.setColumnCount(colNumber);
-
                 DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
                 int screenWidth = metrics.widthPixels;
-
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / 6, screenWidth / 6);
-
                 Resources res = mContext.getResources();
-                for (final Icon icon : list) {
-                    if (icon.getIconBitmap() != null) {
-                        ImageView image = new ImageView(mContext);
-                        image.setLayoutParams(params);
-                        image.setPadding(15, 15, 15, 15);
-                        image.setScaleType(ImageView.ScaleType.FIT_XY);
-                        image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
-                        image.setOnClickListener(new ImageView.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
+                processInputs(list, res, params, gridLayout);
+            }
+        }
+
+        public void processInputs(List<Icon> listIcons, final Resources res, final LinearLayout.LayoutParams params, final GridLayout gridLayout) {
+            try {
+                int threads = Runtime.getRuntime().availableProcessors();
+                ExecutorService service = Executors.newFixedThreadPool(threads);
+
+                List<Future<String>> futures = new ArrayList<Future<String>>();
+                for (final Icon icon : listIcons) {
+                    Callable<String> callable = new Callable<String>() {
+                        public String call() throws Exception {
+                            if (icon.getIconBitmap() != null) {
+                                ImageView image = new ImageView(mContext);
+                                image.setLayoutParams(params);
+                                image.setPadding(15, 15, 15, 15);
+                                image.setScaleType(ImageView.ScaleType.FIT_XY);
+                                image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
+                                image.setOnClickListener(new ImageView.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                                gridLayout.addView(image);
                             }
-                        });
-                        gridLayout.addView(image);
-                    }
+                            return "";
+                        }
+                    };
+                    futures.add(service.submit(callable));
                 }
+                service.shutdown();
+                List<String> outputs = new ArrayList<String>();
+                for (Future<String> future : futures) {
+                    outputs.add(future.get());
+                }
+            } catch (Exception e) {
+
             }
         }
     }

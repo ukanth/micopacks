@@ -21,6 +21,10 @@ public class Icon {
 
     private Bitmap iconBitmap;
 
+    public Icon(String title) {
+        mTitle = title;
+    }
+
     public Icon(String title, Bitmap bitmap) {
         mTitle = title;
         iconBitmap = bitmap;
