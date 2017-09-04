@@ -3,10 +3,10 @@ package dev.ukanth.iconmgr;
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -16,6 +16,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -149,15 +150,15 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 finalPosition = position - 1;
                 List<Bitmap> maps = mHomes.get(finalPosition).getListIcons();
                 if (maps != null && maps.size() > 0) {
-                    Drawable d = new BitmapDrawable(mContext.getResources(), maps.get(0));
-                    viewHolder.image.setImageDrawable(d);
-                    /*for (int i = 1; i < maps.size(); i++) {
-                        d = new BitmapDrawable(mContext.getResources(), maps.get(i));
-                        ImageView imageView = new ImageView(mContext);
-                        imageView.setImageDrawable(d);
-                        viewHolder.layout.addView(imageView);
-                    }*/
-                    viewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
+                    params.setMargins(10, 10, 10, 10);
+                    Resources res = mContext.getResources();
+                    for (final Bitmap bitmap : maps) {
+                        ImageView image = new ImageView(mContext);
+                        image.setLayoutParams(params);
+                        image.setImageDrawable(new BitmapDrawable(res, bitmap));
+                        viewHolder.layout.addView(image);
+                    }
                 }
                 break;
             case TYPE_ICON_REQUEST:
@@ -323,23 +324,16 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private class IconViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView image;
-        private final LinearLayout layout;
-        private final TextView autoFitTitle;
+        private final GridLayout layout;
 
         IconViewHolder(View itemView) {
             super(itemView);
-            image = (ImageView) itemView.findViewById(R.id.iconview_img);
-            layout = (LinearLayout) itemView.findViewById(R.id.iconbase);
-            autoFitTitle = (TextView) itemView.findViewById(R.id.title_icon);
-
+            layout = (GridLayout) itemView.findViewById(R.id.iconmaskpreview);
             CardView card = (CardView) itemView.findViewById(R.id.iconview_card);
             card.setUseCompatPadding(false);
             card.setCardElevation(0);
         }
-
     }
-
 
     private class IconRequestViewHolder extends RecyclerView.ViewHolder {
 
