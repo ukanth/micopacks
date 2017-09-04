@@ -24,7 +24,7 @@ import java.util.Set;
  * Created by ukanth on 3/9/17.
  */
 
-public class IconPreview extends AppCompatActivity {
+public class IconPreviewActivity extends AppCompatActivity {
 
 
     private MaterialDialog plsWait;
@@ -43,7 +43,7 @@ public class IconPreview extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         String pkgName = bundle.getString("pkg");
 
-        IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreview.this, pkgName);
+        IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreviewActivity.this, pkgName);
 
         if (plsWait == null && (previewLoader.getStatus() == AsyncTask.Status.PENDING ||
                 previewLoader.getStatus() == AsyncTask.Status.FINISHED)) {

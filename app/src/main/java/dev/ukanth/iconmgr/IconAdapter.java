@@ -53,7 +53,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 public void onClick(View view) {
 
                     if (currentItem != null && currentItem.getIconPkg() != null) {
-                        Intent intent = new Intent(ctx, IconPreview.class);
+                        Intent intent = new Intent(ctx, IconPreviewActivity.class);
                         intent.putExtra("pkg", currentItem.getIconPkg());
                         ctx.startActivity(intent);
                     }

@@ -84,13 +84,21 @@ public class IconPackUtil {
 
 
     private Bitmap loadBitmap(String drawableName, String packageName) {
+
         int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
         if (id > 0) {
             Drawable bitmap = iconPackres.getDrawable(id);
-            if (bitmap instanceof BitmapDrawable)
-                return ((BitmapDrawable) bitmap).getBitmap();
+            if (bitmap instanceof BitmapDrawable) {
+                Bitmap bit = ((BitmapDrawable) bitmap).getBitmap();
+                return getResizedBitmap(bit, 128, 128);
+            }
         }
+
         return null;
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
+        return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
     }
 
     public List<Bitmap> getIcons(Context mContext, String packageName) {
