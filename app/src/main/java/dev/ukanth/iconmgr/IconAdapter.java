@@ -7,8 +7,6 @@ package dev.ukanth.iconmgr;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.widget.CardView;
@@ -175,23 +173,8 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         PackageManager pm = ctx.getPackageManager();
         try {
             Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).getIconPkg());
-            personViewHolder.icon.setImageDrawable(resize(drawable));
+            personViewHolder.icon.setImageDrawable(Util.resizeImage(ctx, drawable));
         } catch (Exception exception) {
-        }
-    }
-
-    private Drawable resize(Drawable image) {
-        if (image instanceof BitmapDrawable) {
-            Bitmap b = ((BitmapDrawable) image).getBitmap();
-
-            int SIZE_DP = 60;
-            final float scale = ctx.getResources().getDisplayMetrics().density;
-            int p = (int) (SIZE_DP * scale + 0.5f);
-
-            Bitmap bitmapResized = Bitmap.createScaledBitmap(b, p, p, false);
-            return new BitmapDrawable(ctx.getResources(), bitmapResized);
-        } else {
-            return image;
         }
     }
 

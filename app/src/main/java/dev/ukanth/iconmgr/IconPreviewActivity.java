@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -106,14 +107,18 @@ public class IconPreviewActivity extends AppCompatActivity {
                     }
                 });
                 GridLayout layout = (GridLayout) findViewById(R.id.iconpreview);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
-                params.setMargins(10, 10, 10, 10);
+
+                DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+                int screenWidth = metrics.widthPixels;
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth/5, screenWidth/5);
 
                 Resources res = mContext.getResources();
                 for (final Icon icon : list) {
                     if (icon.getIconBitmap() != null) {
                         ImageView image = new ImageView(mContext);
                         image.setLayoutParams(params);
+                        image.setPadding(8, 8, 8, 8);
                         image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
                         image.setOnClickListener(new ImageView.OnClickListener() {
                             @Override
@@ -121,6 +126,8 @@ public class IconPreviewActivity extends AppCompatActivity {
                                 Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
                             }
                         });
+                        image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        image.setAdjustViewBounds(true);
                         layout.addView(image);
                     }
                 }

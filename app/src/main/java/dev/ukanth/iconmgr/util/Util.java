@@ -8,6 +8,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
@@ -338,6 +341,22 @@ public class Util {
         }
     }
 
+
+    public static Drawable resizeImage(Context context, Drawable image) {
+        if (image instanceof BitmapDrawable) {
+            Bitmap b = ((BitmapDrawable) image).getBitmap();
+
+            int SIZE_DP = 60;
+            final float scale = context.getResources().getDisplayMetrics().density;
+            int p = (int) (SIZE_DP * scale + 0.5f);
+
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(b, p, p, false);
+            return new BitmapDrawable(context.getResources(), bitmapResized);
+        } else {
+            return image;
+        }
+    }
+
     private static boolean isSystemPackage(ResolveInfo ri) {
         return ((ri.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
     }
@@ -353,10 +372,10 @@ public class Util {
         return installedApps;
     }
 
-    public static boolean isPackageExisted(Context context, String targetPackage){
-        PackageManager pm= context.getPackageManager();
+    public static boolean isPackageExisted(Context context, String targetPackage) {
+        PackageManager pm = context.getPackageManager();
         try {
-            pm.getPackageInfo(targetPackage,PackageManager.GET_META_DATA);
+            pm.getPackageInfo(targetPackage, PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }

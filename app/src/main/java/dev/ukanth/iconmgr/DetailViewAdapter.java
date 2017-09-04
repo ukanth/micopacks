@@ -150,7 +150,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 finalPosition = position - 1;
                 List<Icon> icons = mHomes.get(finalPosition).getListIcons();
                 if (icons != null && icons.size() > 0) {
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(100, 100);
                     params.setMargins(10, 10, 10, 10);
                     Resources res = mContext.getResources();
                     for (final Icon icon : icons) {

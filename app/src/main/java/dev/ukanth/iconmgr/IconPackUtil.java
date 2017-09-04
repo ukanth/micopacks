@@ -90,10 +90,9 @@ public class IconPackUtil {
             Drawable bitmap = iconPackres.getDrawable(id);
             if (bitmap instanceof BitmapDrawable) {
                 Bitmap bit = ((BitmapDrawable) bitmap).getBitmap();
-                return getResizedBitmap(bit, 128, 128);
+                return getResizedBitmap(bit, 256, 256);
             }
         }
-
         return null;
     }
 
