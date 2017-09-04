@@ -12,28 +12,22 @@ import java.util.List;
 public class Icon {
 
     private String mTitle;
-    private int mRes;
     private String mPackageName;
 
     public Bitmap getIconBitmap() {
         return iconBitmap;
     }
 
-    public void setIconBitmap(Bitmap iconBitmap) {
-        this.iconBitmap = iconBitmap;
-    }
 
     private Bitmap iconBitmap;
 
-    public Icon(String title, int res,Bitmap bitmap) {
+    public Icon(String title, Bitmap bitmap) {
         mTitle = title;
-        mRes = res;
         iconBitmap = bitmap;
     }
 
-    public Icon(String title, int res, String packageName, Bitmap iconBitmap) {
+    public Icon(String title, String packageName, Bitmap iconBitmap) {
         mTitle = title;
-        mRes = res;
         mPackageName = packageName;
         this.iconBitmap = iconBitmap;
     }
@@ -50,22 +44,20 @@ public class Icon {
         mTitle = title;
     }
 
-    public int getRes() {
-        return mRes;
-    }
-
     public String getPackageName() {
         return mPackageName;
     }
 
     @Override
-    public boolean equals(Object object) {
-        boolean res = false;
-        boolean title = false;
-        if (object != null && object instanceof Icon) {
-            res = mRes == ((Icon) object).getRes();
-            title = mTitle.equals(((Icon) object).getTitle());
-        }
-        return res && title;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Icon icon = (Icon) o;
+        return mTitle.equals(icon.mTitle);
+    }
+
+    @Override
+    public int hashCode() {
+        return mTitle.hashCode();
     }
 }

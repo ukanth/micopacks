@@ -1,13 +1,16 @@
 package dev.ukanth.iconmgr;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -103,14 +106,23 @@ public class IconPreview extends AppCompatActivity {
                     }
                 });
                 GridLayout layout = (GridLayout) findViewById(R.id.iconpreview);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
+                params.setMargins(10, 10, 10, 10);
 
-                for (Icon icon : list) {
-                    ImageView image = new ImageView(mContext);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
-                    params.setMargins(10, 10, 10, 10);
-                    image.setLayoutParams(params);
-                    image.setImageDrawable(new BitmapDrawable(mContext.getResources(), icon.getIconBitmap()));
-                    layout.addView(image);
+                Resources res = mContext.getResources();
+                for (final Icon icon : list) {
+                    if (icon.getIconBitmap() != null) {
+                        ImageView image = new ImageView(mContext);
+                        image.setLayoutParams(params);
+                        image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
+                        image.setOnClickListener(new ImageView.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        layout.addView(image);
+                    }
                 }
             }
         }

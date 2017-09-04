@@ -29,8 +29,6 @@ import java.util.Set;
 
 import dev.ukanth.iconmgr.util.Util;
 
-import static dev.ukanth.iconmgr.util.DrawableHelper.getResourceId;
-
 /**
  * Created by ukanth on 17/7/17.
  */
@@ -139,6 +137,7 @@ public class IconPackUtil {
 
     public Set<Icon> getListIcons(Context mContext, String packageName) {
         Set<Icon> icons = new HashSet<>();
+        //Set<String> unique = new HashSet<>();
         Key key = Key.ACTIVITY;
 
         List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
@@ -156,8 +155,9 @@ public class IconPackUtil {
                             if (isSupported(mContext, packageName, listPackages, sKey)) {
                                 String name = xpp.getAttributeValue(null, "drawable");
                                 Bitmap iconBitmap = loadBitmap(name, packageName);
-                                int id = getResourceId(mContext, name);
-                                icons.add(new Icon(name, id, iconBitmap));
+                                if (iconBitmap != null) {
+                                    icons.add(new Icon(name, iconBitmap));
+                                }
                             }
                         }
                     }
