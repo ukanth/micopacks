@@ -58,6 +58,9 @@ public class IconPreviewActivity extends AppCompatActivity {
             }
         });
 
+        if(!Prefs.isFabShow(getApplicationContext())){
+            fab.setVisibility(View.GONE);
+        }
 
         IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreviewActivity.this, pkgName);
 

@@ -76,6 +76,9 @@ public class DetailsActivity extends AppCompatActivity {
                 LauncherHelper.apply(getApplicationContext(), pkgName, launcherPack);
             }
         });
+        if (!Prefs.isFabShow(getApplicationContext())) {
+            fab.setVisibility(View.GONE);
+        }
 
         DetailViewAdapter rcAdapter = new DetailViewAdapter(DetailsActivity.this, getApplicationContext(), homes, 1, pkgObj);
         recyclerView.setAdapter(rcAdapter);

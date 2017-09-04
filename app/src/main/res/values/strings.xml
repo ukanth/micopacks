@@ -84,4 +84,5 @@
     <string name="iconPercent">Installed icons supported !</string>
     <string name="iconinstalled">New iconpack installed/updated</string>
     <string name="iconMask">Preview of Iconmask</string>
+    <string name="enable_fab_button">Show Apply Button</string>
 </resources>

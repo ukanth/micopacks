@@ -20,4 +20,9 @@
         android:key="notify_install"
         android:title="@string/show_notification" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="enable_fab"
+        android:title="@string/enable_fab_button" />
+
 </PreferenceScreen>
