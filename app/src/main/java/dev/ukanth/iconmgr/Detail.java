@@ -1,6 +1,5 @@
 package dev.ukanth.iconmgr;
 
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -19,7 +18,7 @@ public class Detail {
     private final Detail.Type mType;
 
 
-    private List<Bitmap> listIcons;
+    private List<Icon> listIcons;
 
     public Detail(@DrawableRes int icon, String title, String subtitle, @NonNull Detail.Type type) {
         mIcon = icon;
@@ -50,11 +49,11 @@ public class Detail {
     }
 
 
-    public List<Bitmap> getListIcons() {
+    public List<Icon> getListIcons() {
         return listIcons;
     }
 
-    public void setListIcons(List<Bitmap> listIcons) {
+    public void setListIcons(List<Icon> listIcons) {
         this.listIcons = listIcons;
     }
 

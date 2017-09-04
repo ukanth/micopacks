@@ -101,8 +101,8 @@ public class IconPackUtil {
         return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
     }
 
-    public List<Bitmap> getIcons(Context mContext, String packageName) {
-        List<Bitmap> mBackImages = new ArrayList<Bitmap>();
+    public Set<Icon> getIcons(Context mContext, String packageName) {
+        Set<Icon> mBackImages = new HashSet<Icon>();
 
         Bitmap mMaskImage;
         Bitmap mFrontImage;
@@ -116,7 +116,7 @@ public class IconPackUtil {
                                 String drawableName = xpp.getAttributeValue(i);
                                 Bitmap iconback = loadBitmap(drawableName, packageName);
                                 if (iconback != null)
-                                    mBackImages.add(iconback);
+                                    mBackImages.add(new Icon(drawableName, iconback));
                             }
                         }
                     } else if (xpp.getName().equals("iconmask")) {
@@ -124,14 +124,14 @@ public class IconPackUtil {
                             String drawableName = xpp.getAttributeValue(0);
                             mMaskImage = loadBitmap(drawableName, packageName);
                             if (mMaskImage != null)
-                                mBackImages.add(mMaskImage);
+                                mBackImages.add(new Icon(drawableName, mMaskImage));
                         }
                     } else if (xpp.getName().equals("iconupon")) {
                         if (xpp.getAttributeCount() > 0 && xpp.getAttributeName(0).equals("img1")) {
                             String drawableName = xpp.getAttributeValue(0);
                             mFrontImage = loadBitmap(drawableName, packageName);
                             if (mFrontImage != null)
-                                mBackImages.add(mFrontImage);
+                                mBackImages.add(new Icon(drawableName, mFrontImage));
 
                         }
                     }

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.BlurMaskFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
@@ -21,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
@@ -148,15 +148,21 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_ICON_MASK:
                 IconViewHolder viewHolder = (IconViewHolder) holder;
                 finalPosition = position - 1;
-                List<Bitmap> maps = mHomes.get(finalPosition).getListIcons();
-                if (maps != null && maps.size() > 0) {
+                List<Icon> icons = mHomes.get(finalPosition).getListIcons();
+                if (icons != null && icons.size() > 0) {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(200, 200);
                     params.setMargins(10, 10, 10, 10);
                     Resources res = mContext.getResources();
-                    for (final Bitmap bitmap : maps) {
+                    for (final Icon icon : icons) {
                         ImageView image = new ImageView(mContext);
                         image.setLayoutParams(params);
-                        image.setImageDrawable(new BitmapDrawable(res, bitmap));
+                        image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
+                        image.setOnClickListener(new ImageView.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         viewHolder.layout.addView(image);
                     }
                 }
@@ -172,7 +178,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         public void processFinish(HashMap<String, List> output) {
                             plsWait.dismiss();
                             if (output != null) {
-                                List<Bitmap> bitMap = output.get("bitmap");
+                                List<Icon> bitMap = output.get("bitmap");
                                 List<ResolveInfo> resolveInfos = output.get("install");
                                 int installed = resolveInfos.size();
                                 int missed = output.get("package").size();
@@ -253,7 +259,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         @Override
                         public void processFinish(HashMap<String, List> output) {
                             if (output != null) {
-                                List<Bitmap> bitMap = output.get("bitmap");
+                                List<Icon> bitMap = output.get("bitmap");
                                 if (bitMap != null && bitMap.size() > 0) {
                                     Detail detail = new Detail(-1, mContext.getResources().getString(R.string.iconMask),
                                             mContext.getResources().getString(R.string.iconMask),

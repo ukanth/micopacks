@@ -2,13 +2,14 @@ package dev.ukanth.iconmgr;
 
 import android.content.Context;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import dev.ukanth.iconmgr.dao.DaoSession;
@@ -63,7 +64,8 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
                         returnData.put("install", listPackages);
                         break;
                     case "BITMAP":
-                        List<Bitmap> listBitMap = ip.getIcons(mContext, packageName);
+                        Set<Icon> icons = ip.getIcons(mContext, packageName);
+                        List<Icon> listBitMap = new ArrayList<Icon>(icons);
                         returnData.put("bitmap", listBitMap);
                         break;
                     case "INSTALL":
@@ -75,7 +77,9 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
                         missPackage = ip.getMissingApps(mContext, packageName, listPackages);
                         returnData.put("package", missPackage);
                         returnData.put("install", listPackages);
-                        listBitMap = ip.getIcons(mContext, packageName);
+
+                        icons = ip.getIcons(mContext, packageName);
+                        listBitMap = new ArrayList<Icon>(icons);
                         returnData.put("bitmap", listBitMap);
 
                 }
