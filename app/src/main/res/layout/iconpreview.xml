@@ -18,7 +18,6 @@
                 android:id="@+id/iconpreview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:columnCount="5"
                 android:numColumns="auto_fit"
                 android:orientation="horizontal"></GridLayout>
 

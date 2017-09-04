@@ -8,6 +8,10 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -90,14 +94,14 @@ public class IconPackUtil {
             Drawable bitmap = iconPackres.getDrawable(id);
             if (bitmap instanceof BitmapDrawable) {
                 Bitmap bit = ((BitmapDrawable) bitmap).getBitmap();
-                return getResizedBitmap(bit, 256, 256);
+                return getResizedBitmap(bit, 256, 256, true);
             }
         }
         return null;
     }
 
-    public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight) {
-        return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, true);
+    public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight, boolean filter) {
+        return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, filter);
     }
 
     public Set<Icon> getIcons(Context mContext, String packageName) {
@@ -305,10 +309,38 @@ public class IconPackUtil {
         }
     }
 
-    /*public double getMatch() {
-        double matchIcons = matchPackage.size();
-        double data = matchIcons / (double) totalInstall;
-        data = (int) (data * 100);
-        return data;
-    }*/
+    private Bitmap maskImage(Bitmap original, Bitmap mask) {
+        Bitmap result = Bitmap.createBitmap(mask.getWidth(), mask.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas mCanvas = new Canvas(result);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+        mCanvas.drawBitmap(original, 0, 0, null);
+        mCanvas.drawBitmap(mask, 0, 0, paint);
+        paint.setXfermode(null);
+        return result;
+    }
+
+    public Set<Icon> getNonThemeIcons(Context context, String currentPackage) {
+        Set<Icon> icons = new HashSet<>();
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> listPackages = Util.getInstalledApps(context);
+        HashMap<String, String> appFilter = getAppFilter(currentPackage, context, Key.ACTIVITY);
+        for (ResolveInfo app : listPackages) {
+            String packageName = app.activityInfo.packageName;
+            String activity = packageName + "/" + app.activityInfo.name;
+            String value = appFilter.get(activity);
+            //not themes icons
+            if (value == null) {
+                String name = app.activityInfo.loadLabel(packageManager).toString();
+                Drawable drawable = app.activityInfo.loadIcon(packageManager);
+                Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                bitmap = getResizedBitmap(bitmap, 256, 256, true);
+                //try to mask icon
+                if (bitmap != null) {
+                    icons.add(new Icon(name, bitmap));
+                }
+            }
+        }
+        return icons;
+    }
 }

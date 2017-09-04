@@ -58,7 +58,7 @@ public class IconPreviewActivity extends AppCompatActivity {
             }
         });
 
-        if(!Prefs.isFabShow(getApplicationContext())){
+        if (!Prefs.isFabShow(getApplicationContext())) {
             fab.setVisibility(View.GONE);
         }
 
@@ -74,7 +74,8 @@ public class IconPreviewActivity extends AppCompatActivity {
 
         private Context mContext;
         private String packageName;
-        private Set<Icon> icons;
+        private Set<Icon> themed_icons;
+        private Set<Icon> nonthemed_icons;
 
         private IconsPreviewLoader(Context context, String packageName) {
             this.mContext = context;
@@ -91,7 +92,8 @@ public class IconPreviewActivity extends AppCompatActivity {
             while (!isCancelled()) {
                 try {
                     IconPackUtil packUtil = new IconPackUtil();
-                    icons = packUtil.getListIcons(mContext, packageName);
+                    themed_icons = packUtil.getListIcons(mContext, packageName);
+                    nonthemed_icons = packUtil.getNonThemeIcons(mContext, packageName);
                     return true;
                 } catch (Exception e) {
                     return false;
@@ -117,26 +119,36 @@ public class IconPreviewActivity extends AppCompatActivity {
                 plsWait = null;
             }
 
-            if (icons != null) {
-                List<Icon> list = new ArrayList<Icon>(icons);
+            if (themed_icons != null) {
+                List<Icon> list = new ArrayList<Icon>(themed_icons);
+                if(nonthemed_icons != null) {
+                    List<Icon> listNonTheme = new ArrayList<Icon>(nonthemed_icons);
+                    list.addAll(listNonTheme);
+                }
                 Collections.sort(list, new Comparator<Icon>() {
                     public int compare(Icon o1, Icon o2) {
                         return String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle());
                     }
                 });
-                GridLayout layout = (GridLayout) findViewById(R.id.iconpreview);
+                GridLayout gridLayout = (GridLayout) findViewById(R.id.iconpreview);
+
+                gridLayout.invalidate();
+
+                int colNumber = 6;
+                gridLayout.setColumnCount(colNumber);
 
                 DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
                 int screenWidth = metrics.widthPixels;
 
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / 5, screenWidth / 5);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / 6, screenWidth / 6);
 
                 Resources res = mContext.getResources();
                 for (final Icon icon : list) {
                     if (icon.getIconBitmap() != null) {
                         ImageView image = new ImageView(mContext);
                         image.setLayoutParams(params);
-                        image.setPadding(8, 8, 8, 8);
+                        image.setPadding(15, 15, 15, 15);
+                        image.setScaleType(ImageView.ScaleType.FIT_XY);
                         image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
                         image.setOnClickListener(new ImageView.OnClickListener() {
                             @Override
@@ -144,9 +156,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                                 Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
                             }
                         });
-                        image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        image.setAdjustViewBounds(true);
-                        layout.addView(image);
+                        gridLayout.addView(image);
                     }
                 }
             }
