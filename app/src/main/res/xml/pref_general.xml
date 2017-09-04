@@ -25,4 +25,10 @@
         android:key="enable_fab"
         android:title="@string/enable_fab_button" />
 
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="preview_nonthemed"
+        android:title="@string/preview_nontheme" />
+
+
 </PreferenceScreen>

@@ -14,6 +14,7 @@ public class Prefs {
     public static final String TOTAL_ICONS = "total_icons";
     public static final String NOTIFY = "notify_install";
     public static final String FAB = "enable_fab";
+    public static final String PREVIEW = "preview_nonthemed";
 
     public static boolean isDarkTheme(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -23,6 +24,11 @@ public class Prefs {
     public static boolean isTotalIcons(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(TOTAL_ICONS, false);
+    }
+
+    public static boolean isNonPreview(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(PREVIEW, false);
     }
 
     public static boolean isNotify(Context context) {

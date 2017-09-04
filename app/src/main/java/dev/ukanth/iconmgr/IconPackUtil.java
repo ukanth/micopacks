@@ -189,9 +189,7 @@ public class IconPackUtil {
 
     public Set<Icon> processXpp(final Context mContext, final String packageName, List<Attrb> input) {
         try {
-            int threads = Runtime.getRuntime().availableProcessors();
-            ExecutorService service = Executors.newFixedThreadPool(threads);
-
+            ExecutorService service = Executors.newFixedThreadPool(2);
             final List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
             List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
             for (final Attrb attr : input) {

@@ -97,7 +97,9 @@ public class IconPreviewActivity extends AppCompatActivity {
                 try {
                     IconPackUtil packUtil = new IconPackUtil();
                     themed_icons = packUtil.getListIcons(mContext, packageName);
-                    nonthemed_icons = packUtil.getNonThemeIcons(mContext, packageName);
+                    if(Prefs.isNonPreview(getApplicationContext())) {
+                        nonthemed_icons = packUtil.getNonThemeIcons(mContext, packageName);
+                    }
                     return true;
                 } catch (Exception e) {
                     return false;
@@ -125,7 +127,7 @@ public class IconPreviewActivity extends AppCompatActivity {
 
             if (themed_icons != null) {
                 List<Icon> list = new ArrayList<Icon>(themed_icons);
-                if (nonthemed_icons != null) {
+                if (Prefs.isNonPreview(getApplicationContext()) && nonthemed_icons != null) {
                     List<Icon> listNonTheme = new ArrayList<Icon>(nonthemed_icons);
                     list.addAll(listNonTheme);
                 }
@@ -148,8 +150,7 @@ public class IconPreviewActivity extends AppCompatActivity {
 
         public void processInputs(List<Icon> listIcons, final Resources res, final LinearLayout.LayoutParams params, final GridLayout gridLayout) {
             try {
-                int threads = Runtime.getRuntime().availableProcessors();
-                ExecutorService service = Executors.newFixedThreadPool(threads);
+                ExecutorService service = Executors.newFixedThreadPool(2);
 
                 List<Future<String>> futures = new ArrayList<Future<String>>();
                 for (final Icon icon : listIcons) {
@@ -180,7 +181,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                     outputs.add(future.get());
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
     }

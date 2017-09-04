@@ -85,4 +85,5 @@
     <string name="iconinstalled">New iconpack installed/updated</string>
     <string name="iconMask">Preview of Iconmask</string>
     <string name="enable_fab_button">Show Apply Button</string>
+    <string name="preview_nontheme">Show non-themed icons in preview</string>
 </resources>
