@@ -138,11 +138,11 @@ public class IconPreviewActivity extends AppCompatActivity {
                 });
                 GridLayout gridLayout = (GridLayout) findViewById(R.id.iconpreview);
                 gridLayout.invalidate();
-                int colNumber = 6;
+                int colNumber = Prefs.getCol(getApplicationContext());;
                 gridLayout.setColumnCount(colNumber);
                 DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
                 int screenWidth = metrics.widthPixels;
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / 6, screenWidth / 6);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
                 Resources res = mContext.getResources();
                 processInputs(list, res, params, gridLayout);
             }

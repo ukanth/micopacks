@@ -17,6 +17,8 @@ public class Prefs {
     public static final String PREVIEW = "preview_nonthemed";
     public static final String ROOT_TASKER = "use_root_tasker";
 
+    public static final String LIST_COL = "preview_col";
+
     public static boolean isDarkTheme(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(THEME_RES_ID, false);
@@ -56,5 +58,11 @@ public class Prefs {
     public static void sortBy(Context context, String value) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefs.edit().putString(SORT_BY, value).commit();
+    }
+
+    public static int getCol(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String currentValue = prefs.getString(LIST_COL, "5");
+        return Integer.parseInt(currentValue);
     }
 }

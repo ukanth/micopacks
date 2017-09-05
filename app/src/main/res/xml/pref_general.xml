@@ -35,5 +35,12 @@
         android:key="use_root_tasker"
         android:title="@string/use_root" />
 
+    <ListPreference
+        android:key="preview_col"
+        android:title="Number of Columns in Preview"
+        android:defaultValue="5"
+        android:entries="@array/col"
+        android:entryValues="@array/colvalue"/>
+
 
 </PreferenceScreen>
