@@ -30,5 +30,10 @@
         android:key="preview_nonthemed"
         android:title="@string/preview_nontheme" />
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="use_root_tasker"
+        android:title="@string/use_root" />
+
 
 </PreferenceScreen>

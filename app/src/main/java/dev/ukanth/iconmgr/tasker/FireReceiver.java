@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.stericson.roottools.RootTools;
 
+import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.Util;
@@ -86,11 +87,11 @@ public final class FireReceiver extends BroadcastReceiver {
                 String launcherName = LauncherHelper.getLauncherName(context, launcherPack);
                 switch (LauncherHelper.getLauncherId(launcherPack)) {
                     case LauncherHelper.NOVA:
-                        if (RootTools.isRootAvailable()) {
+                        if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
                             Util.changeSharedPreferences(context, "com.teslacoilsw.launcher", iconName + ":GO:" + iconPackage);
                             Util.restartLauncher(context, "com.teslacoilsw.launcher");
                         } else {
-                            Toast.makeText(context, R.string.rootrequired, Toast.LENGTH_LONG).show();
+                            LauncherHelper.apply(context, iconPackage, launcherPack);
                         }
                         break;
                     case LauncherHelper.SOLO:
@@ -102,7 +103,8 @@ public final class FireReceiver extends BroadcastReceiver {
                         LauncherHelper.apply(context, iconPackage, launcherPack);
                         break;
                     default:
-                        Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                        LauncherHelper.apply(context, iconPackage, launcherPack);
+                        //Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
                 }
             }
         }

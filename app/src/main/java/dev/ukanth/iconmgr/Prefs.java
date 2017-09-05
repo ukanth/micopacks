@@ -15,11 +15,18 @@ public class Prefs {
     public static final String NOTIFY = "notify_install";
     public static final String FAB = "enable_fab";
     public static final String PREVIEW = "preview_nonthemed";
+    public static final String ROOT_TASKER = "use_root_tasker";
 
     public static boolean isDarkTheme(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(THEME_RES_ID, false);
     }
+
+    public static boolean useRoot(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(ROOT_TASKER, true);
+    }
+
 
     public static boolean isTotalIcons(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
