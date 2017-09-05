@@ -5,12 +5,8 @@ Version 1.3
 * Details view with icon count and missing package status
 * Removed unnessary options from preferences
 
-
-
 TODO:
 
-* Loading screen for details page
-* Tasker should read from DB
 * Widgets
 * Android N Shortcuts
 

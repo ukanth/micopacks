@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,7 +117,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 int finalPosition = position - 1;
                 contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
 
-                if(!BuildConfig.PAID) {
+                if (!BuildConfig.PAID) {
                     float radius = contentViewHolder.autoFitTitle.getTextSize() / 3;
                     BlurMaskFilter filter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
                     contentViewHolder.autoFitTitle.getPaint().setMaskFilter(filter);
@@ -133,7 +134,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
 
-                if(!BuildConfig.PAID) {
+                if (!BuildConfig.PAID) {
                     float radius = contentViewHolder.autoFitTitle.getTextSize() / 3;
                     BlurMaskFilter filter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
                     contentViewHolder.autoFitTitle.getPaint().setMaskFilter(filter);
@@ -150,7 +151,9 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 finalPosition = position - 1;
                 List<Icon> icons = mHomes.get(finalPosition).getListIcons();
                 if (icons != null && icons.size() > 0) {
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(100, 100);
+                    DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+                    int screenWidth = metrics.widthPixels;
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / 6, screenWidth / 6);
                     params.setMargins(10, 10, 10, 10);
                     Resources res = mContext.getResources();
                     for (final Icon icon : icons) {
@@ -166,9 +169,13 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         viewHolder.layout.addView(image);
                     }
                 }
+                if (mHomes.get(finalPosition).getSubtitle().length() > 0) {
+                    viewHolder.subtitle.setText(mHomes.get(finalPosition).getSubtitle());
+                    viewHolder.subtitle.setVisibility(View.VISIBLE);
+                }
+
                 break;
-            case TYPE_ICON_REQUEST:
-            {
+            case TYPE_ICON_REQUEST: {
                 final IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
                 //refresh package
                 if (pkgObj.getMissed() == 0) {
@@ -331,13 +338,20 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private class IconViewHolder extends RecyclerView.ViewHolder {
 
         private final GridLayout layout;
+        private final TextView subtitle;
 
         IconViewHolder(View itemView) {
             super(itemView);
             layout = (GridLayout) itemView.findViewById(R.id.iconmaskpreview);
+            subtitle = (TextView) itemView.findViewById(R.id.subtitle_content_mask);
             CardView card = (CardView) itemView.findViewById(R.id.iconview_card);
             card.setUseCompatPadding(false);
-            card.setCardElevation(0);
+            int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
+            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
+            params.setMargins(0, 0, margin, margin);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                params.setMarginEnd(margin);
+            }
         }
     }
 

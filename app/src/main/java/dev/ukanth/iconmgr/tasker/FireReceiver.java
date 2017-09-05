@@ -83,8 +83,7 @@ public final class FireReceiver extends BroadcastReceiver {
                     Toast.makeText(context, R.string.nodefault, Toast.LENGTH_LONG).show();
                     return;
                 }
-
-                String launcherName = LauncherHelper.getLauncherName(context, launcherPack);
+                //String launcherName = LauncherHelper.getLauncherName(context, launcherPack);
                 switch (LauncherHelper.getLauncherId(launcherPack)) {
                     case LauncherHelper.NOVA:
                         if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
