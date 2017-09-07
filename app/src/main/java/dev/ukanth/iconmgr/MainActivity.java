@@ -2,11 +2,13 @@ package dev.ukanth.iconmgr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.javiersantos.piracychecker.PiracyChecker;
+import com.github.javiersantos.piracychecker.enums.Display;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -35,6 +39,8 @@ import dev.ukanth.iconmgr.util.PackageComparator;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyView;
+
+    private Display piracyCheckerDisplay = Display.DIALOG;
 
     public static IconAdapter getAdapter() {
         return adapter;
@@ -97,6 +103,27 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         loadApp();
 
+        // Show APK signature
+        //Log.e("Signature", PiracyCheckerUtils.getAPKSignature(this));
+
+        startLicenseCheck();
+    }
+
+    private void startLicenseCheck() {
+        try {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            if (!prefs.getBoolean("valid_license", false)) {
+                //check for license one more time
+                new PiracyChecker(this)
+                        .enableGooglePlayLicensing("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApXY+Hz2FyJ7rgvDjNiisklEMS6o0fRtQHgPi8uDpJxhr5IrOBu0LE8utemYXZYkYU8Hx4dhFr/lcgXJf9Sg6XXMybSwq0mS/N6OFAhI6Mo9Hjaw7sKfmf/8ogyMMQ0s88qjE4A7J0Eu8I12Bw0e2zPSb3Nz/oi3Wz9G0weGf6lNAqcrGaZwxSN/5fVOjy5fafKlH52Iln0t2GSuW97yiakD2XERTeQGlpTq5Dm7Lp4Ve4SqfmFi9m9w5PKLZJgkotFPcH8VsZgqElAwM3UK0Q4+J1TvBeQxugZHI6Uc5vUJeFvPpL8lGK80Dh16Z4kMcJyJsZpjFz6aoI2VdFrNhkQIDAQAB")
+                        .saveResultToSharedPreferences(prefs, "valid_license")
+                        .start();
+                if (!prefs.getBoolean("valid_license", false)) {
+                    setTheme(R.style.AppTheme_Dark_Pirated);
+                }
+            }
+        } catch (Exception e) {
+        }
     }
 
     @Override

@@ -9,4 +9,7 @@
     <color name="chglib_material_color_text_2">#000</color>
     <color name="black">#000000</color>
     <color name="white">#fff</color>
+
+    <color name="red">#f20306</color>
+    <color name="green">#22ff00</color>
 </resources>

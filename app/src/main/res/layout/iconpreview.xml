@@ -42,4 +42,12 @@
             android:src="@drawable/ic_apply" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/emptypreview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/no_preview"
+        android:visibility="gone" />
 </RelativeLayout>

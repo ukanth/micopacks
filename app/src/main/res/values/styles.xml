@@ -19,4 +19,13 @@
         <item name="cardStyle">@style/CardView.Dark</item>
     </style>
 
+
+    <style name="AppTheme.Dark.Pirated" parent="Theme.AppCompat">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/red</item>
+        <item name="colorPrimaryDark">@color/green</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
 </resources>

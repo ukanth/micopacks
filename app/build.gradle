@@ -54,5 +54,11 @@ dependencies {
     //changelib
     compile 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
 
+    //license check
+    compile 'com.github.javiersantos:PiracyChecker:1.1'
+
+    //bitmap pool
+    compile 'com.amitshekhar.android:glide-bitmap-pool:0.0.1'
+
     testCompile 'junit:junit:4.12'
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,9 +13,10 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.glidebitmappool.GlideBitmapFactory;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -92,14 +91,9 @@ public class IconPackUtil {
 
 
     private Bitmap loadBitmap(String drawableName, String packageName) {
-
         int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
         if (id > 0) {
-            Drawable bitmap = iconPackres.getDrawable(id);
-            if (bitmap instanceof BitmapDrawable) {
-                Bitmap bit = ((BitmapDrawable) bitmap).getBitmap();
-                return getResizedBitmap(bit, 256, 256, true);
-            }
+            return GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
         }
         return null;
     }
@@ -113,6 +107,7 @@ public class IconPackUtil {
 
         Bitmap mMaskImage;
         Bitmap mFrontImage;
+
         try {
             XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
@@ -173,7 +168,9 @@ public class IconPackUtil {
                         sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
                         if (sKey != null) {
                             String name = xpp.getAttributeValue(null, "drawable");
-                            items.add(new Attrb(sKey, name));
+                            if (name != null) {
+                                items.add(new Attrb(sKey, name));
+                            }
                         }
                     }
                 }
@@ -191,6 +188,7 @@ public class IconPackUtil {
         try {
             ExecutorService service = Executors.newFixedThreadPool(2);
             final List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
+
             List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
             for (final Attrb attr : input) {
                 Callable<Icon> callable = new Callable<Icon>() {
@@ -247,7 +245,7 @@ public class IconPackUtil {
     }
 
 
-    public static String getOtherAppLocaleName(@NonNull Context context, @NonNull Locale locale, @NonNull String packageName) {
+   /* public static String getOtherAppLocaleName(@NonNull Context context, @NonNull Locale locale, @NonNull String packageName) {
         try {
             PackageManager packageManager = context.getPackageManager();
             ApplicationInfo info = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
@@ -264,9 +262,10 @@ public class IconPackUtil {
             res.updateConfiguration(configuration, context.getResources().getDisplayMetrics());
             return res.getString(info.labelRes);
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
     public boolean isSupported(@NonNull Context context, String currentPackage, List<ResolveInfo> listPackages, String currentActivity) {
         for (ResolveInfo app : listPackages) {
@@ -288,10 +287,7 @@ public class IconPackUtil {
             String activity = packageName + "/" + app.activityInfo.name;
             String value = appFilter.get(activity);
             if (value == null) {
-                String name = getOtherAppLocaleName(context, new Locale("en"), packageName);
-                if (name == null) {
-                    name = app.activityInfo.loadLabel(packageManager).toString();
-                }
+                String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
                 requests.add(name);
             }
         }
@@ -370,13 +366,17 @@ public class IconPackUtil {
             String value = appFilter.get(activity);
             //not themes icons
             if (value == null) {
-                String name = app.activityInfo.loadLabel(packageManager).toString();
-                Drawable drawable = app.activityInfo.loadIcon(packageManager);
-                Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-                bitmap = getResizedBitmap(bitmap, 256, 256, true);
-                //try to mask icon
-                if (bitmap != null) {
-                    icons.add(new Icon(name, bitmap));
+                String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
+                //Drawable drawable = app.activityInfo.loadIcon(packageManager);
+                try {
+                    Drawable drawable = packageManager.getApplicationIcon(packageName);
+                    Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                    bitmap = getResizedBitmap(bitmap, 256, 256, true);
+                    //try to mask icon
+                    if (bitmap != null) {
+                        icons.add(new Icon(name, bitmap));
+                    }
+                } catch (PackageManager.NameNotFoundException e) {
                 }
             }
         }

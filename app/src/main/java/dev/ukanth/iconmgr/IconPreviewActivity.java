@@ -12,9 +12,11 @@ import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.glidebitmappool.GlideBitmapPool;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +38,7 @@ public class IconPreviewActivity extends AppCompatActivity {
 
 
     private MaterialDialog plsWait;
+    private TextView emptyView;
 
     private FloatingActionButton fab;
 
@@ -49,6 +52,10 @@ public class IconPreviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.iconpreview);
 
+        emptyView = (TextView) findViewById(R.id.emptypreview);
+        emptyView.setVisibility(View.GONE);
+
+        GlideBitmapPool.initialize(10 * 1024 * 1024);
 
         Bundle bundle = getIntent().getExtras();
         final String pkgName = bundle.getString("pkg");
@@ -97,7 +104,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                 try {
                     IconPackUtil packUtil = new IconPackUtil();
                     themed_icons = packUtil.getListIcons(mContext, packageName);
-                    if(Prefs.isNonPreview(getApplicationContext())) {
+                    if (Prefs.isNonPreview(getApplicationContext())) {
                         nonthemed_icons = packUtil.getNonThemeIcons(mContext, packageName);
                     }
                     return true;
@@ -131,20 +138,28 @@ public class IconPreviewActivity extends AppCompatActivity {
                     List<Icon> listNonTheme = new ArrayList<Icon>(nonthemed_icons);
                     list.addAll(listNonTheme);
                 }
-                Collections.sort(list, new Comparator<Icon>() {
-                    public int compare(Icon o1, Icon o2) {
-                        return String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle());
-                    }
-                });
-                GridLayout gridLayout = (GridLayout) findViewById(R.id.iconpreview);
-                gridLayout.invalidate();
-                int colNumber = Prefs.getCol(getApplicationContext());;
-                gridLayout.setColumnCount(colNumber);
-                DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
-                int screenWidth = metrics.widthPixels;
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
-                Resources res = mContext.getResources();
-                processInputs(list, res, params, gridLayout);
+
+                if (list != null && list.size() > 0) {
+
+                    Collections.sort(list, new Comparator<Icon>() {
+                        public int compare(Icon o1, Icon o2) {
+                            return String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle());
+                        }
+                    });
+                    GridLayout gridLayout = (GridLayout) findViewById(R.id.iconpreview);
+                    gridLayout.invalidate();
+                    int colNumber = Prefs.getCol(getApplicationContext());
+                    gridLayout.setColumnCount(colNumber);
+                    DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+                    int screenWidth = metrics.widthPixels;
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
+                    Resources res = mContext.getResources();
+                    processInputs(list, res, params, gridLayout);
+                } else{
+                    emptyView.setVisibility(View.VISIBLE);
+                    fab.setVisibility(View.GONE);
+                }
+
             }
         }
 
@@ -180,6 +195,8 @@ public class IconPreviewActivity extends AppCompatActivity {
                 for (Future<String> future : futures) {
                     outputs.add(future.get());
                 }
+
+                GlideBitmapPool.clearMemory();
             } catch (Exception e) {
                 e.printStackTrace();
             }
