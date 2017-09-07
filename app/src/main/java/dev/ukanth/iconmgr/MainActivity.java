@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         .saveResultToSharedPreferences(prefs, "valid_license")
                         .start();
                 if (!prefs.getBoolean("valid_license", false)) {
-                    setTheme(R.style.AppTheme_Dark_Pirated);
+                   Toast.makeText(getApplicationContext(), "Detected PIRATED version !", Toast.LENGTH_LONG).show();
                 }
             }
         } catch (Exception e) {
