@@ -2,13 +2,11 @@ package dev.ukanth.iconmgr;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,8 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.javiersantos.piracychecker.PiracyChecker;
-import com.github.javiersantos.piracychecker.enums.Display;
+import com.danimahardhika.android.helpers.license.LicenseHelper;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -34,13 +31,14 @@ import java.util.List;
 import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.LicenseCallbackHelper;
 import dev.ukanth.iconmgr.util.PackageComparator;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyView;
 
-    private Display piracyCheckerDisplay = Display.DIALOG;
+    private LicenseHelper mLicenseHelper;
 
     public static IconAdapter getAdapter() {
         return adapter;
@@ -75,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private static boolean reloadTheme = false;
     private static boolean reloadApp = false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,26 +102,36 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         loadApp();
 
-        // Show APK signature
-        //Log.e("Signature", PiracyCheckerUtils.getAPKSignature(this));
-
         startLicenseCheck();
     }
 
     private void startLicenseCheck() {
-        try {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            if (!prefs.getBoolean("valid_license", false)) {
-                //check for license one more time
-                new PiracyChecker(this)
-                        .enableGooglePlayLicensing("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApXY+Hz2FyJ7rgvDjNiisklEMS6o0fRtQHgPi8uDpJxhr5IrOBu0LE8utemYXZYkYU8Hx4dhFr/lcgXJf9Sg6XXMybSwq0mS/N6OFAhI6Mo9Hjaw7sKfmf/8ogyMMQ0s88qjE4A7J0Eu8I12Bw0e2zPSb3Nz/oi3Wz9G0weGf6lNAqcrGaZwxSN/5fVOjy5fafKlH52Iln0t2GSuW97yiakD2XERTeQGlpTq5Dm7Lp4Ve4SqfmFi9m9w5PKLZJgkotFPcH8VsZgqElAwM3UK0Q4+J1TvBeQxugZHI6Uc5vUJeFvPpL8lGK80Dh16Z4kMcJyJsZpjFz6aoI2VdFrNhkQIDAQAB")
-                        .saveResultToSharedPreferences(prefs, "valid_license")
-                        .start();
-                if (!prefs.getBoolean("valid_license", false)) {
-                   Toast.makeText(getApplicationContext(), "Detected PIRATED version !", Toast.LENGTH_LONG).show();
-                }
-            }
-        } catch (Exception e) {
+
+        byte[] salt = new byte[]{
+                -11, 115, 10, -19, -33,
+                -12, 18, -24, 21, 68,
+                -15, -45, 97, -17, -16,
+                -13, -11, 12, -14, 81
+        };
+
+        String licenseKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApXY+Hz2FyJ7rgvDjNiisklEMS6o0fRtQHgPi8uDpJxhr5IrOBu0LE8utemYXZYkYU8Hx4dhFr/lcgXJf9Sg6XXMybSwq0mS/N6OFAhI6Mo9Hjaw7sKfmf/8ogyMMQ0s88qjE4A7J0Eu8I12Bw0e2zPSb3Nz/oi3Wz9G0weGf6lNAqcrGaZwxSN/5fVOjy5fafKlH52Iln0t2GSuW97yiakD2XERTeQGlpTq5Dm7Lp4Ve4SqfmFi9m9w5PKLZJgkotFPcH8VsZgqElAwM3UK0Q4+J1TvBeQxugZHI6Uc5vUJeFvPpL8lGK80Dh16Z4kMcJyJsZpjFz6aoI2VdFrNhkQIDAQAB";
+
+        if (Prefs.isFirstTime(getApplicationContext())) {
+            mLicenseHelper = new LicenseHelper(this);
+            mLicenseHelper.run(licenseKey, salt, new LicenseCallbackHelper(this));
+            return;
+        }
+
+        if (!Prefs.isPS(getApplicationContext())) {
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mLicenseHelper != null) {
+            mLicenseHelper.destroy();
         }
     }
 
@@ -179,9 +188,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     case "s2":
                         mainMenu.findItem(R.id.sort_count).setChecked(true);
                         break;
-                   /* case "s3":
-                        mainMenu.findItem(R.id.sort_percent).setChecked(true);
-                        break;*/
                 }
             }
         });

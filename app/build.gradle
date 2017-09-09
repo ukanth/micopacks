@@ -55,7 +55,7 @@ dependencies {
     compile 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
 
     //license check
-    compile 'com.github.javiersantos:PiracyChecker:1.1'
+    compile 'com.github.danimahardhika.android-helpers:license:0.0.6'
 
     //bitmap pool
     compile 'com.amitshekhar.android:glide-bitmap-pool:0.0.1'

@@ -11,6 +11,8 @@
         android:smallScreens="true"
         android:xlargeScreens="true" />
 
+    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+
     <application
         android:name=".App"
         android:allowBackup="true"

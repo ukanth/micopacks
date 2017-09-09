@@ -89,4 +89,12 @@
     <string name="enable_fab_button">Show Apply Button</string>
     <string name="preview_nontheme">Show non-themed icons in preview</string>
     <string name="use_root">Make use of ROOT along with tasker</string>
+
+
+    <string name="license_checking">Checking license …</string>
+    <string name="license_check">License Check</string>
+    <string name="license_check_success">License check success, thank you for downloading the app from Play Store.</string>
+    <string name="license_check_failed">License check failed, you didn\'t download this app from Play Store.
+        You will not able to use the app.</string>
+    <string name="license_check_retry">Unable to check license, please try again in a few moments</string>
 </resources>

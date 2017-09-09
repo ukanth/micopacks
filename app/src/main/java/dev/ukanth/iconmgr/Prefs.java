@@ -19,6 +19,11 @@ public class Prefs {
 
     public static final String LIST_COL = "preview_col";
 
+
+    public static final String IS_FIRST_TIME = "isFirstTime";
+
+    public static final String PS = "PS";
+
     public static boolean isDarkTheme(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(THEME_RES_ID, false);
@@ -50,6 +55,12 @@ public class Prefs {
         return prefs.getBoolean(FAB, false);
     }
 
+
+    public static boolean isFirstTime(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(IS_FIRST_TIME, true);
+    }
+
     public static String sortBy(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(SORT_BY, "s0");
@@ -64,5 +75,20 @@ public class Prefs {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String currentValue = prefs.getString(LIST_COL, "5");
         return Integer.parseInt(currentValue);
+    }
+
+    public static void setFirstRun(Context context, boolean b) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putBoolean(IS_FIRST_TIME, b).commit();
+    }
+
+    public static void setLicensed(Context context, boolean b) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefs.edit().putBoolean(PS, b).commit();
+    }
+
+    public static boolean isPS(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(PS, false);
     }
 }
