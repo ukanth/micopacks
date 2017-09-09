@@ -28,6 +28,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 
 /**
@@ -59,6 +62,16 @@ public class IconPreviewActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         final String pkgName = bundle.getString("pkg");
+
+        App app = ((App) getApplicationContext());
+        DaoSession daoSession = app.getDaoSession();
+        IPObjDao ipObjDao = daoSession.getIPObjDao();
+        IPObj pkgObj;
+        if (ipObjDao != null) {
+            pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+            setTitle(pkgObj.getIconName());
+        }
+
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -147,15 +160,32 @@ public class IconPreviewActivity extends AppCompatActivity {
                         }
                     });
                     GridLayout gridLayout = (GridLayout) findViewById(R.id.iconpreview);
-                    gridLayout.invalidate();
                     int colNumber = Prefs.getCol(getApplicationContext());
                     gridLayout.setColumnCount(colNumber);
                     DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
                     int screenWidth = metrics.widthPixels;
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
                     Resources res = mContext.getResources();
-                    processInputs(list, res, params, gridLayout);
-                } else{
+
+                    for (final Icon icon : list) {
+                        if (icon.getIconBitmap() != null) {
+                            ImageView image = new ImageView(mContext);
+                            image.setLayoutParams(params);
+                            image.setPadding(15, 15, 15, 15);
+                            image.setScaleType(ImageView.ScaleType.FIT_XY);
+                            image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
+                            image.setOnClickListener(new ImageView.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            gridLayout.addView(image);
+                        }
+                    }
+                    GlideBitmapPool.clearMemory();
+                    //processInputs(list, res, params, gridLayout);
+                } else {
                     emptyView.setVisibility(View.VISIBLE);
                     fab.setVisibility(View.GONE);
                 }
@@ -171,20 +201,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                 for (final Icon icon : listIcons) {
                     Callable<String> callable = new Callable<String>() {
                         public String call() throws Exception {
-                            if (icon.getIconBitmap() != null) {
-                                ImageView image = new ImageView(mContext);
-                                image.setLayoutParams(params);
-                                image.setPadding(15, 15, 15, 15);
-                                image.setScaleType(ImageView.ScaleType.FIT_XY);
-                                image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
-                                image.setOnClickListener(new ImageView.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                                gridLayout.addView(image);
-                            }
+
                             return "";
                         }
                     };
@@ -196,7 +213,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                     outputs.add(future.get());
                 }
 
-                GlideBitmapPool.clearMemory();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
