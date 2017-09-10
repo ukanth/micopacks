@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
 
@@ -123,7 +125,23 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         if (!Prefs.isPS(getApplicationContext())) {
-            finish();
+            if (!Prefs.isPS(getApplicationContext())) {
+                new MaterialDialog.Builder(MainActivity.this)
+                        .title(R.string.license_check)
+                        .content(getString(R.string.license_check_failed))
+                        .positiveText(R.string.close)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        })
+                        .cancelable(false)
+                        .canceledOnTouchOutside(false)
+                        .show();
+
+            }
         }
     }
 

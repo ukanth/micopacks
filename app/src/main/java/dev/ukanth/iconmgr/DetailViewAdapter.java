@@ -72,32 +72,19 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_ICON_MASK:
                 view = LayoutInflater.from(mContext).inflate(
                         R.layout.iconview_card, parent, false);
-                return new IconViewHolder(view);
+                return new IconMaskViewHolder(view);
             case TYPE_CONTENT_PERCENT:
                 view = LayoutInflater.from(mContext).inflate(
                         R.layout.content_card, parent, false);
                 return new ContentViewHolder(view);
             default:
-                view = LayoutInflater.from(mContext).inflate(
-                        R.layout.content_card, parent, false);
-                return new ContentViewHolder(view);
+                return null;
         }
     }
 
     @Override
     public void onViewRecycled(RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);
-        /*if (holder.getItemViewType() == TYPE_CONTENT_TOTAL) {
-            ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
-            contentViewHolder.autoFitTitle.setSingleLine(false);
-            contentViewHolder.autoFitTitle.setMaxLines(10);
-            contentViewHolder.autoFitTitle.setSizeToFit(true);
-            contentViewHolder.autoFitTitle.setGravity(Gravity.CENTER_VERTICAL);
-            contentViewHolder.autoFitTitle.setIncludeFontPadding(true);
-            contentViewHolder.autoFitTitle.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
-            contentViewHolder.subtitle.setVisibility(View.VISIBLE);
-            contentViewHolder.subtitle.setGravity(Gravity.CENTER_VERTICAL);
-        }*/
     }
 
     @Override
@@ -147,7 +134,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 break;
 
             case TYPE_ICON_MASK:
-                IconViewHolder viewHolder = (IconViewHolder) holder;
+                IconMaskViewHolder viewHolder = (IconMaskViewHolder) holder;
                 finalPosition = position - 1;
                 List<Icon> icons = mHomes.get(finalPosition).getListIcons();
                 if (icons != null && icons.size() > 0) {
@@ -215,7 +202,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 addNewContent(d);
 
                                 if (bitMap != null && bitMap.size() > 0) {
-                                    d = new Detail(-1, mContext.getResources().getString(R.string.iconMask),
+                                    d = new Detail(-1, "",
                                             mContext.getResources().getString(R.string.iconMask),
                                             Detail.Type.MASK);
                                     d.setListIcons(bitMap);
@@ -257,26 +244,24 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                         Detail.Type.PERCENT);
 
                                 addNewContent(d);
+
+                                IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
+                                    @Override
+                                    public void processFinish(HashMap<String, List> output) {
+                                        if (output != null) {
+                                            List<Icon> bitMap = output.get("bitmap");
+                                            if (bitMap != null && bitMap.size() > 0) {
+                                                Detail detail = new Detail(-1, "", mContext.getResources().getString(R.string.iconMask),
+                                                        Detail.Type.MASK);
+                                                detail.setListIcons(bitMap);
+                                                addContent(detail);
+                                            }
+                                        }
+                                    }
+                                }, "BITMAP");
                             }
                         }
                     }, "INSTALL");
-
-
-                    IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
-                        @Override
-                        public void processFinish(HashMap<String, List> output) {
-                            if (output != null) {
-                                List<Icon> bitMap = output.get("bitmap");
-                                if (bitMap != null && bitMap.size() > 0) {
-                                    Detail detail = new Detail(-1, mContext.getResources().getString(R.string.iconMask),
-                                            mContext.getResources().getString(R.string.iconMask),
-                                            Detail.Type.MASK);
-                                    detail.setListIcons(bitMap);
-                                    addContent(detail);
-                                }
-                            }
-                        }
-                    }, "BITMAP");
                 }
             }
             break;
@@ -335,12 +320,12 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     }
 
-    private class IconViewHolder extends RecyclerView.ViewHolder {
+    private class IconMaskViewHolder extends RecyclerView.ViewHolder {
 
         private final GridLayout layout;
         private final TextView subtitle;
 
-        IconViewHolder(View itemView) {
+        IconMaskViewHolder(View itemView) {
             super(itemView);
             layout = (GridLayout) itemView.findViewById(R.id.iconmaskpreview);
             subtitle = (TextView) itemView.findViewById(R.id.subtitle_content_mask);
