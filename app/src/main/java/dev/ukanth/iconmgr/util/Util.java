@@ -342,6 +342,18 @@ public class Util {
     }
 
 
+    public static long getApkSize(Context context, String packageName)
+            throws PackageManager.NameNotFoundException {
+        long sizeInBytes = new File(context.getPackageManager().getApplicationInfo(
+                packageName, 0).publicSourceDir).length();
+        if (sizeInBytes > 0) {
+            long sizeInMb = (sizeInBytes + 9216000) / (1024 * 1024);
+            return sizeInMb;
+        }
+        return 0;
+    }
+
+
     public static Drawable resizeImage(Context context, Drawable image) {
         if (image instanceof BitmapDrawable) {
             Bitmap b = ((BitmapDrawable) image).getBitmap();

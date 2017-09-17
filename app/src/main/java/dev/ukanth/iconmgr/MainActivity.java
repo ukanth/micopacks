@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
+import com.google.gson.Gson;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -99,12 +100,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         recyclerView.setLayoutManager(llm);
         recyclerView.setHasFixedSize(true);
 
+        adapter = new IconAdapter(MainActivity.this, iconPacksList);
+        recyclerView.setAdapter(adapter);
+
         mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         mSwipeLayout.setOnRefreshListener(this);
 
-        loadApp();
-
-        startLicenseCheck();
+        loadApp(false);
+        if (BuildConfig.LICENSE) {
+            startLicenseCheck();
+        }
     }
 
     private void startLicenseCheck() {
@@ -172,17 +177,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         startActivity(i);
     }
 
-    private void loadApp() {
+    private void loadApp(boolean forceLoad) {
         LoadAppList getAppList = new LoadAppList();
         if (plsWait == null && (getAppList.getStatus() == AsyncTask.Status.PENDING ||
                 getAppList.getStatus() == AsyncTask.Status.FINISHED)) {
-            getAppList.setContext(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            getAppList.setContext(forceLoad, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
     @Override
     public void onRefresh() {
-        loadApp();
+        loadApp(true);
         mSwipeLayout.setRefreshing(false);
     }
 
@@ -267,26 +272,31 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                 }
                 return true;
-            case R.id.sort_count:
-                Prefs.sortBy(getApplicationContext(), "s2");
-                item.setChecked(true);
-                loadApp();
-                return true;
             case R.id.sort_alpha:
                 Prefs.sortBy(getApplicationContext(), "s0");
                 item.setChecked(true);
-                loadApp();
+                loadApp(false);
                 return true;
             case R.id.sort_lastupdate:
                 Prefs.sortBy(getApplicationContext(), "s1");
                 item.setChecked(true);
-                loadApp();
+                loadApp(false);
                 return true;
-            /*case R.id.sort_percent:
+            case R.id.sort_count:
+                Prefs.sortBy(getApplicationContext(), "s2");
+                item.setChecked(true);
+                loadApp(false);
+                return true;
+            case R.id.sort_size:
                 Prefs.sortBy(getApplicationContext(), "s3");
                 item.setChecked(true);
-                loadApp();
-                return true;*/
+                loadApp(false);
+                return true;
+            case R.id.sort_percent:
+                Prefs.sortBy(getApplicationContext(), "s4");
+                item.setChecked(true);
+                loadApp(false);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -362,8 +372,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         Context context = null;
         long startTime;
+        boolean forceLoad = false;
 
-        public LoadAppList setContext(Context context) {
+
+        public LoadAppList setContext(boolean forceLoad, Context context) {
+            this.forceLoad = forceLoad;
             this.context = context;
             return this;
         }
@@ -378,22 +391,31 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         protected Void doInBackground(Void... params) {
 
             try {
-                // query all notes, sorted a-z by their text
-                ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
-                List<IPObj> iPacksList = ipObjQuery.list();
-
-                //update if not match
-                if (iPacksList.size() == 0 || IconPackUtil.getInstalledIconPacks(getApplicationContext()).size() != iPacksList.size()) {
+                if (!forceLoad) {
+                    ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
+                    List<IPObj> iPacksList = ipObjQuery.list();
+                    List<IPObj> tmp = new ArrayList<>();
+                    IconAttr attr;
+                    for (IPObj obj : iPacksList) {
+                        if (obj.getAdditional() != null) {
+                            attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
+                            if (attr != null && !attr.isDeleted()) {
+                                tmp.add(obj);
+                            }
+                        } else {
+                            tmp.add(obj);
+                        }
+                    }
+                    iconPacksList = tmp;
+                } else {
                     IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
                     iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
-                } else {
-                    iconPacksList = iPacksList;
                 }
                 if (isCancelled())
                     return null;
-                //publishProgress(-1);
                 return null;
             } catch (SQLiteException sqe) {
+                sqe.printStackTrace();
                 return null;
             }
 
@@ -415,18 +437,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     plsWait = null;
                 }
                 mSwipeLayout.setRefreshing(false);
-                if (iconPacksList != null) {
+                if (iconPacksList != null && !iconPacksList.isEmpty()) {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
                     adapter = new IconAdapter(MainActivity.this, iconPacksList);
                     recyclerView.setAdapter(adapter);
-
-                    if (iconPacksList.isEmpty()) {
-                        recyclerView.setVisibility(View.GONE);
-                        emptyView.setVisibility(View.VISIBLE);
-                    } else {
-                        recyclerView.setVisibility(View.VISIBLE);
-                        emptyView.setVisibility(View.GONE);
-                    }
+                    adapter.notifyDataSetChanged();
+                } else {
+                    recyclerView.setVisibility(View.GONE);
+                    emptyView.setVisibility(View.VISIBLE);
                 }
                 //Log.i("MICO", "Total time:" + (System.currentTimeMillis() - startTime) / 1000 + " sec");
             } catch (Exception e) {

@@ -25,20 +25,18 @@ public class IconPackManager {
     private List<IPObj> returnList;
     private HashSet<String> unique;
 
+
     public IconPackManager(Context c) {
         mContext = c;
     }
 
     public List<IPObj> updateIconPacks(IPObjDao ipObjDao, boolean delete) {
-
-        //make sure we delete existing regards
-        if (delete) ipObjDao.deleteAll();
-
         returnList = new ArrayList<>();
         PackageManager pm = mContext.getPackageManager();
-        unique = new HashSet();
         int flags = PackageManager.GET_META_DATA |
                 PackageManager.GET_SHARED_LIBRARY_FILES;
+        unique = new HashSet();
+
 
         List<ApplicationInfo> packages = pm.getInstalledApplications(flags);
         ArrayList<String> packageList = new ArrayList<>();
@@ -70,6 +68,7 @@ public class IconPackManager {
         for (ResolveInfo ri : rinfo) {
             if (ri.activityInfo.packageName.equals(packageName)) {
                 IPObj obj = new IPObj();
+                IconAttr attr = new IconAttr();
                 obj.setIconPkg(packageName);
                 try {
                     ApplicationInfo ai = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
@@ -77,6 +76,9 @@ public class IconPackManager {
                     obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
                     obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
                     obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
+                    attr.setDeleted(false);
+                    attr.setSize(Util.getApkSize(mContext, packageName));
+                    obj.setAdditional(attr.toString());
                     ipObjDao.insert(obj);
                     Util.showNotification(mContext, packageName);
                     IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
@@ -91,25 +93,46 @@ public class IconPackManager {
 
     private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, IPObjDao ipObjDao) {
         IPObj obj;
-        IconPackUtil ip;
+        IconPackUtil ip = new IconPackUtil();
         ApplicationInfo ai = null;
         for (ResolveInfo ri : rinfo) {
-            obj = new IPObj();
-            ip = new IconPackUtil();
-            obj.setIconPkg(ri.activityInfo.packageName);
-            obj.setIconType(key);
-            try {
-                ai = pm.getApplicationInfo(obj.getIconPkg(), PackageManager.GET_META_DATA);
-                obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
-                obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
-                obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
-                //insert only unique value
-                if (!unique.contains(obj.getIconPkg())) {
-                    unique.add(obj.getIconPkg());
-                    returnList.add(obj);
-                    ipObjDao.insert(obj);
+            String pkgName = ri.activityInfo.packageName;
+            if (!unique.contains(pkgName)) {
+                unique.add(pkgName);
+                IconAttr attr = new IconAttr();
+                obj = new IPObj();
+                obj.setIconPkg(pkgName);
+                obj.setIconType(key);
+                if (!ipObjDao.hasKey(obj)) {
+                    try {
+                        ai = pm.getApplicationInfo(obj.getIconPkg(), PackageManager.GET_META_DATA);
+                        obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
+                        obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
+                        obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
+                        attr.setDeleted(false);
+                        obj.setMissed(ip.getMissingApps(mContext, obj.getIconPkg(), Util.getInstalledApps(mContext)).size());
+                        attr.setSize(Util.getApkSize(mContext, obj.getIconPkg()));
+                        obj.setAdditional(attr.toString());
+                        ipObjDao.insert(obj);
+                    } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
+                        sqe.printStackTrace();
+                    }
+                } else {
+                    try {
+                        obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                        if (obj.getMissed() == 0 || obj.getAdditional() == null) {
+                            attr.setDeleted(false);
+                            obj.setMissed(ip.getMissingApps(mContext, obj.getIconPkg(), Util.getInstalledApps(mContext)).size());
+                            attr.setSize(Util.getApkSize(mContext, obj.getIconPkg()));
+                            obj.setAdditional(attr.toString());
+                            ipObjDao.update(obj);
+                        }
+                        returnList.add(obj);
+                        Log.i("MICO", "Skipping " + obj.getIconPkg());
+                    } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
+                        sqe.printStackTrace();
+                    }
                 }
-            } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
             }
         }
     }

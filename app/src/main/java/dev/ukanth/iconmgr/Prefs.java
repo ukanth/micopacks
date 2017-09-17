@@ -16,6 +16,8 @@ public class Prefs {
     public static final String FAB = "enable_fab";
     public static final String PREVIEW = "preview_nonthemed";
     public static final String ROOT_TASKER = "use_root_tasker";
+    public static final String SHOW_SIZE = "showpack_size";
+    public static final String SHOW_PERCENT = "showpack_percent";
 
     public static final String LIST_COL = "preview_col";
 
@@ -32,6 +34,11 @@ public class Prefs {
     public static boolean useRoot(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(ROOT_TASKER, true);
+    }
+
+    public static boolean showSize(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(SHOW_SIZE, false);
     }
 
 
@@ -90,5 +97,10 @@ public class Prefs {
     public static boolean isPS(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(PS, false);
+    }
+
+    public static boolean showPercentage(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(SHOW_PERCENT, false);
     }
 }

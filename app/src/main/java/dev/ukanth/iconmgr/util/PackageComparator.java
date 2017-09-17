@@ -2,8 +2,11 @@ package dev.ukanth.iconmgr.util;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+
 import java.util.Comparator;
 
+import dev.ukanth.iconmgr.IconAttr;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.dao.IPObj;
 
@@ -27,11 +30,15 @@ public class PackageComparator implements Comparator<IPObj> {
             case "s0":
                 return String.CASE_INSENSITIVE_ORDER.compare(o1.getIconName(), o2.getIconName());
             case "s1":
-                return (o1.getInstallTime() > o2.getInstallTime()) ? -1: (o1.getInstallTime() < o2.getInstallTime()) ? 1 : 0;
+                return (o1.getInstallTime() > o2.getInstallTime()) ? -1 : (o1.getInstallTime() < o2.getInstallTime()) ? 1 : 0;
             case "s2":
-                return (o1.getTotal() > o2.getTotal()) ? -1: (o1.getTotal() < o2.getTotal()) ? 1 : 0;
-            /*case "s3":
-                return (o1.getMatch() > o2.getMatch()) ? -1: (o1.getMatch() < o2.getMatch()) ? 1 : 0;*/
+                return (o1.getTotal() > o2.getTotal()) ? -1 : (o1.getTotal() < o2.getTotal()) ? 1 : 0;
+            case "s3":
+                long o1Attr = o1.getAdditional() != null ? new Gson().fromJson(o1.getAdditional(), IconAttr.class).getSize() : 0;
+                long o2Attr = o2.getAdditional() != null ? new Gson().fromJson(o2.getAdditional(), IconAttr.class).getSize() : 0;
+                return (o1Attr > o2Attr) ? -1 : (o1Attr < o2Attr) ? 1 : 0;
+            case "s4":
+                return (o2.getMissed() > o1.getMissed()) ? -1 : (o2.getMissed() < o1.getMissed()) ? 1 : 0;
         }
         return 1;
     }

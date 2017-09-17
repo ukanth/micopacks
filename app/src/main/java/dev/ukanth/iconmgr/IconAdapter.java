@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -163,13 +164,42 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
     @Override
     public void onBindViewHolder(IconPackViewHolder personViewHolder, int i) {
-        personViewHolder.currentItem = iconPacks.get(i);
-        personViewHolder.ipackName.setText(iconPacks.get(i).getIconName());
+        IPObj obj = iconPacks.get(i);
+        personViewHolder.currentItem = obj;
+        personViewHolder.ipackName.setText(obj.getIconName());
+        StringBuilder builder = new StringBuilder();
+        boolean isshown = false;
         if (Prefs.isTotalIcons(ctx)) {
-            personViewHolder.ipackCount.setText(ctx.getString(R.string.noicons) + " " + Integer.toString(iconPacks.get(i).getTotal()));
-        } else {
+            builder.append(ctx.getString(R.string.noicons) + " " + Integer.toString(obj.getTotal()));
+            isshown = true;
+        }
+        if (Prefs.showSize(ctx)) {
+            if (Prefs.isTotalIcons(ctx)) {
+                builder.append(" - ");
+            }
+            isshown = true;
+            IconAttr attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
+            builder.append(attr.getSize() + " MB");
+        }
+        if (Prefs.showPercentage(ctx)) {
+            if (Prefs.isTotalIcons(ctx) || Prefs.showSize(ctx)) {
+                builder.append(" - ");
+            }
+            isshown = true;
+            int installed = Util.getInstalledApps(ctx).size();
+            int missed = obj.getMissed();
+            int themed = installed - missed;
+            double percent = ((double) themed / installed) * 100;
+            String result = String.format("%.2f", percent) + "%";
+            builder.append(" " + result);
+        }
+
+        personViewHolder.ipackCount.setText(builder.toString());
+
+        if(!isshown) {
             personViewHolder.ipackCount.setVisibility(View.GONE);
         }
+
         PackageManager pm = ctx.getPackageManager();
         try {
             Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).getIconPkg());

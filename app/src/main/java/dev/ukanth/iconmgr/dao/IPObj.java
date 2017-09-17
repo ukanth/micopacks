@@ -97,4 +97,19 @@ public class IPObj {
         this.missed = missed;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IPObj obj = (IPObj) o;
+
+        return iconPkg.equals(obj.iconPkg);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return iconPkg.hashCode();
+    }
 }

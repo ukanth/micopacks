@@ -58,6 +58,7 @@
     <string name="notsupported">Detected %s, Sorry not supported for tasker yet!</string>
     <string name="rootrequired">Root requires to apply the change</string>
     <string name="noicons">Icons: </string>
+    <string name="percent">Percent: </string>
     <string name="report">Report a problem</string>
     <string name="use_dark">Dark theme</string>
     <string name="use_dark_paid">Dark theme(Paid only)</string>
@@ -67,6 +68,7 @@
     <string name="alphabet">By alphabet</string>
     <string name="lastupdated">By last update</string>
     <string name="iconcount">By icon count</string>
+    <string name="iconsize">By package size</string>
     <string name="iconpercent">By match percent</string>
     <string name="total_icons">Show icon count</string>
     <string name="show_notification">Notify on new icon pack install</string>
@@ -97,4 +99,6 @@
     <string name="license_check_failed">License check failed, you didn\'t download this app from Play Store.
         You will not able to use the app.</string>
     <string name="license_check_retry">Unable to check license, please try again in a few moments</string>
+    <string name="showsize">Show application size</string>
+    <string name="show_percent">Show Percentage</string>
 </resources>

@@ -176,7 +176,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                                 List<ResolveInfo> resolveInfos = output.get("install");
                                 int installed = resolveInfos.size();
                                 int missed = output.get("package").size();
-                                int themed = installed - output.get("package").size();
+                                int themed = installed - missed;
 
                                 double percent = ((double) themed / installed) * 100;
                                 String result = String.format("%.2f", percent) + "%";

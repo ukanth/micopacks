@@ -2,11 +2,12 @@
 <changelog bulletedList="false">
 
     <changelogversion versionName="1.4" changeDate="">
-        <changelogtext>Preview icons without applying</changelogtext>
-        <changelogtext>Tasker now supports without root for nova launcher (use autoinput/TouchTask )</changelogtext>
-        <changelogtext>Apply using FAB on detail screen</changelogtext>
+        <changelogtext>Preview icons (click icon on main screen)</changelogtext>
+        <changelogtext>Tasker now supports without root for nova launcher (use autoinput app)</changelogtext>
+        <changelogtext>Apply iconpacks using FAB on detail screen</changelogtext>
         <changelogtext>Improved Mask/Front icons detection on detail screen </changelogtext>
         <changelogtext>Bug fixes and performance improvements</changelogtext>
+        <changelogtext>License check</changelogtext>
     </changelogversion>
 
     <changelogversion versionName="1.3" changeDate="">

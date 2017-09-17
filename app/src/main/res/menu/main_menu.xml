@@ -29,10 +29,15 @@
                     android:title="@string/iconcount"
                     app:showAsAction="always"></item>
 
-               <!-- <item
+                <item
+                    android:id="@+id/sort_size"
+                    android:title="@string/iconsize"
+                    app:showAsAction="always"></item>
+
+                <item
                     android:id="@+id/sort_percent"
                     android:title="@string/iconpercent"
-                    app:showAsAction="always"></item>-->
+                    app:showAsAction="always"></item>
             </group>
         </menu>
     </item>
