@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
-import com.google.gson.Gson;
 
 import org.greenrobot.greendao.query.Query;
 
@@ -389,28 +388,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         @Override
         protected Void doInBackground(Void... params) {
-
             try {
-                if (!forceLoad) {
-                    ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
-                    List<IPObj> iPacksList = ipObjQuery.list();
-                    List<IPObj> tmp = new ArrayList<>();
-                    IconAttr attr;
-                    for (IPObj obj : iPacksList) {
-                        if (obj.getAdditional() != null) {
-                            attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
-                            if (attr != null && !attr.isDeleted()) {
-                                tmp.add(obj);
-                            }
-                        } else {
-                            tmp.add(obj);
-                        }
-                    }
-                    iconPacksList = tmp;
-                } else {
-                    IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
-                    iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
-                }
+                IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
+                iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
                 if (isCancelled())
                     return null;
                 return null;

@@ -5,6 +5,7 @@ import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
 import org.greenrobot.greendao.annotation.NotNull;
+import org.greenrobot.greendao.annotation.Unique;
 
 /**
  * Created by ukanth on 13/8/17.
@@ -18,6 +19,7 @@ public class IPObj {
     @Id
     private String iconPkg;
 
+    @Unique
     @NotNull
     private String iconName;
     private String iconType;

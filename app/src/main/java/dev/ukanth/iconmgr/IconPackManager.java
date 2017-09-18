@@ -92,7 +92,6 @@ public class IconPackManager {
 
 
     private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, IPObjDao ipObjDao) {
-        IPObj obj;
         IconPackUtil ip = new IconPackUtil();
         ApplicationInfo ai = null;
         for (ResolveInfo ri : rinfo) {
@@ -100,12 +99,13 @@ public class IconPackManager {
             if (!unique.contains(pkgName)) {
                 unique.add(pkgName);
                 IconAttr attr = new IconAttr();
-                obj = new IPObj();
-                obj.setIconPkg(pkgName);
-                obj.setIconType(key);
-                if (!ipObjDao.hasKey(obj)) {
+                IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                if (obj2 == null) {
                     try {
+                        IPObj obj = new IPObj();
+                        obj.setIconPkg(pkgName);
                         ai = pm.getApplicationInfo(obj.getIconPkg(), PackageManager.GET_META_DATA);
+                        obj.setIconType(key);
                         obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
                         obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
                         obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
@@ -114,21 +114,21 @@ public class IconPackManager {
                         attr.setSize(Util.getApkSize(mContext, obj.getIconPkg()));
                         obj.setAdditional(attr.toString());
                         ipObjDao.insert(obj);
+                        returnList.add(obj);
                     } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
                         sqe.printStackTrace();
                     }
                 } else {
                     try {
-                        obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
-                        if (obj.getMissed() == 0 || obj.getAdditional() == null) {
+                        if (obj2.getMissed() == 0 || obj2.getAdditional() == null) {
                             attr.setDeleted(false);
-                            obj.setMissed(ip.getMissingApps(mContext, obj.getIconPkg(), Util.getInstalledApps(mContext)).size());
-                            attr.setSize(Util.getApkSize(mContext, obj.getIconPkg()));
-                            obj.setAdditional(attr.toString());
-                            ipObjDao.update(obj);
+                            obj2.setMissed(ip.getMissingApps(mContext, obj2.getIconPkg(), Util.getInstalledApps(mContext)).size());
+                            attr.setSize(Util.getApkSize(mContext, obj2.getIconPkg()));
+                            obj2.setAdditional(attr.toString());
+                            ipObjDao.update(obj2);
                         }
-                        returnList.add(obj);
-                        Log.i("MICO", "Skipping " + obj.getIconPkg());
+                        returnList.add(obj2);
+                        Log.i("MICO", "Skipping " + obj2.getIconPkg());
                     } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
                         sqe.printStackTrace();
                     }

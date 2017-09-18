@@ -31,7 +31,7 @@ public class UninstallReceiver extends BroadcastReceiver {
             IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).unique();
             if (pkgObj != null) {
                 IconAttr attr = new Gson().fromJson(pkgObj.getAdditional(), IconAttr.class);
-                attr.setDeleted(false);
+                attr.setDeleted(true);
                 pkgObj.setAdditional(attr.toString());
                 ipObjDao.update(pkgObj);
                 List<IPObj> listPackages = MainActivity.getIconPacksList();
