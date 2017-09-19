@@ -389,8 +389,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                IconPackManager iconPackManager = new IconPackManager(getApplicationContext());
-                iconPacksList = iconPackManager.updateIconPacks(ipObjDao, true);
+                iconPacksList = new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao);
                 if (isCancelled())
                     return null;
                 return null;

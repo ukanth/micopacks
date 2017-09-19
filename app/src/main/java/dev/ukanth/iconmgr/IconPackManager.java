@@ -22,22 +22,18 @@ import dev.ukanth.iconmgr.util.Util;
 
 public class IconPackManager {
     private Context mContext;
-    private List<IPObj> returnList;
     private HashSet<String> unique;
-
 
     public IconPackManager(Context c) {
         mContext = c;
     }
 
-    public List<IPObj> updateIconPacks(IPObjDao ipObjDao, boolean delete) {
-        returnList = new ArrayList<>();
+    public List<IPObj> updateIconPacks(IPObjDao ipObjDao) {
         PackageManager pm = mContext.getPackageManager();
         int flags = PackageManager.GET_META_DATA |
                 PackageManager.GET_SHARED_LIBRARY_FILES;
         unique = new HashSet();
-
-
+        List<IPObj> installedIconPacks = new ArrayList<>();
         List<ApplicationInfo> packages = pm.getInstalledApplications(flags);
         ArrayList<String> packageList = new ArrayList<>();
         for (ApplicationInfo info : packages) {
@@ -53,8 +49,9 @@ public class IconPackManager {
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
 
-        loadIconPack("GO", rinfo, pm, ipObjDao);
-        return returnList;
+        loadIconPack("GO", rinfo, pm, ipObjDao, installedIconPacks);
+
+        return installedIconPacks;
     }
 
 
@@ -91,7 +88,7 @@ public class IconPackManager {
     }
 
 
-    private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, IPObjDao ipObjDao) {
+    private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, IPObjDao ipObjDao, List<IPObj> installedIconPacks) {
         IconPackUtil ip = new IconPackUtil();
         ApplicationInfo ai = null;
         for (ResolveInfo ri : rinfo) {
@@ -114,9 +111,9 @@ public class IconPackManager {
                         attr.setSize(Util.getApkSize(mContext, obj.getIconPkg()));
                         obj.setAdditional(attr.toString());
                         ipObjDao.insert(obj);
-                        returnList.add(obj);
-                    } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
-                        sqe.printStackTrace();
+                        installedIconPacks.add(obj);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 } else {
                     try {
@@ -127,10 +124,9 @@ public class IconPackManager {
                             obj2.setAdditional(attr.toString());
                             ipObjDao.update(obj2);
                         }
-                        returnList.add(obj2);
-                        Log.i("MICO", "Skipping " + obj2.getIconPkg());
-                    } catch (PackageManager.NameNotFoundException | android.database.sqlite.SQLiteConstraintException sqe) {
-                        sqe.printStackTrace();
+                        installedIconPacks.add(obj2);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
                     }
                 }
             }
