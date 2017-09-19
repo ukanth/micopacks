@@ -103,4 +103,5 @@
     <string name="show_percent">Show Percentage</string>
     <string name="forcereload">Rebuild list</string>
     <string name="onlysupportedroot">Supported through root mode only</string>
+    <string name="applied">Applied successfully</string>
 </resources>

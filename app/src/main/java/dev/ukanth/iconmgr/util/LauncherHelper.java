@@ -15,8 +15,14 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.stericson.roottools.RootTools;
 
+import java.util.HashMap;
+
+import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
+import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 
 /*
  * CandyBar - Material Dashboard
@@ -297,15 +303,18 @@ public class LauncherHelper {
                 break;
             case ARROW:
                 try {
+                    HashMap<String, String> data = new HashMap<>();
+                    data.put("cur_iconpack_package", launcherPackage);
+                    data.put("cur_iconpack_name", getLabel(launcherPackage, context));
                     if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
-                        Util.changeSharedPreferences(context, "cur_iconpack_name", launcherName);
-                        Util.changeSharedPreferences(context, "cur_iconpack_package", launcherPackage);
+                        Util.changeSharedPreferences(context, "com.microsoft.launcher", data, "GadernSalad.xml", true);
                     } else {
                         Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
                     }
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
+                break;
             case SMART:
                 try {
                     final Intent smart = new Intent("ginlemon.smartlauncher.setGSLTHEME");
@@ -452,9 +461,16 @@ public class LauncherHelper {
         }
     }
 
+    private static String getLabel(String launcherPackage, Context context) {
+        App app = ((App) context.getApplicationContext());
+        DaoSession daoSession = app.getDaoSession();
+        IPObjDao ipObjDao = daoSession.getIPObjDao();
+        IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(launcherPackage)).unique();
+        return pkgObj.getIconName();
+    }
+
     private static void applyManual(final Context context, final String launcherPackage, final String launcherName, final String activity) {
         new MaterialDialog.Builder(context)
-                .typeface("Font-Medium.ttf", "Font-Regular.ttf")
                 .title(launcherName)
                 .content(context.getResources().getString(R.string.apply_manual,
                         launcherName,
@@ -521,7 +537,6 @@ public class LauncherHelper {
 
     private static void openGooglePlay(final Context context, final String packageName, final String launcherName) {
         new MaterialDialog.Builder(context)
-                .typeface("Font-Medium.ttf", "Font-Regular.ttf")
                 .title(launcherName)
                 .content(String.format(context.getString(R.string.apply_launcher_not_installed), launcherName))
                 .positiveText(context.getString(R.string.install))

@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.stericson.roottools.RootTools;
 
+import java.util.HashMap;
+
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.util.LauncherHelper;
@@ -87,7 +89,7 @@ public final class FireReceiver extends BroadcastReceiver {
                 switch (LauncherHelper.getLauncherId(launcherPack)) {
                     case LauncherHelper.NOVA:
                         if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
-                            Util.changeSharedPreferences(context, "com.teslacoilsw.launcher", iconName + ":GO:" + iconPackage);
+                            Util.changeSharedPreferences(context, "com.teslacoilsw.launcher", "theme_icon_pack", iconName + ":GO:" + iconPackage, "com.teslacoilsw.launcher" + "_preferences.xml");
                             Util.restartLauncher(context, "com.teslacoilsw.launcher");
                         } else {
                             LauncherHelper.apply(context, iconPackage, launcherPack);
@@ -102,9 +104,11 @@ public final class FireReceiver extends BroadcastReceiver {
                         LauncherHelper.apply(context, iconPackage, launcherPack);
                         break;
                     case LauncherHelper.ARROW:
+                        HashMap<String, String> data = new HashMap<>();
+                        data.put("cur_iconpack_package", iconPackage);
+                        data.put("cur_iconpack_name", iconName);
                         if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
-                            Util.changeSharedPreferences(context, "cur_iconpack_name", iconName);
-                            Util.changeSharedPreferences(context, "cur_iconpack_package", iconPackage);
+                            Util.changeSharedPreferences(context, "com.microsoft.launcher", data, "GadernSalad.xml", true);
                         }
                     default:
                         LauncherHelper.apply(context, iconPackage, launcherPack);

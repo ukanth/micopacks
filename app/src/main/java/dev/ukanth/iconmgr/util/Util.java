@@ -30,8 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,9 +55,7 @@ public class Util {
     public static final String CMD_FIND_XML_FILES = "find /data/data/%s -type f -name \\*.xml";
     private static final String TAG = "MICOPACK";
 
-    public static final String FILE_SEPARATOR = System.getProperty("file.separator");
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private static final String PACKAGE_NAME_PATTERN = "^[a-zA-Z_\\$][\\w\\$]*(?:\\.[a-zA-Z_\\$][\\w\\$]*)*$";
 
     public static final String CMD_CHOWN = "chown %s.%s \"%s\"";
     public static final String CMD_CAT_FILE = "cat \"%s\"";
@@ -64,9 +63,8 @@ public class Util {
     public static final String TMP_FILE = ".temp";
 
 
-    public static String readFile(final String fileName, final String packageName, final String updateValue, final Context ctx) {
-        final StringBuilder sb = new StringBuilder();
-        Log.d(TAG, String.format("readFile(%s)", fileName));
+    public static void updateFile(final String fileName, final String packageName, final String key, final String value, final Context ctx) {
+        Log.i(TAG, String.format("Read Preference - (%s)", fileName));
         new AsyncTask<Object, Object, StringBuilder>() {
             @Override
             public StringBuilder doInBackground(Object... args) {
@@ -85,13 +83,43 @@ public class Util {
                 String fileContent = res.toString();
                 if (fileContent != null && !fileContent.isEmpty()) {
                     PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
-                    preferenceFile.updateValue("theme_icon_pack", updateValue);
+                    Log.i(TAG, " Updating " + key + " with value: " + value);
+                    preferenceFile.updateValue(key, value);
                     savePreferences(preferenceFile, fileName, packageName, ctx);
-                    Log.i(TAG, "preferenceFile: " + preferenceFile.getList().size());
                 }
             }
         }.execute();
-        return sb.toString();
+    }
+
+    public static void updateFile(final String fileName, final String packageName, final HashMap<String, String> data, final Context ctx, final boolean restart) {
+        Log.i(TAG, String.format("Read Preference - (%s)", fileName));
+        new AsyncTask<Object, Object, StringBuilder>() {
+            @Override
+            public StringBuilder doInBackground(Object... args) {
+                StringBuilder temp = new StringBuilder();
+                List<String> lines = Shell.SU.run(String.format(CMD_CAT_FILE, fileName));
+                if (lines != null) {
+                    for (String line : lines) {
+                        temp.append(line).append(LINE_SEPARATOR);
+                    }
+                }
+                return temp;
+            }
+
+            @Override
+            public void onPostExecute(StringBuilder res) {
+                String fileContent = res.toString();
+                if (fileContent != null && !fileContent.isEmpty()) {
+                    PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
+                    for (Map.Entry<String, String> entry : data.entrySet()) {
+                        Log.i(TAG, " Updating " + entry.getKey() + " with value: " + entry.getValue());
+                        preferenceFile.updateValue(entry.getKey(), entry.getValue());
+                    }
+                    savePreferences(preferenceFile, fileName, packageName, ctx);
+                    if (restart) Util.restartLauncher(ctx, packageName);
+                }
+            }
+        }.execute();
     }
 
 
@@ -137,11 +165,11 @@ public class Util {
         return true;
     }
 
-    public static double getPercent(int totalInstall, double matchIcons) {
+   /* public static double getPercent(int totalInstall, double matchIcons) {
         double data = matchIcons / (double) totalInstall;
         data = (int) (data * 100);
         return data;
-    }
+    }*/
 
     public static int getUid(Context ctx, String packageName) {
         int uid = 0;
@@ -152,7 +180,7 @@ public class Util {
         return uid;
     }
 
-    public static String extractFileName(String s) {
+    /*public static String extractFileName(String s) {
         if (TextUtils.isEmpty(s)) {
             return null;
         }
@@ -164,7 +192,7 @@ public class Util {
             return null;
         }
         return s.substring(0, Math.max(s.length(), s.lastIndexOf(FILE_SEPARATOR)));
-    }
+    }*/
 
 
     private static boolean fixUserAndGroupId(Context ctx, String file, String packageName) {
@@ -216,19 +244,32 @@ public class Util {
         }.execute();
     }
 
-    public static List<String> findXmlFiles(final String packageName) {
+   /* public static List<String> findXmlFiles(final String packageName) {
         Log.d(TAG, String.format("findXmlFiles(%s)", packageName));
         List<String> files = Shell.SU.run(String.format(CMD_FIND_XML_FILES, packageName));
         Log.d(TAG, "files: " + Arrays.toString(files.toArray()));
         return files;
-    }
+    }*/
 
-    public static boolean changeSharedPreferences(Context ctx, String packageName, String updateValue) {
+    public static boolean changeSharedPreferences(Context ctx, String packageName, String key, String value, String preferenceFileName) {
         boolean res = false;
         try {
-            String fileName = getDataDir(ctx, packageName) + File.separator + "shared_prefs" + File.separator + packageName + "_preferences.xml";
+            String fileName = getDataDir(ctx, packageName) + File.separator + "shared_prefs" + File.separator + preferenceFileName;
             Log.d(TAG, String.format("readTextFile(%s)", fileName));
-            readFile(fileName, packageName, updateValue, ctx);
+            updateFile(fileName, packageName, key, value, ctx);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
+        return res;
+    }
+
+    public static boolean changeSharedPreferences(Context ctx, String packageName, HashMap<String, String> data, String preferenceFileName, boolean restart) {
+        boolean res = false;
+        try {
+            String fileName = getDataDir(ctx, packageName) + File.separator + "shared_prefs" + File.separator + preferenceFileName;
+            Log.d(TAG, String.format("readTextFile(%s)", fileName));
+            updateFile(fileName, packageName, data, ctx, restart);
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
