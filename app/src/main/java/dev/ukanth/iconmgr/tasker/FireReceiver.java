@@ -101,6 +101,11 @@ public final class FireReceiver extends BroadcastReceiver {
                     case LauncherHelper.GO:
                         LauncherHelper.apply(context, iconPackage, launcherPack);
                         break;
+                    case LauncherHelper.ARROW:
+                        if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                            Util.changeSharedPreferences(context, "cur_iconpack_name", iconName);
+                            Util.changeSharedPreferences(context, "cur_iconpack_package", iconPackage);
+                        }
                     default:
                         LauncherHelper.apply(context, iconPackage, launcherPack);
                         //Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();

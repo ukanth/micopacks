@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.stericson.roottools.RootTools;
 
+import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
 
 /*
@@ -44,12 +46,12 @@ public class LauncherHelper {
     public static final int AVIATE = 5;
     public static final int CMTHEME = 6;
     public static final int GO = 7;
-   // public static final int HOLO = 8;
+    // public static final int HOLO = 8;
     //public static final int HOLOHD = 9;
     //public static final int LGHOME = 10;
     //public static final int LGHOME3 = 11;
     public static final int LUCID = 12;
-   // public static final int MINI = 13;
+    // public static final int MINI = 13;
     public static final int NEXT = 14;
     public static final int NOVA = 15;
     public static final int SMART = 16;
@@ -61,6 +63,7 @@ public class LauncherHelper {
     public static final int V = 22;
     public static final int ABC = 23;
     public static final int EVIE = 24;
+    public static final int ARROW = 25;
 
     public static int getLauncherId(String packageName) {
         if (packageName == null) return UNKNOWN;
@@ -120,6 +123,8 @@ public class LauncherHelper {
                 return ABC;
             case "is.shortcut":
                 return EVIE;
+            case "com.microsoft.launcher":
+                return ARROW;
             default:
                 return UNKNOWN;
         }
@@ -290,6 +295,17 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
+            case ARROW:
+                try {
+                    if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                        Util.changeSharedPreferences(context, "cur_iconpack_name", launcherName);
+                        Util.changeSharedPreferences(context, "cur_iconpack_package", launcherPackage);
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
+                    }
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
             case SMART:
                 try {
                     final Intent smart = new Intent("ginlemon.smartlauncher.setGSLTHEME");

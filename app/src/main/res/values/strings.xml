@@ -1,7 +1,7 @@
 <resources xmlns:android="http://schemas.android.com/tools" android:autoLink="web">
     <string name="app_name">MicoPacks</string>
     <string name="app_name_free">MicoPacks Free</string>
-    <string name="loading">Listing Icon Packs</string>
+    <string name="loading">Loading Iconpacks</string>
     <string name="loading_preview">Generate preview</string>
     <string name="loading_stats">Calculating stats</string>
     <string name="title">Action for </string>
@@ -13,7 +13,7 @@
     <string name="no_browser">No browser</string>
     <string name="close">Close</string>
     <string name="apply_manual">%1$s doesn\'t support direct apply, you can apply %2$s manually from the launcher settings.</string>
-    <string name="apply_manual_evie">Tap and hold on homescreen - Settings - Icon Pack - choose %s.</string>
+    <string name="apply_manual_evie">Tap and hold on homescreen - Settings - Iconpack - choose %s.</string>
     <string name="apply_launch_failed">Unable to launch %s settings</string>
     <string name="apply_launcher_not_installed">%s is not installed. Do you want to open
         Google Play Store to download and install it?</string>
@@ -33,8 +33,8 @@
     <string name="about">About</string>
     <string name="saverules">Save</string>
     <string name="about_content">
-        Micopacks helps managing installed icon packs on the device.
-        Also helps auto applying icon packs using tasker/locale plugin. Support various launchers and icon packs.\n\n
+        Micopacks helps managing installed iconpacks on the device.
+        Also helps auto applying iconpacks using tasker/locale plugin. Support various launchers and iconpacks.\n\n
 
         Libraries Used: \n
         ------------------ \n
@@ -55,7 +55,7 @@
     </string>
 
     <string name="about_help">Tasker plugin - Requires ROOT for Nova Launcher</string>
-    <string name="notsupported">Detected %s, Sorry not supported for tasker yet!</string>
+    <string name="notsupported">Detected %s , Sorry not supported yet!</string>
     <string name="rootrequired">Root requires to apply the change</string>
     <string name="noicons">Icons: </string>
     <string name="percent">Percent: </string>
@@ -74,7 +74,7 @@
     <string name="show_notification">Notify on new icon pack install</string>
     <string name="show_notification_paid">Notify on new icon pack install(Paid only)</string>
     <string name="match" formatted="false">Supports %s of %s apps(%s)</string>
-    <string name="please_wait">Please wait ...</string>
+    <string name="please_wait">Please wait ... it might take few minutes depends on number of iconpacks</string>
     <string name="action_search">Search</string>
     <string name="changelog">Changelog</string>
     <string name="icon_progress">Icons Supported</string>
@@ -102,4 +102,5 @@
     <string name="showsize">Show application size</string>
     <string name="show_percent">Show Percentage</string>
     <string name="forcereload">Rebuild list</string>
+    <string name="onlysupportedroot">Supported through root mode only</string>
 </resources>
