@@ -17,6 +17,8 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import static dev.ukanth.iconmgr.Prefs.SHOW_PERCENT;
+import static dev.ukanth.iconmgr.Prefs.SHOW_SIZE;
 import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
 import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
 
@@ -143,7 +145,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
 
-            if(!BuildConfig.PAID) {
+            if (!BuildConfig.PAID) {
                 getPreferenceScreen().findPreference("dark_theme").setEnabled(false);
                 getPreferenceScreen().findPreference("dark_theme").setTitle(getString(R.string.use_dark_paid));
                 getPreferenceScreen().findPreference("notify_install").setEnabled(false);
@@ -183,7 +185,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (key.equals(THEME_RES_ID)) {
                 MainActivity.setReloadTheme(true);
             }
-            if (key.equals(TOTAL_ICONS)) {
+            if (key.equals(TOTAL_ICONS) || key.equals(SHOW_PERCENT) || key.equals(SHOW_SIZE)) {
                 MainActivity.setReloadApp(true);
             }
         }

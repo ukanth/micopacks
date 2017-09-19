@@ -18,12 +18,8 @@ public class Prefs {
     public static final String ROOT_TASKER = "use_root_tasker";
     public static final String SHOW_SIZE = "showpack_size";
     public static final String SHOW_PERCENT = "showpack_percent";
-
     public static final String LIST_COL = "preview_col";
-
-
     public static final String IS_FIRST_TIME = "isFirstTime";
-
     public static final String PS = "PS";
 
     public static boolean isDarkTheme(Context context) {
