@@ -34,4 +34,8 @@
         <item>7</item>
         <item>8</item>
     </string-array>
+    <string-array name="planets_array">
+        <item>test</item>
+        <item>test2</item>
+    </string-array>
 </resources>

@@ -14,6 +14,7 @@ import dev.ukanth.iconmgr.dao.DaoSession;
 public class App extends Application {
 
     private DaoSession daoSession;
+    private DaoSession daoSessionHistory;
 
     @Override
     public void onCreate() {
@@ -22,6 +23,10 @@ public class App extends Application {
         DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
         Database db = helper.getWritableDb();
         daoSession = new DaoMaster(db).newSession();
+
+        DaoMaster.DevOpenHelper helper2 = new DaoMaster.DevOpenHelper(this, "history-db");
+        Database db2 = helper2.getWritableDb();
+        daoSessionHistory = new DaoMaster(db2).newSession();
     }
 
     public DaoSession getDaoSession() {
@@ -32,6 +37,17 @@ public class App extends Application {
             Database db = helper.getWritableDb();
             daoSession = new DaoMaster(db).newSession();
             return daoSession;
+        }
+    }
+
+    public DaoSession getHistoryDaoSession() {
+        if (daoSessionHistory != null) {
+            return daoSessionHistory;
+        } else {
+            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "history-db");
+            Database db = helper.getWritableDb();
+            daoSessionHistory = new DaoMaster(db).newSession();
+            return daoSessionHistory;
         }
     }
 }

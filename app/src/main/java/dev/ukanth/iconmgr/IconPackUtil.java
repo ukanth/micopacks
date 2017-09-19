@@ -165,11 +165,13 @@ public class IconPackUtil {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("item")) {
                         String sKey = xpp.getAttributeValue(null, key.getKey());
-                        sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
                         if (sKey != null) {
-                            String name = xpp.getAttributeValue(null, "drawable");
-                            if (name != null) {
-                                items.add(new Attrb(sKey, name));
+                            sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
+                            if (sKey != null) {
+                                String name = xpp.getAttributeValue(null, "drawable");
+                                if (name != null) {
+                                    items.add(new Attrb(sKey, name));
+                                }
                             }
                         }
                     }

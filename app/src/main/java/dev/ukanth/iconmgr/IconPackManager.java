@@ -28,7 +28,10 @@ public class IconPackManager {
         mContext = c;
     }
 
-    public List<IPObj> updateIconPacks(IPObjDao ipObjDao) {
+    public List<IPObj> updateIconPacks(IPObjDao ipObjDao, boolean forceReload) {
+        if(forceReload) {
+            ipObjDao.deleteAll();
+        }
         PackageManager pm = mContext.getPackageManager();
         int flags = PackageManager.GET_META_DATA |
                 PackageManager.GET_SHARED_LIBRARY_FILES;

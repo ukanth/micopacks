@@ -24,8 +24,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
 
-import org.greenrobot.greendao.query.Query;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,30 +37,23 @@ import dev.ukanth.iconmgr.util.PackageComparator;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyView;
-
     private LicenseHelper mLicenseHelper;
+    private static IconAdapter adapter;
+    private IPObjDao ipObjDao;
+    private static List<IPObj> iconPacksList;
+    private SwipeRefreshLayout mSwipeLayout;
+    private MaterialDialog plsWait;
+    private Menu mainMenu;
+    private static boolean reloadTheme = false;
+    private static boolean reloadApp = false;
 
     public static IconAdapter getAdapter() {
         return adapter;
     }
 
-    private static IconAdapter adapter;
-
-    private IPObjDao ipObjDao;
-    private Query<IPObj> ipObjQuery;
-
     public static List<IPObj> getIconPacksList() {
         return iconPacksList;
     }
-
-    private static List<IPObj> iconPacksList;
-
-    private SwipeRefreshLayout mSwipeLayout;
-
-    private MaterialDialog plsWait;
-
-    private Menu mainMenu;
-
 
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
@@ -71,10 +62,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public static void setReloadApp(boolean b) {
         MainActivity.reloadApp = b;
     }
-
-    private static boolean reloadTheme = false;
-    private static boolean reloadApp = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public void onRefresh() {
-        loadApp(true);
+        loadApp(false);
         mSwipeLayout.setRefreshing(false);
     }
 
@@ -243,6 +230,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 return true;
             case R.id.about:
                 showAbout();
+                return true;
+            case R.id.force:
+                loadApp(true);
                 return true;
             case R.id.changelog:
                 showChangelog();
@@ -389,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                iconPacksList = new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao);
+                iconPacksList = new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao, forceLoad);
                 if (isCancelled())
                     return null;
                 return null;

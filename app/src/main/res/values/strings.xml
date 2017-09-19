@@ -101,4 +101,5 @@
     <string name="license_check_retry">Unable to check license, please try again in a few moments</string>
     <string name="showsize">Show application size</string>
     <string name="show_percent">Show Percentage</string>
+    <string name="forcereload">Rebuild list</string>
 </resources>
