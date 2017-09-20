@@ -5,13 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
-
-
     <TextView
         android:id="@+id/chg_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@string/font_fontFamily_material_item"
         android:padding="@dimen/chglib_material_keyline1"
         android:textSize="@dimen/chglib_material_list_fontsize" />
 </LinearLayout>

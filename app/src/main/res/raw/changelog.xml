@@ -6,6 +6,7 @@
         <changelogtext>Sort by Size</changelogtext>
         <changelogtext>Show Percentage/Size on UI</changelogtext>
         <changelogtext>Force rebuild</changelogtext>
+        <changelogtext>Added ARROW,EVIE launcher support (ROOT only)</changelogtext>
         <changelogtext>History-initial changes (no UI)</changelogtext>
         <changelogtext>Bug fixes and performance improvements</changelogtext>      
     </changelogversion>

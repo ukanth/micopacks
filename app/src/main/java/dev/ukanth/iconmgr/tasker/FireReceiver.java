@@ -109,10 +109,22 @@ public final class FireReceiver extends BroadcastReceiver {
                         data.put("cur_iconpack_name", iconName);
                         if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
                             Util.changeSharedPreferences(context, "com.microsoft.launcher", data, "GadernSalad.xml", true);
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
                         }
+                        break;
+                    case LauncherHelper.EVIE:
+                        data = new HashMap<>();
+                        data.put("package_name", iconPackage);
+                        data.put("label", iconName);
+                        if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                            Util.changeSharedPreferences(context, "is.shortcut", data, "com.voxel.simplesearchlauncher.iconpack.IconPackManager.pref.xml", true);
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
                     default:
                         LauncherHelper.apply(context, iconPackage, launcherPack);
-                        //Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
                 }
             }
         }
