@@ -30,13 +30,13 @@
                 android:layout_gravity="top"
                 android:scaleType="fitXY"
                 android:layout_alignParentTop="true"
-                android:layout_marginRight="18dp" />
+                android:layout_marginRight="10dp" />
 
             <TextView
                 android:id="@+id/ipack_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingBottom="5dp"
+                android:paddingBottom="8dp"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/ipack_icon"
                 android:textSize="26sp" />

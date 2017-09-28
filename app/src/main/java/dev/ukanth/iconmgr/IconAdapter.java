@@ -9,8 +9,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,7 @@ import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.Util;
 
+import static dev.ukanth.iconmgr.tasker.FireReceiver.TAG;
 import static dev.ukanth.iconmgr.util.Util.getCurrentLauncher;
 
 public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHolder> {
@@ -38,6 +41,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         IPObj currentItem;
+        LocalIcon localIcon;
         TextView ipackName;
         TextView ipackCount;
         ImageView icon;
@@ -51,7 +55,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             icon.setOnClickListener(new ImageView.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
                     if (currentItem != null && currentItem.getIconPkg() != null) {
                         Intent intent = new Intent(ctx, IconPreviewActivity.class);
                         intent.putExtra("pkg", currentItem.getIconPkg());
@@ -145,8 +148,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     }
 
 
-    IconAdapter(Context ctx, List<IPObj> ipacks) {
-        this.ctx = ctx;
+    IconAdapter(List<IPObj> ipacks) {
         this.iconPacks = ipacks;
     }
 
@@ -157,15 +159,18 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
     @Override
     public IconPackViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        ctx = viewGroup.getContext();
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.pack_card, viewGroup, false);
-        IconPackViewHolder pvh = new IconPackViewHolder(v);
-
-        return pvh;
+        return new IconPackViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(IconPackViewHolder personViewHolder, int i) {
+        //ctx = personViewHolder.itemView.getContext();
+        View currentView = personViewHolder.itemView;
+        currentView.setTag(personViewHolder);
         IPObj obj = iconPacks.get(i);
+        personViewHolder.localIcon = new LocalIcon();
         personViewHolder.currentItem = obj;
         personViewHolder.ipackName.setText(obj.getIconName());
 
@@ -197,24 +202,23 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             builder.append(" " + result);
         }
 
-        if(Prefs.sortBy(ctx).equals("s1")) {
+        if (Prefs.sortBy(ctx).equals("s1")) {
             if (Prefs.isTotalIcons(ctx) || Prefs.showSize(ctx) || Prefs.showPercentage(ctx)) {
                 builder.append(" - ");
             }
-            builder.append(" " + Util.prettyFormat(new Date(System.currentTimeMillis() -obj.getInstallTime())));
+            builder.append(" " + Util.prettyFormat(new Date(System.currentTimeMillis() - obj.getInstallTime())));
         }
 
         personViewHolder.ipackCount.setText(builder.toString());
 
-        if(!isshown) {
+        if (!isshown) {
             personViewHolder.ipackCount.setVisibility(View.GONE);
         }
 
-        PackageManager pm = ctx.getPackageManager();
         try {
-            Drawable drawable = pm.getApplicationIcon(iconPacks.get(i).getIconPkg());
-            personViewHolder.icon.setImageDrawable(Util.resizeImage(ctx, drawable));
-        } catch (Exception exception) {
+            new LoadIcon().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, personViewHolder.currentItem,
+                    ctx.getPackageManager(), personViewHolder.localIcon, currentView);
+        } catch (Exception r) {
         }
     }
 
@@ -223,4 +227,40 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         return iconPacks.size();
     }
 
+    private class LoadIcon extends AsyncTask<Object, Void, View> {
+        @Override
+        protected View doInBackground(Object... params) {
+            IPObj ipObj = (IPObj) params[0];
+            final PackageManager pkgMgr = (PackageManager) params[1];
+            final LocalIcon icon = (LocalIcon) params[2];
+            final View viewToUpdate = (View) params[3];
+            try {
+                icon.setDrawable(Util.resizeImage(ctx, pkgMgr.getApplicationIcon(ipObj.getIconPkg())));
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            return viewToUpdate;
+        }
+
+        protected void onPostExecute(View viewToUpdate) {
+            try {
+                final IconPackViewHolder entryToUpdate = (IconPackViewHolder) viewToUpdate.getTag();
+                entryToUpdate.icon.setImageDrawable(entryToUpdate.localIcon.drawable);
+            } catch (Exception e) {
+                Log.e(TAG, "Error showing icon", e);
+            }
+        }
+    }
+
+    private class LocalIcon {
+        public Drawable getDrawable() {
+            return drawable;
+        }
+
+        public void setDrawable(Drawable drawable) {
+            this.drawable = drawable;
+        }
+
+        private Drawable drawable;
+    }
 }

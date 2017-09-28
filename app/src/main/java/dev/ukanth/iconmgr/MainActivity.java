@@ -84,9 +84,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
 
-        adapter = new IconAdapter(MainActivity.this, iconPacksList);
+        adapter = new IconAdapter(iconPacksList);
         recyclerView.setAdapter(adapter);
 
         mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         List<IPObj> filteredModelList = filter(query);
 
         Collections.sort(new ArrayList(filteredModelList), new PackageComparator().setCtx(getApplicationContext()));
-        adapter = new IconAdapter(MainActivity.this, filteredModelList);
+        adapter = new IconAdapter(filteredModelList);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         return true;
@@ -410,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
-                    adapter = new IconAdapter(MainActivity.this, iconPacksList);
+                    adapter = new IconAdapter(iconPacksList);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 } else {
