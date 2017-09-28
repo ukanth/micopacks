@@ -237,7 +237,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             try {
                 icon.setDrawable(Util.resizeImage(ctx, pkgMgr.getApplicationIcon(ipObj.getIconPkg())));
             } catch (PackageManager.NameNotFoundException e) {
-                e.printStackTrace();
             }
             return viewToUpdate;
         }

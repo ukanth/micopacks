@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
+
+    <changelogversion versionName="1.6" changeDate="">
+        <changelogtext>Last update time will be shown if sort option selected</changelogtext>
+        <changelogtext>Reduced lag on main screen</changelogtext>
+
+        <changelogtext>Bug fixes and performance improvements</changelogtext>
+    </changelogversion>
+
     <changelogversion versionName="1.5" changeDate="">
         <changelogtext>Sort by Percentage</changelogtext>
         <changelogtext>Sort by Size</changelogtext>
