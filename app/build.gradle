@@ -7,14 +7,13 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "dev.ukanth.iconmanager"
-        //applicationId "dev.ukanth.iconmanager.free"
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1500
         versionName "1.5.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "boolean", "PAID", "true"
-        buildConfigField "boolean", "LICENSE", "false"
+        buildConfigField "boolean", "LICENSE", "true"
     }
     buildTypes {
         release {
@@ -63,6 +62,10 @@ dependencies {
 
     //gson
     compile 'com.google.code.gson:gson:2.8.1'
+
+    //prettytime
+    compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
+
 
     testCompile 'junit:junit:4.12'
 }

@@ -372,14 +372,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         @Override
         protected void onPreExecute() {
-            plsWait = new MaterialDialog.Builder(context).cancelable(false).title(context.getString(R.string.loading)).content(R.string.please_wait).progress(true, 0).show();
+            plsWait = new MaterialDialog.Builder(context).cancelable(false).title(context.getString(R.string.loading)).content(R.string.please_wait_normal).progress(true, 0).show();
             startTime = System.currentTimeMillis();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                iconPacksList = new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao, forceLoad);
+                iconPacksList = new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao, forceLoad, plsWait);
                 if (isCancelled())
                     return null;
                 return null;

@@ -18,6 +18,9 @@ import android.util.Log;
 
 import com.stericson.roottools.RootTools;
 
+import org.ocpsoft.prettytime.PrettyTime;
+import org.ocpsoft.prettytime.TimeUnit;
+import org.ocpsoft.prettytime.units.JustNow;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -262,6 +266,18 @@ public class Util {
             Log.e(TAG, e.getMessage());
         }
         return res;
+    }
+
+    public static String prettyFormat(Date date) {
+        PrettyTime prettyTime = new PrettyTime();
+        for (TimeUnit t : prettyTime.getUnits()) {
+            if (t instanceof JustNow) {
+                prettyTime.removeUnit(t);
+                break;
+            }
+        }
+        prettyTime.setReference(date);
+        return prettyTime.format(new Date(0));
     }
 
     public static boolean changeSharedPreferences(Context ctx, String packageName, HashMap<String, String> data, String preferenceFileName, boolean restart) {

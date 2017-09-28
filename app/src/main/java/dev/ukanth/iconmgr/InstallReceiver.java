@@ -16,14 +16,17 @@ public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String packageName = intent.getData().getSchemeSpecificPart();
-        try {
-            App app = ((App) context.getApplicationContext());
-            DaoSession daoSession = app.getDaoSession();
-            IPObjDao ipObjDao = daoSession.getIPObjDao();
-            IconPackManager iconPackManager = new IconPackManager(context);
-            iconPackManager.insertIconPack(ipObjDao, packageName);
-        } catch (Exception e) {
-            Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());
+        if (packageName != null) {
+            try {
+                App app = ((App) context.getApplicationContext());
+                DaoSession daoSession = app.getDaoSession();
+                IPObjDao ipObjDao = daoSession.getIPObjDao();
+                IconPackManager iconPackManager = new IconPackManager(context);
+                iconPackManager.insertIconPack(ipObjDao, packageName);
+            } catch (Exception e) {
+                Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());
+            }
         }
+
     }
 }

@@ -25,31 +25,33 @@ public class UninstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String packageName = intent.getData().getSchemeSpecificPart();
-        try {
-            App app = ((App) context.getApplicationContext());
-            DaoSession daoSession = app.getDaoSession();
-            DaoSession historySession = app.getHistoryDaoSession();
-            ipObjDao = daoSession.getIPObjDao();
-            historyDao = historySession.getHistoryDao();
-            IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).unique();
-            if (pkgObj != null) {
-                //delete from install db to history
-                ipObjDao.deleteByKey(packageName);
-                historyDao.insertOrReplace(getHistory(pkgObj));
-                List<IPObj> listPackages = MainActivity.getIconPacksList();
-                if (listPackages != null) {
-                    for (IPObj pack : listPackages) {
-                        if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(packageName)) {
-                            MainActivity.getIconPacksList().remove(pack);
-                            MainActivity.getAdapter().notifyDataSetChanged();
-                            return;
+        if (packageName != null) {
+            try {
+                App app = ((App) context.getApplicationContext());
+                DaoSession daoSession = app.getDaoSession();
+                DaoSession historySession = app.getHistoryDaoSession();
+                ipObjDao = daoSession.getIPObjDao();
+                historyDao = historySession.getHistoryDao();
+                IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).unique();
+                if (pkgObj != null) {
+                    //delete from install db to history
+                    ipObjDao.deleteByKey(packageName);
+                    historyDao.insertOrReplace(getHistory(pkgObj));
+                    List<IPObj> listPackages = MainActivity.getIconPacksList();
+                    if (listPackages != null) {
+                        for (IPObj pack : listPackages) {
+                            if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(packageName)) {
+                                MainActivity.getIconPacksList().remove(pack);
+                                MainActivity.getAdapter().notifyDataSetChanged();
+                                return;
+                            }
                         }
                     }
                 }
+                //ipObjDao.deleteByKey(packageName);
+            } catch (Exception e) {
+                Log.e("MICO", "Exception in UninstallReceiver" + e.getMessage());
             }
-            //ipObjDao.deleteByKey(packageName);
-        } catch (Exception e) {
-            Log.e("MICO", "Exception in UninstallReceiver" + e.getMessage());
         }
     }
 

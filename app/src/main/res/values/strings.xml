@@ -74,7 +74,7 @@
     <string name="show_notification">Notify on new icon pack install</string>
     <string name="show_notification_paid">Notify on new icon pack install(Paid only)</string>
     <string name="match" formatted="false">Supports %s of %s apps(%s)</string>
-    <string name="please_wait">Please wait ... it might take few minutes depends on number of iconpacks</string>
+    <string name="please_wait_normal">Please wait ... </string>
     <string name="action_search">Search</string>
     <string name="changelog">Changelog</string>
     <string name="icon_progress">Icons Supported</string>

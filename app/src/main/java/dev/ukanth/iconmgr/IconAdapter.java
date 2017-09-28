@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 
+import java.util.Date;
 import java.util.List;
 
 import dev.ukanth.iconmgr.dao.IPObj;
@@ -167,8 +168,10 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         IPObj obj = iconPacks.get(i);
         personViewHolder.currentItem = obj;
         personViewHolder.ipackName.setText(obj.getIconName());
+
         StringBuilder builder = new StringBuilder();
         boolean isshown = false;
+
         if (Prefs.isTotalIcons(ctx)) {
             builder.append(ctx.getString(R.string.noicons) + " " + Integer.toString(obj.getTotal()));
             isshown = true;
@@ -192,6 +195,13 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             double percent = ((double) themed / installed) * 100;
             String result = String.format("%.2f", percent) + "%";
             builder.append(" " + result);
+        }
+
+        if(Prefs.sortBy(ctx).equals("s1")) {
+            if (Prefs.isTotalIcons(ctx) || Prefs.showSize(ctx) || Prefs.showPercentage(ctx)) {
+                builder.append(" - ");
+            }
+            builder.append(" " + Util.prettyFormat(new Date(System.currentTimeMillis() -obj.getInstallTime())));
         }
 
         personViewHolder.ipackCount.setText(builder.toString());

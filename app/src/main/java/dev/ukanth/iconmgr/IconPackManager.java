@@ -12,6 +12,8 @@ import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +30,7 @@ public class IconPackManager {
         mContext = c;
     }
 
-    public List<IPObj> updateIconPacks(IPObjDao ipObjDao, boolean forceReload) {
+    public List<IPObj> updateIconPacks(IPObjDao ipObjDao, boolean forceReload, MaterialDialog dialog) {
         if(forceReload) {
             ipObjDao.deleteAll();
         }
@@ -52,7 +54,7 @@ public class IconPackManager {
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
 
-        loadIconPack("GO", rinfo, pm, ipObjDao, installedIconPacks);
+        loadIconPack("GO", rinfo, pm, ipObjDao, installedIconPacks, dialog);
 
         return installedIconPacks;
     }
@@ -71,6 +73,7 @@ public class IconPackManager {
                 IconAttr attr = new IconAttr();
                 obj.setIconPkg(packageName);
                 try {
+
                     ApplicationInfo ai = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
                     obj.setIconType("GO");
                     obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
@@ -91,7 +94,7 @@ public class IconPackManager {
     }
 
 
-    private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, IPObjDao ipObjDao, List<IPObj> installedIconPacks) {
+    private void loadIconPack(String key, List<ResolveInfo> rinfo, PackageManager pm, IPObjDao ipObjDao, List<IPObj> installedIconPacks, MaterialDialog dialog) {
         IconPackUtil ip = new IconPackUtil();
         ApplicationInfo ai = null;
         for (ResolveInfo ri : rinfo) {

@@ -108,7 +108,7 @@ public class IconPreviewActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            plsWait = new MaterialDialog.Builder(mContext).cancelable(false).title(mContext.getString(R.string.loading_preview)).content(R.string.please_wait).progress(true, 0).show();
+            plsWait = new MaterialDialog.Builder(mContext).cancelable(false).title(mContext.getString(R.string.loading_preview)).content(R.string.please_wait_normal).progress(true, 0).show();
         }
 
         @Override

@@ -166,7 +166,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 final IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
                 //refresh package
                 if (pkgObj.getMissed() == 0) {
-                    final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait).progress(true, 0).show();
+                    final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait_normal).progress(true, 0).show();
                     IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
                         @Override
                         public void processFinish(HashMap<String, List> output) {
@@ -212,7 +212,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                         }
                     }, "MISSED");
                 } else {
-                    final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait).progress(true, 0).show();
+                    final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait_normal).progress(true, 0).show();
                     IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
                         @Override
                         public void processFinish(HashMap<String, List> output) {
