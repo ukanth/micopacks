@@ -33,6 +33,7 @@ import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LicenseCallbackHelper;
 import dev.ukanth.iconmgr.util.PackageComparator;
+import dev.ukanth.iconmgr.util.Util;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private Menu mainMenu;
     private static boolean reloadTheme = false;
     private static boolean reloadApp = false;
+    private static int installed = 0;
 
     public static IconAdapter getAdapter() {
         return adapter;
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         recyclerView.setLayoutManager(llm);
         recyclerView.setNestedScrollingEnabled(false);
 
-        adapter = new IconAdapter(iconPacksList);
+        adapter = new IconAdapter(iconPacksList,installed);
         recyclerView.setAdapter(adapter);
 
         mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
@@ -339,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         List<IPObj> filteredModelList = filter(query);
 
         Collections.sort(new ArrayList(filteredModelList), new PackageComparator().setCtx(getApplicationContext()));
-        adapter = new IconAdapter(filteredModelList);
+        adapter = new IconAdapter(filteredModelList,installed);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         return true;
@@ -380,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         protected Void doInBackground(Void... params) {
             try {
                 iconPacksList = new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao, forceLoad, plsWait);
+                installed = Util.getInstalledApps(getApplicationContext()).size();
                 if (isCancelled())
                     return null;
                 return null;
@@ -410,7 +413,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
-                    adapter = new IconAdapter(iconPacksList);
+                    adapter = new IconAdapter(iconPacksList,installed);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 } else {

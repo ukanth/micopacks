@@ -37,6 +37,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
     private Context ctx;
     protected List<IPObj> iconPacks;
+    private int installed;
 
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -148,7 +149,8 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     }
 
 
-    IconAdapter(List<IPObj> ipacks) {
+    IconAdapter(List<IPObj> ipacks, int installed) {
+        this.installed = installed;
         this.iconPacks = ipacks;
     }
 
@@ -194,7 +196,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 builder.append(" - ");
             }
             isshown = true;
-            int installed = Util.getInstalledApps(ctx).size();
             int missed = obj.getMissed();
             int themed = installed - missed;
             double percent = ((double) themed / installed) * 100;

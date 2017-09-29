@@ -433,12 +433,8 @@ public class Util {
     public static List<ResolveInfo> getInstalledApps(Context context) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PackageManager packageManager = context.getPackageManager();
-
-        List<ResolveInfo> installedApps = packageManager.queryIntentActivities(
+        return context.getPackageManager().queryIntentActivities(
                 intent, PackageManager.GET_RESOLVED_FILTER);
-
-        return installedApps;
     }
 
     public static boolean isPackageExisted(Context context, String targetPackage) {
