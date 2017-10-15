@@ -24,8 +24,12 @@ import com.stericson.roottools.RootTools;
 
 import java.util.HashMap;
 
+import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
+import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -80,6 +84,19 @@ public final class FireReceiver extends BroadcastReceiver {
                 String[] msg = index.split(":");
                 iconName = msg[0];
                 iconPackage = msg[1];
+
+                //random
+                if(iconName.equals("rand") && iconPackage.equals("rand")) {
+                    DaoSession daoSession = ((App) context.getApplicationContext()).getDaoSession();
+                    IPObjDao ipObjDao = daoSession.getIPObjDao();
+                    IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
+                    if(ipObj != null) {
+                        iconName = ipObj.getIconName();
+                        iconPackage = ipObj.getIconPkg();
+                        Toast.makeText(context, context.getString(R.string.selected_pack) + iconName, Toast.LENGTH_LONG).show();
+                    }
+                }
+
                 String launcherPack = LauncherHelper.getLauncherPackage(context);
                 if (launcherPack == null || launcherPack.equals("android")) {
                     Toast.makeText(context, R.string.nodefault, Toast.LENGTH_LONG).show();

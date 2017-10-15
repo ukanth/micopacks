@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 } else {
                     Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
                 }
-                break;
+                return true;
             case R.id.sort_alpha:
                 Prefs.sortBy(getApplicationContext(), "s0");
                 item.setChecked(true);

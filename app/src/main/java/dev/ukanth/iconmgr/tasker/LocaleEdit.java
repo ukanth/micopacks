@@ -51,9 +51,15 @@ public class LocaleEdit extends AppCompatActivity {
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
         List<IPObj> iPacksList = ipObjQuery.list();
 
-        if(iPacksList != null) {
+        if(iPacksList != null && !iPacksList.isEmpty()) {
+            RadioButton button = new RadioButton(this);
+            button.setId(-1);
+            button.setText("rand" + ":" + "rand");
+            button.setTextSize(24);
+            groupPacks.addView(button);
+
             for (IPObj pack : iPacksList) {
-                RadioButton button = new RadioButton(this);
+                button = new RadioButton(this);
                 int uid = Util.getUid(getApplicationContext(),pack.getIconPkg());
                 button.setId(uid);
                 button.setText(pack.getIconName()+ ":" + pack.getIconPkg());
