@@ -2,10 +2,15 @@
 <changelog bulletedList="false">
 
 
-    <changelogversion versionName="1.6" changeDate="">
-        <changelogtext>Last update time will be shown if sort option selected</changelogtext>
-        <changelogtext>Reduced lag on main screen</changelogtext>
+    <changelogversion versionName="1.7" changeDate="">
+        <changelogtext></changelogtext>
+        <changelogtext></changelogtext>
+        <changelogtext></changelogtext>
+    </changelogversion>
 
+    <changelogversion versionName="1.6" changeDate="">
+        <changelogtext>Fixed excess lag on main screen</changelogtext>
+        <changelogtext>Selecting last update sorting option will show the time</changelogtext>
         <changelogtext>Bug fixes and performance improvements</changelogtext>
     </changelogversion>
 

@@ -410,6 +410,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
                 mSwipeLayout.setRefreshing(false);
                 if (iconPacksList != null && !iconPacksList.isEmpty()) {
+                    setTitle(getTitle() + " - #" + iconPacksList.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
