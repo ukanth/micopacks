@@ -31,6 +31,7 @@ import java.util.List;
 import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.LicenseCallbackHelper;
 import dev.ukanth.iconmgr.util.PackageComparator;
 import dev.ukanth.iconmgr.util.Util;
@@ -263,6 +264,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                 }
                 return true;
+            case R.id.action_random:
+                String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
+                IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
+                if (currentLauncher != null) {
+                    if(ipObj != null ) {
+                        Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
+                        LauncherHelper.apply(getApplicationContext(), ipObj.getIconPkg(), currentLauncher);
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
+                }
+                break;
             case R.id.sort_alpha:
                 Prefs.sortBy(getApplicationContext(), "s0");
                 item.setChecked(true);
@@ -410,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
                 mSwipeLayout.setRefreshing(false);
                 if (iconPacksList != null && !iconPacksList.isEmpty()) {
-                    setTitle(getTitle() + " - #" + iconPacksList.size() + " packs");
+                    setTitle(getTitle() + " - #" + iconPacksList.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));

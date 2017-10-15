@@ -104,4 +104,6 @@
     <string name="forcereload">Rebuild list</string>
     <string name="onlysupportedroot">Supported through root mode only</string>
     <string name="applied">Applied successfully</string>
+    <string name="action_random">Random</string>
+    <string name="selected_pack">Selected Pack:</string>
 </resources>

@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -46,6 +47,8 @@ import dev.ukanth.iconmgr.ActionReceiver;
 import dev.ukanth.iconmgr.DetailsActivity;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
+import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 import eu.chainfire.libsuperuser.Shell;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -462,5 +465,14 @@ public class Util {
             return false;
         }
         return true;
+    }
+
+    public static IPObj getRandomInstalledIconPack(IPObjDao ipObjDao) {
+        List<IPObj> list = ipObjDao.loadAll();
+        if (list != null) {
+            Random rand = new Random();
+            return list.get(rand.nextInt(list.size()));
+        }
+        return null;
     }
 }

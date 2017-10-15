@@ -9,6 +9,12 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/action_random"
+        android:icon="@drawable/ic_random"
+        android:title="@string/action_random"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/menu_sort"
         android:icon="@drawable/sort"
         android:title="@string/access_sort"
