@@ -16,6 +16,7 @@ import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;
+import dev.ukanth.iconmgr.util.Util;
 
 
 public class DetailsActivity extends AppCompatActivity {
@@ -37,9 +38,13 @@ public class DetailsActivity extends AppCompatActivity {
 
         setupActionBar();
 
+        Bundle bundle = getIntent().getExtras();
+        final String pkgName = bundle.getString("pkg");
+
+
         if (Prefs.isNotify(getApplicationContext())) {
             NotificationManager notificationmanager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationmanager.cancel(90297);
+            notificationmanager.cancel(Util.hash(pkgName));
         }
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_details);
@@ -49,11 +54,7 @@ public class DetailsActivity extends AppCompatActivity {
                 StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(staggeredGridLayoutManager);
 
-        Bundle bundle = getIntent().getExtras();
-        final String pkgName = bundle.getString("pkg");
-
         List<Detail> homes = new ArrayList<>();
-
 
         App app = ((App) getApplicationContext());
         DaoSession daoSession = app.getDaoSession();

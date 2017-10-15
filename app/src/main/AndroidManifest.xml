@@ -97,6 +97,7 @@
         <receiver android:name=".ActionReceiver">
             <intent-filter>
                 <action android:name="APPLY_ACTION" />
+                <action android:name="PREVIEW_ACTION" />
             </intent-filter>
         </receiver>
     </application>

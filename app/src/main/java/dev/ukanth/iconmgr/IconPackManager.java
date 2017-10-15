@@ -73,7 +73,6 @@ public class IconPackManager {
                 IconAttr attr = new IconAttr();
                 obj.setIconPkg(packageName);
                 try {
-
                     ApplicationInfo ai = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
                     obj.setIconType("GO");
                     obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
@@ -86,7 +85,7 @@ public class IconPackManager {
                     Util.showNotification(mContext, packageName);
                     IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
                 } catch (Exception e) {
-                    Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());
+                    Log.e("MICO", "Exception in InstallReceiver" + e.getMessage(), e);
                 }
                 break;
             }

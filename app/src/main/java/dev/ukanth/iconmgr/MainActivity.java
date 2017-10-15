@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         recyclerView.setLayoutManager(llm);
         recyclerView.setNestedScrollingEnabled(false);
 
-        adapter = new IconAdapter(iconPacksList,installed);
+        adapter = new IconAdapter(iconPacksList, installed);
         recyclerView.setAdapter(adapter);
 
         mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         List<IPObj> filteredModelList = filter(query);
 
         Collections.sort(new ArrayList(filteredModelList), new PackageComparator().setCtx(getApplicationContext()));
-        adapter = new IconAdapter(filteredModelList,installed);
+        adapter = new IconAdapter(filteredModelList, installed);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
         return true;
@@ -410,11 +410,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
                 mSwipeLayout.setRefreshing(false);
                 if (iconPacksList != null && !iconPacksList.isEmpty()) {
-                    setTitle(getTitle() + " - #" + iconPacksList.size());
+                    setTitle(getTitle() + " - #" + iconPacksList.size() + " packs");
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
-                    adapter = new IconAdapter(iconPacksList,installed);
+                    adapter = new IconAdapter(iconPacksList, installed);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 } else {

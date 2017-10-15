@@ -180,8 +180,7 @@ public class IconPackUtil {
             }
             icons = processXpp(mContext, packageName, items);
         } catch (Exception e) {
-            Log.e("MICO", e.getMessage());
-            e.printStackTrace();
+            Log.e("MICO", e.getMessage(),e);
         }
         return icons;
     }

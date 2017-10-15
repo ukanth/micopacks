@@ -367,6 +367,15 @@ public class Util {
         return name;
     }
 
+    public static int hash(String s) {
+        int h = 0;
+        for (int i = 0; i < s.length(); i++) {
+            h = 31 * h + s.charAt(i);
+        }
+        return h;
+    }
+
+
     public static void showNotification(Context context, String packageName) {
 
         if (Prefs.isNotify(context)) {
@@ -377,24 +386,32 @@ public class Util {
             PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-            Intent yesReceive = new Intent();
-            yesReceive.putExtra("pkg", packageName);
-            yesReceive.setAction(ActionReceiver.APPLY_ACTION);
-            PendingIntent pendingIntentYes = PendingIntent.getBroadcast(context, 12345, yesReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent applyReceive = new Intent();
+            applyReceive.putExtra("pkg", packageName);
+            applyReceive.setAction(ActionReceiver.APPLY_ACTION);
+            PendingIntent applyIntentYes = PendingIntent.getBroadcast(context, 12345, applyReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+            Intent previewReceive = new Intent();
+            previewReceive.putExtra("pkg", packageName);
+            previewReceive.setAction(ActionReceiver.PREVIEW_ACTION);
+            PendingIntent previewIntent = PendingIntent.getBroadcast(context, 12345, previewReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
             NotificationCompat.Action applyAction =
-                    new NotificationCompat.Action.Builder(R.drawable.ic_apply, "Apply", pendingIntentYes).build();
+                    new NotificationCompat.Action.Builder(R.drawable.ic_apply, "Apply", applyIntentYes).build();
+
+            NotificationCompat.Action previewAction =
+                    new NotificationCompat.Action.Builder(R.drawable.ic_preview, "Preview", previewIntent).build();
 
             NotificationCompat.Builder noti = new NotificationCompat.Builder(context)
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(context.getString(R.string.iconinstalled))
                     .setSmallIcon(R.drawable.iconpack)
                     .setContentIntent(pIntent)
-                    .setAutoCancel(true)
-                    .addAction(applyAction);
-
-            notificationManager.notify(90297, noti.build());
+                    .addAction(applyAction)
+                    .addAction(previewAction);
+            notificationManager.notify(hash(packageName), noti.build());
         }
     }
 

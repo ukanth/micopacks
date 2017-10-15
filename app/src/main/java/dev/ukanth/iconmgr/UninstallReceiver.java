@@ -50,7 +50,7 @@ public class UninstallReceiver extends BroadcastReceiver {
                 }
                 //ipObjDao.deleteByKey(packageName);
             } catch (Exception e) {
-                Log.e("MICO", "Exception in UninstallReceiver" + e.getMessage());
+                Log.e("MICO", "Exception in UninstallReceiver" + e.getMessage(), e);
             }
         }
     }
