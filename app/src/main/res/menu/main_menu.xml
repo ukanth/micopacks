@@ -12,7 +12,7 @@
         android:id="@+id/action_random"
         android:icon="@drawable/ic_random"
         android:title="@string/action_random"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_sort"

@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import java.util.List;
-
 import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.History;
 import dev.ukanth.iconmgr.dao.HistoryDao;
@@ -36,8 +34,12 @@ public class UninstallReceiver extends BroadcastReceiver {
                 if (pkgObj != null) {
                     //delete from install db to history
                     ipObjDao.deleteByKey(packageName);
+                    Intent intentNotify = new Intent();
+                    intentNotify.setAction("updatelist");
+                    intentNotify.putExtra("pkgName", packageName);
+                    context.sendBroadcast(intentNotify);
                     historyDao.insertOrReplace(getHistory(pkgObj));
-                    List<IPObj> listPackages = MainActivity.getIconPacksList();
+                    /*List<IPObj> listPackages = MainActivity.getIconPacksList();
                     if (listPackages != null) {
                         for (IPObj pack : listPackages) {
                             if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(packageName)) {
@@ -46,7 +48,7 @@ public class UninstallReceiver extends BroadcastReceiver {
                                 return;
                             }
                         }
-                    }
+                    }*/
                 }
                 //ipObjDao.deleteByKey(packageName);
             } catch (Exception e) {

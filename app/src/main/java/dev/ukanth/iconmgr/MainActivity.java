@@ -1,7 +1,9 @@
 package dev.ukanth.iconmgr;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteException;
@@ -40,23 +42,25 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private RecyclerView recyclerView;
     private TextView emptyView;
     private LicenseHelper mLicenseHelper;
-    private static IconAdapter adapter;
+    private IconAdapter adapter;
     private IPObjDao ipObjDao;
-    private static List<IPObj> iconPacksList;
+    private List<IPObj> iconPacksList;
     private SwipeRefreshLayout mSwipeLayout;
     private MaterialDialog plsWait;
     private Menu mainMenu;
     private static boolean reloadTheme = false;
     private static boolean reloadApp = false;
     private static int installed = 0;
+    private IntentFilter filter;
+    private BroadcastReceiver mMessageReceiver;
 
-    public static IconAdapter getAdapter() {
+   /* public static IconAdapter getAdapter() {
         return adapter;
     }
 
     public static List<IPObj> getIconPacksList() {
         return iconPacksList;
-    }
+    }*/
 
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
@@ -99,6 +103,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         if (BuildConfig.LICENSE) {
             startLicenseCheck();
         }
+
+        filter = new IntentFilter();
+        filter.addAction("updatelist");
+        mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String pkgName = intent.getStringExtra("pkgName");
+                if (pkgName != null) {
+                    for (IPObj pack : iconPacksList) {
+                        if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(pkgName)) {
+                            iconPacksList.remove(pack);
+                            adapter.notifyDataSetChanged();
+                            setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                            return;
+                        }
+                    }
+                }
+            }
+        };
+        registerReceiver(mMessageReceiver, filter);
     }
 
     private void startLicenseCheck() {
@@ -144,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onDestroy();
         if (mLicenseHelper != null) {
             mLicenseHelper.destroy();
+        }
+        if (mMessageReceiver != null) {
+            unregisterReceiver(mMessageReceiver);
         }
     }
 
@@ -268,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
                 IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
                 if (currentLauncher != null) {
-                    if(ipObj != null ) {
+                    if (ipObj != null) {
                         Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
                         LauncherHelper.apply(getApplicationContext(), ipObj.getIconPkg(), currentLauncher);
                     }
@@ -372,6 +399,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         return filteredPack.size() > 0 ? filteredPack : iconPacksList;
     }
 
+
     public class LoadAppList extends AsyncTask<Void, Integer, Void> {
 
         Context context = null;
@@ -423,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
                 mSwipeLayout.setRefreshing(false);
                 if (iconPacksList != null && !iconPacksList.isEmpty()) {
-                    setTitle(getTitle() + " - #" + iconPacksList.size());
+                    setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
