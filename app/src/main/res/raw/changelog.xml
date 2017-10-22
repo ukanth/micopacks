@@ -3,9 +3,8 @@
 
 
     <changelogversion versionName="1.7" changeDate="">
-        <changelogtext>Shows total number of iconpack on title</changelogtext>
-        <changelogtext></changelogtext>
-        <changelogtext></changelogtext>
+        <changelogtext>Apply random icon packs(tasker/main)</changelogtext>
+        <changelogtext>Shows total number of iconpacks</changelogtext>        
     </changelogversion>
 
     <changelogversion versionName="1.6" changeDate="">

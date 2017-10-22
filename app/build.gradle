@@ -66,6 +66,5 @@ dependencies {
     //prettytime
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
 
-
     testCompile 'junit:junit:4.12'
 }

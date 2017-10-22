@@ -114,10 +114,14 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
 
     private void openApp(Context ctx, IPObj currentItem) {
-        if (currentItem != null && currentItem.getIconPkg() != null
-                && Util.isPackageExisted(ctx, currentItem.getIconPkg())) {
-            Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.getIconPkg());
-            ctx.startActivity(i);
+        try {
+            if (currentItem != null && currentItem.getIconPkg() != null && !currentItem.getIconPkg().isEmpty()
+                    && Util.isPackageExisted(ctx, currentItem.getIconPkg())) {
+                Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.getIconPkg());
+                ctx.startActivity(i);
+            }
+        } catch (Exception e) {
+            Log.e("MICO", e.getMessage(), e);
         }
     }
 

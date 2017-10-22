@@ -32,6 +32,7 @@ public class LocaleEdit extends AppCompatActivity {
         if(Prefs.isDarkTheme(getApplicationContext())) {
             setTheme(R.style.AppTheme_Dark);
         }
+
         super.onCreate(paramBundle);
 
         BundleScrubber.scrub(getIntent());
@@ -44,9 +45,6 @@ public class LocaleEdit extends AppCompatActivity {
         ipObjDao = daoSession.getIPObjDao();
 
         ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
-
-
-        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
         List<IPObj> iPacksList = ipObjQuery.list();
@@ -139,7 +137,7 @@ public class LocaleEdit extends AppCompatActivity {
             int selectedId = group.getCheckedRadioButtonId();
             RadioButton radioButton = (RadioButton) findViewById(selectedId);
             String action = "";
-            if( radioButton.getText() != null) {
+            if( radioButton != null && radioButton.getText() != null) {
                 action = radioButton.getText().toString();
             }
             final Intent resultIntent = new Intent();
