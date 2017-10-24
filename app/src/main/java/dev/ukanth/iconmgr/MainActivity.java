@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 } catch (PackageManager.NameNotFoundException e) {
 
                 }
-                i.putExtra(Intent.EXTRA_EMAIL, new String[]{"uzoftinc@gmail.com"});
+                i.putExtra(Intent.EXTRA_EMAIL, new String[]{"uzoftinc+mico@gmail.com"});
                 i.putExtra(Intent.EXTRA_SUBJECT, "Report Issue: " + getString(R.string.app_name) + " " + version);
                 i.putExtra(Intent.EXTRA_TEXT, "");
                 try {

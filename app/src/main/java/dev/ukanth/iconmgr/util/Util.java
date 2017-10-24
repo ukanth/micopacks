@@ -470,12 +470,10 @@ public class Util {
     public static IPObj getRandomInstalledIconPack(IPObjDao ipObjDao) {
         List<IPObj> list = ipObjDao.loadAll();
         try {
-            if (list != null && list.size() > 0) {
+            if (list != null && !list.isEmpty()) {
                 Random rand = new Random();
                 int random = rand.nextInt(list.size());
-                if (random > 0) {
-                    return list.get(random - 1);
-                }
+                return list.get(random);
             }
         } catch (IllegalArgumentException |
                 NullPointerException e)
