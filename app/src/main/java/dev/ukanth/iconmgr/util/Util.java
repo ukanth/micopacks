@@ -130,7 +130,7 @@ public class Util {
     }
 
 
-    public static boolean savePreferences(PreferenceFile preferenceFile, String file, String packageName, Context ctx) {
+    public static boolean savePreferences(final PreferenceFile preferenceFile, final String file, final String packageName, Context ctx) {
         Log.d(TAG, String.format("savePreferences(%s, %s)", file, packageName));
         if (preferenceFile == null) {
             Log.e(TAG, "Error preferenceFile is null");
@@ -148,7 +148,7 @@ public class Util {
             return false;
         }
 
-        File tmpFile = new File(ctx.getFilesDir(), TMP_FILE);
+        final File tmpFile = new File(ctx.getFilesDir(), TMP_FILE);
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(ctx.openFileOutput(TMP_FILE, Context.MODE_PRIVATE));
             outputStreamWriter.write(preferences);
@@ -157,8 +157,12 @@ public class Util {
             Log.e(TAG, "Error writing temporary file", e);
             return false;
         }
-
-        Shell.SU.run(String.format(CMD_CP, tmpFile.getAbsolutePath(), file));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Shell.SU.run(String.format(CMD_CP, tmpFile.getAbsolutePath(), file));
+            }
+        });
 
         if (!fixUserAndGroupId(ctx, file, packageName)) {
             Log.e(TAG, "Error fixUserAndGroupId");
