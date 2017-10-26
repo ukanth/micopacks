@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
+    <changelogversion versionName="1.7.2" changeDate="">
+        <changelogtext>Tasker plugin fix for ROOT users</changelogtext>
+    </changelogversion>
+
+    <changelogversion versionName="1.7.1" changeDate="">
+        <changelogtext>User reported crash fixes</changelogtext>
+    </changelogversion>
 
     <changelogversion versionName="1.7" changeDate="">
-        <changelogtext>Apply random icon packs(tasker/main)</changelogtext>
-        <changelogtext>Shows total number of iconpacks</changelogtext>        
+        <changelogtext>Added Preview from Install Notification</changelogtext>
+        <changelogtext>Added Shuffle functionality (apply random icon packs) from tasker and main UI</changelogtext>
+        <changelogtext>Now shows total iconpacks on title ( not very intuitive way, but will update it later )</changelogtext>
+        <changelogtext>Under the hood improvements and optimizations</changelogtext>
     </changelogversion>
 
     <changelogversion versionName="1.6" changeDate="">
