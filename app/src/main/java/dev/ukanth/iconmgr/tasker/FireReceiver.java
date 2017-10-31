@@ -140,6 +140,16 @@ public final class FireReceiver extends BroadcastReceiver {
                             Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
                         }
                         break;
+                   /* case LauncherHelper.SMART:
+                        data = new HashMap<>();
+                        data.put("BubbleTheme", iconPackage);
+                        data.put("DrawerTheme", iconPackage);
+                        if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                            Util.changeSharedPreferences(context, launcherPack, data, launcherPack +".xml", true);
+                        } else {
+                            LauncherHelper.apply(context, iconPackage, launcherPack);
+                        }
+                        break;*/
                     default:
                         LauncherHelper.apply(context, iconPackage, launcherPack);
                 }
