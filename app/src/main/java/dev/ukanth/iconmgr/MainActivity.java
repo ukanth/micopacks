@@ -53,15 +53,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private static boolean reloadApp = false;
     private static int installed = 0;
     private IntentFilter filter;
+    private IntentFilter insertFilter;
     private BroadcastReceiver mMessageReceiver;
 
-   /* public static IconAdapter getAdapter() {
-        return adapter;
-    }
+    private BroadcastReceiver updateReceiver;
 
-    public static List<IPObj> getIconPacksList() {
-        return iconPacksList;
-    }*/
 
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
@@ -123,7 +119,26 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             }
         };
+
+        insertFilter = new IntentFilter();
+        insertFilter.addAction("insertlist");
+        updateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String pkgName = intent.getStringExtra("pkgName");
+                if (pkgName != null) {
+                    IPObj obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                    if(obj != null) {
+                        iconPacksList.add(obj);
+                        adapter.notifyDataSetChanged();
+                        setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                    }
+                }
+            }
+        };
+
         registerReceiver(mMessageReceiver, filter);
+        registerReceiver(updateReceiver, insertFilter);
     }
 
     private void startLicenseCheck() {
@@ -177,6 +192,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         if (mMessageReceiver != null) {
             unregisterReceiver(mMessageReceiver);
         }
+        if (updateReceiver != null) {
+            unregisterReceiver(updateReceiver);
+        }
     }
 
     @Override
@@ -208,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public void onRefresh() {
+        iconPacksList = new ArrayList<>();
         loadApp(false);
         mSwipeLayout.setRefreshing(false);
     }
@@ -311,26 +330,31 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.sort_alpha:
                 Prefs.sortBy(getApplicationContext(), "s0");
                 item.setChecked(true);
+                iconPacksList = new ArrayList<>();
                 loadApp(false);
                 return true;
             case R.id.sort_lastupdate:
                 Prefs.sortBy(getApplicationContext(), "s1");
                 item.setChecked(true);
+                iconPacksList = new ArrayList<>();
                 loadApp(false);
                 return true;
             case R.id.sort_count:
                 Prefs.sortBy(getApplicationContext(), "s2");
                 item.setChecked(true);
+                iconPacksList = new ArrayList<>();
                 loadApp(false);
                 return true;
             case R.id.sort_size:
                 Prefs.sortBy(getApplicationContext(), "s3");
                 item.setChecked(true);
+                iconPacksList = new ArrayList<>();
                 loadApp(false);
                 return true;
             case R.id.sort_percent:
                 Prefs.sortBy(getApplicationContext(), "s4");
                 item.setChecked(true);
+                iconPacksList = new ArrayList<>();
                 loadApp(false);
                 return true;
             default:
@@ -427,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                iconPacksList = new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao, forceLoad, plsWait);
+                new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao, forceLoad, plsWait);
                 installed = Util.getInstalledApps(getApplicationContext()).size();
                 if (isCancelled())
                     return null;
