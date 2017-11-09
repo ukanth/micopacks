@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
+    <changelogversion versionName="1.8.0" changeDate="">
+        <changelogtext>Main screen load much faster on first time load</changelogtext>
+        <changelogtext>Faster sorting</changelogtext>
+        <changelogtext>Supports Oreo</changelogtext>
+        <changelogtext>Improved Non themed icons preview with masking/iconback</changelogtext>
+        <changelogtext>General bugfixes</changelogtext>
+    </changelogversion>
+
     <changelogversion versionName="1.7.2" changeDate="">
         <changelogtext>Tasker plugin fix for ROOT users</changelogtext>
     </changelogversion>

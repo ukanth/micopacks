@@ -13,7 +13,7 @@ android {
         versionName "1.8.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "boolean", "PAID", "true"
-        buildConfigField "boolean", "LICENSE", "false"
+        buildConfigField "boolean", "LICENSE", "true"
     }
 
     compileOptions {
