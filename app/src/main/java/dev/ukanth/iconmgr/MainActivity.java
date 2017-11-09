@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             if (Prefs.isFirstTime(getApplicationContext())) {
                 mLicenseHelper = new LicenseHelper(this);
-                mLicenseHelper.run(licenseKey, salt, new LicenseCallbackHelper(this));
+                mLicenseHelper.run(licenseKey, salt, new LicenseCallbackHelper(MainActivity.this));
                 return;
             }
 
@@ -217,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void loadApp(boolean forceLoad) {
+        iconPacksList = new ArrayList<>();
         LoadAppList getAppList = new LoadAppList();
         if (plsWait == null && (getAppList.getStatus() == AsyncTask.Status.PENDING ||
                 getAppList.getStatus() == AsyncTask.Status.FINISHED)) {
@@ -226,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public void onRefresh() {
-        iconPacksList = new ArrayList<>();
         loadApp(false);
         mSwipeLayout.setRefreshing(false);
     }
@@ -330,36 +330,38 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.sort_alpha:
                 Prefs.sortBy(getApplicationContext(), "s0");
                 item.setChecked(true);
-                iconPacksList = new ArrayList<>();
-                loadApp(false);
+                reload();
                 return true;
             case R.id.sort_lastupdate:
                 Prefs.sortBy(getApplicationContext(), "s1");
                 item.setChecked(true);
-                iconPacksList = new ArrayList<>();
-                loadApp(false);
+                reload();
                 return true;
             case R.id.sort_count:
                 Prefs.sortBy(getApplicationContext(), "s2");
                 item.setChecked(true);
-                iconPacksList = new ArrayList<>();
-                loadApp(false);
+                reload();
                 return true;
             case R.id.sort_size:
                 Prefs.sortBy(getApplicationContext(), "s3");
                 item.setChecked(true);
-                iconPacksList = new ArrayList<>();
-                loadApp(false);
+                reload();
                 return true;
             case R.id.sort_percent:
                 Prefs.sortBy(getApplicationContext(), "s4");
                 item.setChecked(true);
-                iconPacksList = new ArrayList<>();
-                loadApp(false);
+                reload();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void reload() {
+        Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
+        adapter = new IconAdapter(iconPacksList, installed);
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     private void showChangelog() {

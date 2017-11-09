@@ -72,18 +72,15 @@ public class LocaleEdit extends AppCompatActivity {
                     com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
             if (PluginBundleManager.isBundleValid(forwardedBundle)) {
                 String index = forwardedBundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
-                if (index.contains(":")) {
-                    index = index.split(":")[2];
-                }
-                if (index != null) {
-                    RadioButton btn = (RadioButton) findViewById(Integer.parseInt(index));
+                String[] split = index.split(":");
+                if (split.length > 2) {
+                    RadioButton btn = (RadioButton) findViewById(Integer.parseInt(split[2]));
                     if (btn != null) {
                         btn.setChecked(true);
                     }
                 }
             }
         }
-
     }
 
     private void setupTitleApi11() {

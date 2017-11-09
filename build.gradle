@@ -4,10 +4,12 @@ buildscript {
     repositories {
         jcenter()
         mavenCentral()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.0'
     }
 }
 
@@ -17,6 +19,13 @@ allprojects {
         maven {
             url "https://jitpack.io"
         }
+        maven { url "http://dl.bintray.com/drummer-aidan/maven" }
+        maven { url "http://dl.bintray.com/drummer-aidan/maven/com/afollestad" }
+        maven {
+            url "https://maven.google.com"
+        }
+
+        google()
     }
 }
 

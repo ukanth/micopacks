@@ -45,6 +45,14 @@ public class IconPreviewActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
 
+   /* private BroadcastReceiver iconViewReceiver;
+    private IntentFilter filter;*/
+
+    private LinearLayout.LayoutParams params;
+
+    private GridLayout gridLayout;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -86,13 +94,50 @@ public class IconPreviewActivity extends AppCompatActivity {
             fab.setVisibility(View.GONE);
         }
 
-        IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreviewActivity.this, pkgName);
+        gridLayout = (GridLayout) findViewById(R.id.iconpreview);
+        int colNumber = Prefs.getCol(getApplicationContext());
+        gridLayout.setColumnCount(colNumber);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = metrics.widthPixels;
+        params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
 
+       /* filter = new IntentFilter();
+        filter.addAction("iconupdate");
+        iconViewReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Icon icon = getIntent().getParcelableExtra("icon");
+                ImageView image = new ImageView(getApplicationContext());
+                image.setLayoutParams(params);
+                image.setPadding(15, 15, 15, 15);
+                image.setScaleType(ImageView.ScaleType.FIT_XY);
+                image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
+                image.setOnClickListener(new ImageView.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getApplicationContext(), icon.getTitle(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                gridLayout.addView(image);
+            }
+        };
+
+        registerReceiver(iconViewReceiver, filter);*/
+        IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreviewActivity.this, pkgName);
         if (plsWait == null && (previewLoader.getStatus() == AsyncTask.Status.PENDING ||
                 previewLoader.getStatus() == AsyncTask.Status.FINISHED)) {
             previewLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        /*if (iconViewReceiver != null) {
+            unregisterReceiver(iconViewReceiver);
+        }*/
+    }
+
 
     private class IconsPreviewLoader extends AsyncTask<Void, Void, Boolean> {
 
@@ -151,21 +196,12 @@ public class IconPreviewActivity extends AppCompatActivity {
                     List<Icon> listNonTheme = new ArrayList<Icon>(nonthemed_icons);
                     list.addAll(listNonTheme);
                 }
-
                 if (list != null && list.size() > 0) {
-
                     Collections.sort(list, new Comparator<Icon>() {
                         public int compare(Icon o1, Icon o2) {
                             return String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle());
                         }
                     });
-                    GridLayout gridLayout = (GridLayout) findViewById(R.id.iconpreview);
-                    int colNumber = Prefs.getCol(getApplicationContext());
-                    gridLayout.setColumnCount(colNumber);
-                    DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
-                    int screenWidth = metrics.widthPixels;
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
-                    Resources res = mContext.getResources();
 
                     for (final Icon icon : list) {
                         if (icon.getIconBitmap() != null) {
@@ -173,7 +209,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                             image.setLayoutParams(params);
                             image.setPadding(15, 15, 15, 15);
                             image.setScaleType(ImageView.ScaleType.FIT_XY);
-                            image.setImageDrawable(new BitmapDrawable(res, icon.getIconBitmap()));
+                            image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
                             image.setOnClickListener(new ImageView.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {

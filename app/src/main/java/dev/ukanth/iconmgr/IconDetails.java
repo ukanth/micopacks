@@ -105,9 +105,11 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
                 if (ipObjDao != null && ipObjDao.hasKey(ipObj)) {
                     Log.i("MICO", "Exist in DB: " + packageName);
                     IPObj ipobj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).build().unique();
-                    List<String> missedPackage = listPkg.get("package");
-                    ipobj.setMissed(missedPackage != null ? missedPackage.size() : 0);
-                    ipObjDao.update(ipobj);
+                    if(ipobj != null) {
+                        List<String> missedPackage = listPkg.get("package");
+                        ipobj.setMissed(missedPackage != null ? missedPackage.size() : 0);
+                        ipObjDao.update(ipobj);
+                    }
                 }
             }
             if (delegate != null) {

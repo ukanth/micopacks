@@ -35,7 +35,11 @@ public class LicenseCallbackHelper implements LicenseCallback {
 
     @Override
     public void onLicenseCheckStart() {
-        mDialog.show();
+        try {
+            mDialog.show();
+        } catch (Exception e){
+
+        }
     }
 
     @Override
