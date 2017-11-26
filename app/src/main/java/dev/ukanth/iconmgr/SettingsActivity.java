@@ -78,6 +78,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         if (Prefs.isDarkTheme(getApplicationContext())) {
             setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme_Light);
         }
         super.onCreate(savedInstanceState);
         setupActionBar();

@@ -16,6 +16,10 @@ public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String packageName = intent.getData().getSchemeSpecificPart();
+
+        if (!intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED) &&
+                intent.getBooleanExtra(Intent.EXTRA_REPLACING, false))
+            return;
         if (packageName != null) {
             try {
                 App app = ((App) context.getApplicationContext());

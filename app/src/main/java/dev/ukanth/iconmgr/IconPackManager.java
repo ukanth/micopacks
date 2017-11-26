@@ -91,11 +91,11 @@ public class IconPackManager {
                     ipObjDao.insert(obj);
                     Util.showNotification(mContext, packageName);
                     IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
+                    break;
                 } catch (Exception e) {
                     Log.e("MICO", "Exception in InstallReceiver" + e.getMessage(), e);
                 }
             }
-            break;
         }
     }
 

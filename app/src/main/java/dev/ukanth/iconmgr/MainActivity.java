@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         if (Prefs.isDarkTheme(getApplicationContext())) {
             setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme_Light);
         }
 
         setContentView(R.layout.content_main);

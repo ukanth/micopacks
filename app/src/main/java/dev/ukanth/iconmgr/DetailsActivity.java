@@ -31,6 +31,8 @@ public class DetailsActivity extends AppCompatActivity {
 
         if (Prefs.isDarkTheme(getApplicationContext())) {
             setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme_Light);
         }
 
         super.onCreate(savedInstanceState);

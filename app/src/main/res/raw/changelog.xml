@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
+
+    <changelogversion versionName="1.8.1" changeDate="">
+        <changelogtext>Fixed notification not showing on install</changelogtext>
+        <changelogtext>Fixed switching themes</changelogtext>
+    </changelogversion>
+
     <changelogversion versionName="1.8.0" changeDate="">
         <changelogtext>Main screen load much faster on first time load</changelogtext>
         <changelogtext>Faster sorting</changelogtext>
