@@ -379,7 +379,7 @@ public class Util {
     }
 
 
-    public static void showNotification(Context context, String packageName) {
+    public static void showNotification(Context context, String packageName, String name) {
 
         if (Prefs.isNotify(context)) {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
@@ -409,7 +409,7 @@ public class Util {
 
             NotificationCompat.Builder noti = new NotificationCompat.Builder(context)
                     .setContentTitle(context.getString(R.string.app_name))
-                    .setContentText(context.getString(R.string.iconinstalled))
+                    .setContentText(name+ " " + context.getString(R.string.iconinstalled))
                     .setSmallIcon(R.drawable.iconpack)
                     .setContentIntent(pIntent)
                     .addAction(applyAction)

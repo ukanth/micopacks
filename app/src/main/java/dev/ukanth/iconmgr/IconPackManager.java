@@ -83,13 +83,14 @@ public class IconPackManager {
                     ApplicationInfo ai = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
                     obj.setIconType("GO");
                     obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
-                    obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
+                    String name = mContext.getPackageManager().getApplicationLabel(ai).toString();
+                    obj.setIconName(name);
                     obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
                     attr.setDeleted(false);
                     attr.setSize(Util.getApkSize(mContext, packageName));
                     obj.setAdditional(attr.toString());
                     ipObjDao.insert(obj);
-                    Util.showNotification(mContext, packageName);
+                    Util.showNotification(mContext, packageName, name);
                     IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
                     break;
                 } catch (Exception e) {
