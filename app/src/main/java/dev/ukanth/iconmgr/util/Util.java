@@ -384,21 +384,29 @@ public class Util {
         if (Prefs.isNotify(context)) {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
+            int uid = 0;
+            try {
+                uid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;
+            } catch (PackageManager.NameNotFoundException e) {
+            }
             Intent intent = new Intent(context, DetailsActivity.class);
             intent.putExtra("pkg", packageName);
-            PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            intent.putExtra(Intent.EXTRA_TITLE, packageName);
+            PendingIntent pIntent = PendingIntent.getActivity(context, uid, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
             Intent applyReceive = new Intent();
             applyReceive.putExtra("pkg", packageName);
+            applyReceive.putExtra(Intent.EXTRA_TITLE, packageName);
             applyReceive.setAction(ActionReceiver.APPLY_ACTION);
-            PendingIntent applyIntentYes = PendingIntent.getBroadcast(context, 12345, applyReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent applyIntentYes = PendingIntent.getBroadcast(context, uid, applyReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
             Intent previewReceive = new Intent();
             previewReceive.putExtra("pkg", packageName);
+            previewReceive.putExtra(Intent.EXTRA_TITLE, packageName);
             previewReceive.setAction(ActionReceiver.PREVIEW_ACTION);
-            PendingIntent previewIntent = PendingIntent.getBroadcast(context, 12345, previewReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent previewIntent = PendingIntent.getBroadcast(context, uid, previewReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
             NotificationCompat.Action applyAction =
