@@ -2,6 +2,14 @@
 <changelog bulletedList="false">
 
 
+    <changelogversion versionName="1.9.0" changeDate="">
+        <changelogtext>Feature: Show name of the iconpack as notification title</changelogtext>
+        <changelogtext>Feature: Long pressing icon in preview screen will save selected icon to internal storage(Storage Permission)</changelogtext>
+        <changelogtext>Feature: Share icon list as image :)</changelogtext>
+        <changelogtext>Bug: multiple notification actions</changelogtext>
+        <changelogtext>User reported crashes</changelogtext>
+    </changelogversion>
+
     <changelogversion versionName="1.8.1" changeDate="">
         <changelogtext>Fixed notification not showing on install</changelogtext>
         <changelogtext>Fixed switching themes</changelogtext>

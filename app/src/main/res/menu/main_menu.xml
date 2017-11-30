@@ -53,6 +53,12 @@
         android:title="@string/preferences"
         app:showAsAction="collapseActionView" />
 
+
+    <item
+        android:id="@+id/share"
+        android:title="@string/sharelist"
+        app:showAsAction="collapseActionView" />
+
     <item
         android:id="@+id/force"
         android:title="@string/forcereload"
