@@ -235,11 +235,23 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
     }
 
-    private void shareBitmap (Bitmap bitmap,String fileName) {
+    private void shareBitmap (Bitmap src,String fileName) {
         try {
+
+            int w = src.getWidth();
+            int h = src.getHeight();
+            Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());
+            Canvas canvas = new Canvas(result);
+            canvas.drawBitmap(src, 0, 0, null);
+            Paint paint = new Paint();
+            paint.setColor(Color.YELLOW);
+            paint.setTextSize(50);
+            paint.setAntiAlias(true);
+            canvas.drawText("Micopacks", 400, 60, paint);
+
             File file = new File(getCacheDir(), fileName + ".png");
             FileOutputStream fOut = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+            result.compress(Bitmap.CompressFormat.PNG, 100, fOut);
             fOut.flush();
             fOut.close();
             file.setReadable(true, false);
