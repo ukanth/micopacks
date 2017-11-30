@@ -358,7 +358,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 loadApp(true);
                 return true;
             case R.id.share:
-                shareBitmap(getScreenshotFromRecyclerView(recyclerView),System.currentTimeMillis() + "");
+                final Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.generating), Toast.LENGTH_LONG);
+                toast.show();
+                new Thread(() -> shareBitmap(getScreenshotFromRecyclerView(recyclerView),System.currentTimeMillis() + "")).start();
                 return true;
             case R.id.changelog:
                 showChangelog();

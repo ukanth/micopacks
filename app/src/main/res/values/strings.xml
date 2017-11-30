@@ -107,4 +107,5 @@
     <string name="action_random">Random</string>
     <string name="selected_pack">Selected Pack:</string>
     <string name="sharelist">Share</string>
+    <string name="generating">Generating image, please wait ...</string>
 </resources>
