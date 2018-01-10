@@ -108,4 +108,6 @@
     <string name="selected_pack">Selected Pack:</string>
     <string name="sharelist">Share</string>
     <string name="generating">Generating image, please wait ...</string>
+    <string name="random_shortcut_short_label1">Random</string>
+    <string name="random_shortcut_long_label1">Apply random iconpack</string>
 </resources>

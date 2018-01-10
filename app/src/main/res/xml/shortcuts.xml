@@ -1,0 +1,15 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_random"
+        android:shortcutId="randomCall"
+        android:shortcutLongLabel="@string/random_shortcut_long_label1"
+        android:shortcutShortLabel="@string/random_shortcut_short_label1">
+        <intent
+            android:action="dev.ukanth.iconmgr.shortcut.RANDOM"
+            android:targetClass="dev.ukanth.iconmgr.MainActivity"
+            android:targetPackage="dev.ukanth.iconmgr" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <!-- Specify more shortcuts here. -->
+</shortcuts>

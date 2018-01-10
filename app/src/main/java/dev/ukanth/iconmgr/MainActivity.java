@@ -67,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private BroadcastReceiver updateReceiver;
 
 
+    private static final String SHORT_RANDOM =
+            "dev.ukanth.iconmgr.shortcut.RANDOM";
+
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
     }
@@ -79,76 +82,95 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Prefs.isDarkTheme(getApplicationContext())) {
-            setTheme(R.style.AppTheme_Dark);
+        if (SHORT_RANDOM.equals(getIntent().getAction())) {
+            callRandom();
         } else {
-            setTheme(R.style.AppTheme_Light);
-        }
+            if (Prefs.isDarkTheme(getApplicationContext())) {
+                setTheme(R.style.AppTheme_Dark);
+            } else {
+                setTheme(R.style.AppTheme_Light);
+            }
 
-        setContentView(R.layout.content_main);
+            setContentView(R.layout.content_main);
 
-        DaoSession daoSession = ((App) getApplication()).getDaoSession();
-        ipObjDao = daoSession.getIPObjDao();
+            DaoSession daoSession = ((App) getApplication()).getDaoSession();
+            ipObjDao = daoSession.getIPObjDao();
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        emptyView = (TextView) findViewById(R.id.empty_view);
+            recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+            emptyView = (TextView) findViewById(R.id.empty_view);
 
 
-        iconPacksList = new ArrayList<>();
+            iconPacksList = new ArrayList<>();
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);
-        recyclerView.setNestedScrollingEnabled(false);
+            LinearLayoutManager llm = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(llm);
+            recyclerView.setNestedScrollingEnabled(false);
 
-        adapter = new IconAdapter(iconPacksList, installed);
-        recyclerView.setAdapter(adapter);
+            adapter = new IconAdapter(iconPacksList, installed);
+            recyclerView.setAdapter(adapter);
 
-        mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-        mSwipeLayout.setOnRefreshListener(this);
+            mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+            mSwipeLayout.setOnRefreshListener(this);
 
-        loadApp(false);
-        if (BuildConfig.LICENSE) {
-            startLicenseCheck();
-        }
+            loadApp(false);
+            if (BuildConfig.LICENSE) {
+                startLicenseCheck();
+            }
 
-        filter = new IntentFilter();
-        filter.addAction("updatelist");
-        mMessageReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String pkgName = intent.getStringExtra("pkgName");
-                if (pkgName != null) {
-                    for (IPObj pack : iconPacksList) {
-                        if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(pkgName)) {
-                            iconPacksList.remove(pack);
-                            adapter.notifyDataSetChanged();
-                            setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
-                            return;
+            filter = new IntentFilter();
+            filter.addAction("updatelist");
+            mMessageReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String pkgName = intent.getStringExtra("pkgName");
+                    if (pkgName != null) {
+                        for (IPObj pack : iconPacksList) {
+                            if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(pkgName)) {
+                                iconPacksList.remove(pack);
+                                adapter.notifyDataSetChanged();
+                                setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                                return;
+                            }
                         }
                     }
                 }
-            }
-        };
+            };
 
-        insertFilter = new IntentFilter();
-        insertFilter.addAction("insertlist");
-        updateReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String pkgName = intent.getStringExtra("pkgName");
-                if (pkgName != null) {
-                    IPObj obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
-                    if(obj != null) {
-                        iconPacksList.add(obj);
-                        adapter.notifyDataSetChanged();
-                        setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+            insertFilter = new IntentFilter();
+            insertFilter.addAction("insertlist");
+            updateReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String pkgName = intent.getStringExtra("pkgName");
+                    if (pkgName != null) {
+                        IPObj obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                        if (obj != null) {
+                            iconPacksList.add(obj);
+                            adapter.notifyDataSetChanged();
+                            setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                        }
                     }
                 }
-            }
-        };
+            };
 
-        registerReceiver(mMessageReceiver, filter);
-        registerReceiver(updateReceiver, insertFilter);
+            registerReceiver(mMessageReceiver, filter);
+            registerReceiver(updateReceiver, insertFilter);
+        }
+
+
+    }
+
+    private void callRandom() {
+        String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
+        IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
+        if (currentLauncher != null) {
+            if (ipObj != null) {
+                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
+                LauncherHelper.apply(getApplicationContext(), ipObj.getIconPkg(), currentLauncher);
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void startLicenseCheck() {
@@ -235,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
     }
 
-    private void shareBitmap (Bitmap src,String fileName) {
+    private void shareBitmap(Bitmap src, String fileName) {
         try {
 
             int w = src.getWidth();
@@ -255,7 +277,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             fOut.flush();
             fOut.close();
             file.setReadable(true, false);
-            final Intent intent = new Intent(     android.content.Intent.ACTION_SEND);
+            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
             intent.setType("image/png");
@@ -372,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.share:
                 final Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.generating), Toast.LENGTH_LONG);
                 toast.show();
-                new Thread(() -> shareBitmap(getScreenshotFromRecyclerView(recyclerView),System.currentTimeMillis() + "")).start();
+                new Thread(() -> shareBitmap(getScreenshotFromRecyclerView(recyclerView), System.currentTimeMillis() + "")).start();
                 return true;
             case R.id.changelog:
                 showChangelog();
@@ -402,16 +424,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
                 return true;
             case R.id.action_random:
-                String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
-                IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
-                if (currentLauncher != null) {
-                    if (ipObj != null) {
-                        Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
-                        LauncherHelper.apply(getApplicationContext(), ipObj.getIconPkg(), currentLauncher);
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
-                }
+                callRandom();
                 return true;
             case R.id.sort_alpha:
                 Prefs.sortBy(getApplicationContext(), "s0");
