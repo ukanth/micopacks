@@ -12,4 +12,6 @@
 
     <color name="red">#f20306</color>
     <color name="green">#22ff00</color>
+    <color name="icon_tint_normal">#ffe100</color>
+
 </resources>

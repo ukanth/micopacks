@@ -5,6 +5,13 @@
         android:key="dark_theme"
         android:title="@string/use_dark" />
 
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="show_favorites"
+        android:title="@string/show_favs" />
+
+
     <SwitchPreference
         android:defaultValue="false"
         android:key="total_icons"

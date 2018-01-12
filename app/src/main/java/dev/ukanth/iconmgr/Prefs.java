@@ -21,6 +21,7 @@ public class Prefs {
     public static final String LIST_COL = "preview_col";
     public static final String IS_FIRST_TIME = "isFirstTime";
     public static final String PS = "PS";
+    public static final String FAV = "show_favorites";
 
     public static boolean isDarkTheme(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -30,6 +31,11 @@ public class Prefs {
     public static boolean useRoot(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(ROOT_TASKER, true);
+    }
+
+    public static boolean useFavorite(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(FAV, false);
     }
 
     public static boolean showSize(Context context) {

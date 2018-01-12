@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,7 +27,9 @@ import com.google.gson.Gson;
 import java.util.Date;
 import java.util.List;
 
+import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -46,6 +49,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         TextView ipackName;
         TextView ipackCount;
         ImageView icon;
+        ImageView iconImp;
 
         public IconPackViewHolder(View view) {
             super(view);
@@ -53,6 +57,25 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             ipackName = (TextView) view.findViewById(R.id.ipack_name);
             ipackCount = (TextView) view.findViewById(R.id.ipack_icon_count);
             icon = (ImageView) view.findViewById(R.id.ipack_icon);
+            iconImp = (ImageView) view.findViewById(R.id.icon_star);
+            iconImp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (currentItem != null && currentItem.getIconPkg() != null) {
+                        IconAttr attr = new Gson().fromJson(currentItem.getAdditional(), IconAttr.class);
+                        attr.setFavorite(!attr.isFavorite());
+                        currentItem.setAdditional(new Gson().toJson(attr).toString());
+                        App app = ((App) ctx.getApplicationContext());
+                        app.getDaoSession().getIPObjDao().update(currentItem);
+                        if(attr.isFavorite()) {
+                            iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
+                        } else {
+                            iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
+                        }
+                        Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
             icon.setOnClickListener(new ImageView.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -176,6 +199,16 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         View currentView = personViewHolder.itemView;
         currentView.setTag(personViewHolder);
         IPObj obj = iconPacks.get(i);
+        if(Prefs.useFavorite(ctx)) {
+            personViewHolder.iconImp.setVisibility(View.VISIBLE);
+        } else {
+            personViewHolder.iconImp.setVisibility(View.GONE);
+        }
+        personViewHolder.iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
+        IconAttr attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
+        if(attr.isFavorite()) {
+            personViewHolder.iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
+        }
         personViewHolder.localIcon = new LocalIcon();
         personViewHolder.currentItem = obj;
         personViewHolder.ipackName.setText(obj.getIconName());
@@ -192,7 +225,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 builder.append(" - ");
             }
             isshown = true;
-            IconAttr attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
             builder.append(attr.getSize() + " MB");
         }
         if (Prefs.showPercentage(ctx)) {

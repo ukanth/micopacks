@@ -50,6 +50,15 @@
                 android:textSize="14sp"
                 android:layout_toRightOf="@+id/ipack_icon" />
 
+            <ImageView
+                android:id="@+id/icon_star"
+                android:layout_width="@dimen/icon_star"
+                android:layout_height="@dimen/icon_star"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:tint="@color/icon_tint_normal" />
+
+
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>

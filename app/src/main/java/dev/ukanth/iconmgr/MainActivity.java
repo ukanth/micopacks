@@ -32,11 +32,13 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import dev.ukanth.iconmgr.dao.DaoSession;
@@ -511,6 +513,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         List<IPObj> filteredModelList = filter(query);
 
         Collections.sort(new ArrayList(filteredModelList), new PackageComparator().setCtx(getApplicationContext()));
+
         adapter = new IconAdapter(filteredModelList, installed);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -585,6 +588,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
+                    if(Prefs.useFavorite(getApplicationContext())) {
+                        Collections.sort(iconPacksList, new Comparator<IPObj>() {
+                            @Override
+                            public int compare(IPObj o1, IPObj o2) {
+                                IconAttr attr1 = new Gson().fromJson(o1.getAdditional(), IconAttr.class);
+                                IconAttr attr2 = new Gson().fromJson(o2.getAdditional(), IconAttr.class);
+                                return Boolean.compare(attr2.isFavorite(),attr1.isFavorite());
+                            }
+                        });
+                    }
                     adapter = new IconAdapter(iconPacksList, installed);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();

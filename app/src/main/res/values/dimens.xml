@@ -17,6 +17,7 @@
     <dimen name="ic_album_overflow_height">30dp</dimen>
     <dimen name="ic_album_overflow_margin_top">10dp</dimen>
 
+    <dimen name="icon_star">35dp</dimen>
 
 
     <dimen name="content_padding">8dp</dimen>

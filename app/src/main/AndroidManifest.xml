@@ -18,11 +18,15 @@
     <application
         android:name=".App"
         android:allowBackup="true"
+        android:fullBackupContent="@xml/my_backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Light">
+
+        <meta-data android:name="com.google.android.backup.api_key" android:value="AEdPqrEAAAAI_TbK8XPKNMd86jr_MxEWH4j6xY2mVmc028rfIA" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

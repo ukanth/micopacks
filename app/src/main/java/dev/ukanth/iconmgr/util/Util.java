@@ -296,7 +296,7 @@ public class Util {
         return res;
     }
 
-    private static void setElementValue(Element elem, String updateName) {
+   /* private static void setElementValue(Element elem, String updateName) {
         Node kid;
         if (elem != null) {
             if (elem.hasChildNodes()) {
@@ -353,7 +353,7 @@ public class Util {
         }
         return doc;
 
-    }
+    }*/
 
     public static String getCurrentLauncher(Context ctx) {
         String name = null;

@@ -110,4 +110,5 @@
     <string name="generating">Generating image, please wait ...</string>
     <string name="random_shortcut_short_label1">Random</string>
     <string name="random_shortcut_long_label1">Apply random iconpack</string>
+    <string name="show_favs">Use Favorites</string>
 </resources>

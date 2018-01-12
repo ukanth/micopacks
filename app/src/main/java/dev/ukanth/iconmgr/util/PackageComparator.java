@@ -21,7 +21,6 @@ public class PackageComparator implements Comparator<IPObj> {
         return this;
     }
 
-
     private Context ctx;
 
     @Override
