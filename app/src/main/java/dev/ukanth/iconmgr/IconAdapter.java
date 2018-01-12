@@ -7,6 +7,8 @@ package dev.ukanth.iconmgr;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -69,10 +72,29 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                         app.getDaoSession().getIPObjDao().update(currentItem);
                         if(attr.isFavorite()) {
                             iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
+                            Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+                                Intent intent = new Intent(ctx, RandomActivity.class);
+                                intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.putExtra("pack", currentItem.getIconPkg());
+                                ShortcutInfo shortcut = new ShortcutInfo.Builder(ctx, currentItem.getIconPkg())
+                                        .setShortLabel(currentItem.getIconName())
+                                        .setLongLabel(currentItem.getIconName())
+                                        .setIntent(intent)
+                                        .build();
+                                ctx.getSystemService(ShortcutManager.class).addDynamicShortcuts(
+                                        Arrays.asList(shortcut));
+                            }
+
                         } else {
                             iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
+                            Toast.makeText(ctx, "Removed to Favorites", Toast.LENGTH_SHORT).show();
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+                                ctx.getSystemService(ShortcutManager.class).removeDynamicShortcuts(Arrays.asList(currentItem.getIconPkg()));
+                            }
                         }
-                        Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
+
                     }
                 }
             });

@@ -14,7 +14,6 @@
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -24,8 +23,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Light">
-
-        <meta-data android:name="com.google.android.backup.api_key" android:value="AEdPqrEAAAAI_TbK8XPKNMd86jr_MxEWH4j6xY2mVmc028rfIA" />
+        <meta-data
+            android:name="com.google.android.backup.api_key"
+            android:value="AEdPqrEAAAAI_TbK8XPKNMd86jr_MxEWH4j6xY2mVmc028rfIA" />
 
         <activity
             android:name=".MainActivity"
@@ -33,14 +33,15 @@
             android:theme="@style/AppTheme.Dark">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data
+            <!--
+                <meta-data
                 android:name="android.app.shortcuts"
-                android:resource="@xml/shortcuts" />
+                android:resource="@xml/shortcuts"/>
+            -->
         </activity>
-
-
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -49,7 +50,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
-
         <activity
             android:name=".tasker.LocaleEdit"
             android:exported="true"
@@ -67,13 +67,10 @@
             android:name=".tasker.FireReceiver"
             android:exported="true"
             tools:ignore="ExportedReceiver">
-
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
-
-
         <receiver android:name=".UninstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REMOVED" />
@@ -81,7 +78,6 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
-
         <receiver android:name=".InstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_INSTALL" />
@@ -99,7 +95,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
-
         <activity
             android:name=".IconPreviewActivity"
             android:parentActivityName=".MainActivity">
@@ -114,6 +109,8 @@
                 <action android:name="PREVIEW_ACTION" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".RandomActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
     </application>
 
 </manifest>

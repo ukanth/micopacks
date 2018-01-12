@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -37,6 +39,7 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -68,10 +71,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private BroadcastReceiver updateReceiver;
 
-
-    private static final String SHORT_RANDOM =
-            "dev.ukanth.iconmgr.shortcut.RANDOM";
-
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
     }
@@ -84,80 +83,74 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (SHORT_RANDOM.equals(getIntent().getAction())) {
-            callRandom();
+        DaoSession daoSession = ((App) getApplication()).getDaoSession();
+        ipObjDao = daoSession.getIPObjDao();
+
+        if (Prefs.isDarkTheme(getApplicationContext())) {
+            setTheme(R.style.AppTheme_Dark);
         } else {
-            if (Prefs.isDarkTheme(getApplicationContext())) {
-                setTheme(R.style.AppTheme_Dark);
-            } else {
-                setTheme(R.style.AppTheme_Light);
-            }
+            setTheme(R.style.AppTheme_Light);
+        }
 
-            setContentView(R.layout.content_main);
+        setContentView(R.layout.content_main);
 
-            DaoSession daoSession = ((App) getApplication()).getDaoSession();
-            ipObjDao = daoSession.getIPObjDao();
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        emptyView = (TextView) findViewById(R.id.empty_view);
 
-            recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-            emptyView = (TextView) findViewById(R.id.empty_view);
+        iconPacksList = new ArrayList<>();
 
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(llm);
+        recyclerView.setNestedScrollingEnabled(false);
 
-            iconPacksList = new ArrayList<>();
+        adapter = new IconAdapter(iconPacksList, installed);
+        recyclerView.setAdapter(adapter);
 
-            LinearLayoutManager llm = new LinearLayoutManager(this);
-            recyclerView.setLayoutManager(llm);
-            recyclerView.setNestedScrollingEnabled(false);
+        mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeLayout.setOnRefreshListener(this);
 
-            adapter = new IconAdapter(iconPacksList, installed);
-            recyclerView.setAdapter(adapter);
+        loadApp(false);
+        if (BuildConfig.LICENSE) {
+            startLicenseCheck();
+        }
 
-            mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-            mSwipeLayout.setOnRefreshListener(this);
-
-            loadApp(false);
-            if (BuildConfig.LICENSE) {
-                startLicenseCheck();
-            }
-
-            filter = new IntentFilter();
-            filter.addAction("updatelist");
-            mMessageReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    String pkgName = intent.getStringExtra("pkgName");
-                    if (pkgName != null) {
-                        for (IPObj pack : iconPacksList) {
-                            if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(pkgName)) {
-                                iconPacksList.remove(pack);
-                                adapter.notifyDataSetChanged();
-                                setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
-                                return;
-                            }
-                        }
-                    }
-                }
-            };
-
-            insertFilter = new IntentFilter();
-            insertFilter.addAction("insertlist");
-            updateReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    String pkgName = intent.getStringExtra("pkgName");
-                    if (pkgName != null) {
-                        IPObj obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
-                        if (obj != null) {
-                            iconPacksList.add(obj);
+        filter = new IntentFilter();
+        filter.addAction("updatelist");
+        mMessageReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String pkgName = intent.getStringExtra("pkgName");
+                if (pkgName != null) {
+                    for (IPObj pack : iconPacksList) {
+                        if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(pkgName)) {
+                            iconPacksList.remove(pack);
                             adapter.notifyDataSetChanged();
                             setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                            return;
                         }
                     }
                 }
-            };
+            }
+        };
+        insertFilter = new IntentFilter();
+        insertFilter.addAction("insertlist");
+        updateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String pkgName = intent.getStringExtra("pkgName");
+                if (pkgName != null) {
+                    IPObj obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                    if (obj != null) {
+                        iconPacksList.add(obj);
+                        adapter.notifyDataSetChanged();
+                        setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                    }
+                }
+            }
+        };
 
-            registerReceiver(mMessageReceiver, filter);
-            registerReceiver(updateReceiver, insertFilter);
-        }
+        registerReceiver(mMessageReceiver, filter);
+        registerReceiver(updateReceiver, insertFilter);
 
 
     }
@@ -169,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             if (ipObj != null) {
                 Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
                 LauncherHelper.apply(getApplicationContext(), ipObj.getIconPkg(), currentLauncher);
+            } else {
+                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
@@ -588,19 +583,56 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
-                    if(Prefs.useFavorite(getApplicationContext())) {
+                    if (Prefs.useFavorite(getApplicationContext())) {
                         Collections.sort(iconPacksList, new Comparator<IPObj>() {
                             @Override
                             public int compare(IPObj o1, IPObj o2) {
                                 IconAttr attr1 = new Gson().fromJson(o1.getAdditional(), IconAttr.class);
                                 IconAttr attr2 = new Gson().fromJson(o2.getAdditional(), IconAttr.class);
-                                return Boolean.compare(attr2.isFavorite(),attr1.isFavorite());
+                                return Boolean.compare(attr2.isFavorite(), attr1.isFavorite());
                             }
                         });
                     }
                     adapter = new IconAdapter(iconPacksList, installed);
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
+
+                    List<ShortcutInfo> list = new ArrayList<>();
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+                        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+
+                        Intent intent;
+
+                        intent = new Intent(getApplicationContext(), RandomActivity.class);
+                        intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
+                        intent.putExtra("pack", "");
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        ShortcutInfo shortcut = new ShortcutInfo.Builder(getApplicationContext(), "card")
+                                .setShortLabel("Random")
+                                .setLongLabel("Apply Random Iconpack")
+                                .setIntent(intent)
+                                .build();
+                        list.add(shortcut);
+
+                        for (IPObj pack : iconPacksList) {
+                            if (pack != null && pack.getIconPkg() != null && new Gson().fromJson(pack.getAdditional(), IconAttr.class).isFavorite()) {
+                                intent = new Intent(getApplicationContext(), RandomActivity.class);
+                                intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.putExtra("pack", pack.getIconPkg());
+                                shortcut = new ShortcutInfo.Builder(getApplicationContext(), pack.getIconPkg())
+                                        .setShortLabel(pack.getIconName())
+                                        .setLongLabel(pack.getIconName())
+                                        .setIntent(intent)
+                                        .build();
+                                list.add(shortcut);
+
+                            }
+                        }
+                        shortcutManager.setDynamicShortcuts(list);
+                    }
                 } else {
                     recyclerView.setVisibility(View.GONE);
                     emptyView.setVisibility(View.VISIBLE);

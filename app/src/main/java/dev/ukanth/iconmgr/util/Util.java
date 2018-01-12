@@ -417,7 +417,7 @@ public class Util {
 
             NotificationCompat.Builder noti = new NotificationCompat.Builder(context)
                     .setContentTitle(context.getString(R.string.app_name))
-                    .setContentText(name+ " " + context.getString(R.string.iconinstalled))
+                    .setContentText(name + " " + context.getString(R.string.iconinstalled))
                     .setSmallIcon(R.drawable.iconpack)
                     .setContentIntent(pIntent)
                     .addAction(applyAction)
@@ -480,12 +480,12 @@ public class Util {
         try {
             if (list != null && !list.isEmpty()) {
                 Random rand = new Random();
+                rand.setSeed(list.size()+1);
                 int random = rand.nextInt(list.size());
                 return list.get(random);
             }
         } catch (IllegalArgumentException |
                 NullPointerException e)
-
         {
             Log.e("MICO", e.getMessage(), e);
         }
