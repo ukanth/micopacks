@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -247,6 +248,7 @@ public class IconPackUtil {
         }
         // Get a random back image
         Bitmap backImage = getMostAppropriateBackImage(defaultBitmap, mBackImages);
+
         int backImageWidth = backImage.getWidth();
         int backImageHeight = backImage.getHeight();
         // Create a bitmap for the result
@@ -254,7 +256,6 @@ public class IconPackUtil {
         try {
             result = Bitmap.createBitmap(backImageWidth, backImageHeight, Bitmap.Config.ARGB_8888);
         } catch (OutOfMemoryError e) {
-            e.printStackTrace();
             return null;
         }
         // Instantiate a canvas to combine the icon / background
@@ -306,7 +307,6 @@ public class IconPackUtil {
         if (mFrontImage != null) {
             canvas.drawBitmap(mFrontImage, 0, 0, mPaint);
         }
-        // Return result
         return result;
     }
 
@@ -367,21 +367,8 @@ public class IconPackUtil {
 
     public Set<Icon> processXpp(final Context mContext, final String packageName, List<Attrb> input) {
         try {
-           /* List<Bitmap> mBackImages = listMap.get("back");
-            List<Bitmap> mMaskImages = listMap.get("mask");
-            Bitmap maskImage = mMaskImages.size() > 0 ? mMaskImages.get(0) : null;
-            List<Bitmap> mFrontImages = listMap.get("front");
-            Bitmap frontImage = mFrontImages.size() > 0 ? mFrontImages.get(0) : null;
-            float mFactor = 1.0f;
-            Paint mPaint = new Paint();
-            mPaint.setAntiAlias(true);
-            mPaint.setStyle(Paint.Style.FILL);
-            mPaint.setFilterBitmap(true);
-            mPaint.setDither(true);*/
-
             ExecutorService service = Executors.newFixedThreadPool(5);
             final List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
-
             List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
             for (final Attrb attr : input) {
                 Callable<Icon> callable = new Callable<Icon>() {
@@ -442,29 +429,6 @@ public class IconPackUtil {
         return activities;
     }
 
-
-   /* public static String getOtherAppLocaleName(@NonNull Context context, @NonNull Locale locale, @NonNull String packageName) {
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            ApplicationInfo info = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-
-            Resources res = packageManager.getResourcesForApplication(packageName);
-            Context otherAppContext = context.createPackageContext(packageName, Context.CONTEXT_IGNORE_SECURITY);
-            Configuration configuration = new Configuration();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                configuration = res.getConfiguration();
-                configuration.setLocale(locale);
-                return otherAppContext.createConfigurationContext(configuration).getString(info.labelRes);
-            }
-            configuration.locale = locale;
-            res.updateConfiguration(configuration, context.getResources().getDisplayMetrics());
-            return res.getString(info.labelRes);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }*/
-
     public boolean isSupported(@NonNull Context context, String currentPackage, List<ResolveInfo> listPackages, String currentActivity) {
         for (ResolveInfo app : listPackages) {
             String activity = app.activityInfo.packageName + "/" + app.activityInfo.name;
@@ -485,15 +449,15 @@ public class IconPackUtil {
             String activity = packageName + "/" + app.activityInfo.name;
             String value = appFilter.get(activity);
             if (value == null) {
-                String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
+                String name = (String) app.activityInfo.applicationInfo.loadLabel(packageManager);
+                //String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
                 requests.add(name);
             }
         }
         return requests;
     }
 
-
-    public static Set<String> getInstalledIconPacks(Context mContext) {
+    /*public static Set<String> getInstalledIconPacks(Context mContext) {
 
         HashSet returnList = new HashSet<>();
         PackageManager pm = mContext.getPackageManager();
@@ -519,7 +483,7 @@ public class IconPackUtil {
             returnList.add(ri.activityInfo.packageName);
         }
         return returnList;
-    }
+    }*/
 
     public enum Key {
         ACTIVITY("component", "drawable"),
@@ -542,7 +506,7 @@ public class IconPackUtil {
         }
     }
 
-    private Bitmap maskImage(Bitmap original, Bitmap mask) {
+    /*private Bitmap maskImage(Bitmap original, Bitmap mask) {
         Bitmap result = Bitmap.createBitmap(mask.getWidth(), mask.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas mCanvas = new Canvas(result);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -551,15 +515,13 @@ public class IconPackUtil {
         mCanvas.drawBitmap(mask, 0, 0, paint);
         paint.setXfermode(null);
         return result;
-    }
+    }*/
 
-    public Set<Icon> getNonThemeIcons(Context context, String currentPackage) {
-        Set<Icon> icons = new HashSet<>();
+    public Set<Icon> getNonThemeIcons(Context context, String currentPackage) throws ExecutionException, InterruptedException {
         PackageManager packageManager = context.getPackageManager();
         List<ResolveInfo> listPackages = Util.getInstalledApps(context);
         HashMap<String, String> appFilter = getAppFilter(currentPackage, context, Key.ACTIVITY);
-
-        HashMap<String,List<Bitmap>> listMap = getIconsList(context, currentPackage);
+        HashMap<String, List<Bitmap>> listMap = getIconsList(context, currentPackage);
         List<Bitmap> mBackImages = listMap.get("back");
         List<Bitmap> mMaskImages = listMap.get("mask");
         Bitmap maskImage = mMaskImages.size() > 0 ? mMaskImages.get(0) : null;
@@ -572,27 +534,41 @@ public class IconPackUtil {
         mPaint.setFilterBitmap(true);
         mPaint.setDither(true);
 
+        List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
+        ExecutorService service = Executors.newFixedThreadPool(8);
+
+
         for (ResolveInfo app : listPackages) {
             String packageName = app.activityInfo.packageName;
             String activity = packageName + "/" + app.activityInfo.name;
             String value = appFilter.get(activity);
-            //not themes icons
             if (value == null) {
-                String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
-                //Drawable drawable = app.activityInfo.loadIcon(packageManager);
-                try {
-                    Drawable drawable = packageManager.getApplicationIcon(packageName);
-                    Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-                    bitmap = getResizedBitmap(bitmap, 256, 256, true);
-                    bitmap = generateBitmap(bitmap, mBackImages, mFactor, mPaint, maskImage, frontImage);
-                    //try to mask icon
-                    if (bitmap != null) {
-                        icons.add(new Icon(name, bitmap));
+                Callable<Icon> callable = () -> {
+                    String label = (String)  app.activityInfo.applicationInfo.loadLabel(packageManager);
+                    //String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
+                    try {
+                        Drawable drawable = packageManager.getApplicationIcon(packageName);
+                        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                        bitmap = getResizedBitmap(bitmap, 256, 256, true);
+                        bitmap = generateBitmap(bitmap, mBackImages, mFactor, mPaint, maskImage, frontImage);
+                        //try to mask icon
+                        if (bitmap != null) {
+                            return new Icon(label, bitmap);
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
                     }
-                } catch (PackageManager.NameNotFoundException e) {
-                }
+                    return new Icon("");
+                };
+                futures.add(service.submit(callable));
             }
         }
-        return icons;
+
+        service.shutdown();
+
+        Set<Icon> outputs = new HashSet<>();
+        for (Future<Icon> future : futures) {
+            outputs.add(future.get());
+        }
+        return outputs;
     }
 }

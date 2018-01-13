@@ -2,6 +2,15 @@
 <changelog bulletedList="false">
 
 
+
+    <changelogversion versionName="2.0.0" changeDate="">
+        <changelogtext>Feature: Add/Remove Favorite Iconpack</changelogtext>
+        <changelogtext>Feature: Favorite Iconpack will appear in shortcuts (Android 6+)</changelogtext>
+        <changelogtext>Feature: Auto backup preferences/icon database</changelogtext>
+        <changelogtext>Bugs: Fixed masking issue for different iconpacks</changelogtext>
+        <changelogtext>Bugs: Improved performance of icon preview</changelogtext>
+    </changelogversion>
+
     <changelogversion versionName="1.9.0" changeDate="">
         <changelogtext>Feature: Show name of the iconpack as notification title</changelogtext>
         <changelogtext>Feature: Long pressing icon in preview screen will save selected icon to internal storage(Storage Permission)</changelogtext>

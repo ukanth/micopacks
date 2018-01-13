@@ -476,11 +476,11 @@ public class Util {
     }
 
     public static IPObj getRandomInstalledIconPack(IPObjDao ipObjDao) {
+
         List<IPObj> list = ipObjDao.loadAll();
         try {
             if (list != null && !list.isEmpty()) {
                 Random rand = new Random();
-                rand.setSeed(list.size()+1);
                 int random = rand.nextInt(list.size());
                 return list.get(random);
             }
