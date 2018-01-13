@@ -34,8 +34,8 @@ public class IconPackManager {
     private Context mContext;
     private HashSet<String> unique;
 
-    public IconPackManager(Context c) {
-        mContext = c;
+    public IconPackManager() {
+        mContext = App.getContext();
     }
 
     public List<IPObj> updateIconPacks(IPObjDao ipObjDao, boolean forceReload, MaterialDialog dialog) {
@@ -85,13 +85,13 @@ public class IconPackManager {
                     obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
                     String name = mContext.getPackageManager().getApplicationLabel(ai).toString();
                     obj.setIconName(name);
-                    obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
+                    obj.setTotal(ip.calcTotal(obj.getIconPkg()));
                     attr.setDeleted(false);
-                    attr.setSize(Util.getApkSize(mContext, packageName));
+                    attr.setSize(Util.getApkSize(packageName));
                     obj.setAdditional(attr.toString());
                     ipObjDao.insert(obj);
-                    Util.showNotification(mContext, packageName, name);
-                    IconDetails.process(mContext, packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
+                    Util.showNotification(packageName, name);
+                    IconDetails.process(packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
                     break;
                 } catch (Exception e) {
                     Log.e("MICO", "Exception in InstallReceiver" + e.getMessage(), e);
@@ -123,10 +123,10 @@ public class IconPackManager {
                 obj.setIconType("GO");
                 obj.setInstallTime(pm.getPackageInfo(obj.getIconPkg(), 0).lastUpdateTime);
                 obj.setIconName(mContext.getPackageManager().getApplicationLabel(ai).toString());
-                obj.setTotal(ip.calcTotal(mContext, obj.getIconPkg()));
+                obj.setTotal(ip.calcTotal(obj.getIconPkg()));
                 attr.setDeleted(false);
-                obj.setMissed(ip.getMissingApps(mContext, obj.getIconPkg(), Util.getInstalledApps(mContext)).size());
-                attr.setSize(Util.getApkSize(mContext, obj.getIconPkg()));
+                obj.setMissed(ip.getMissingApps(obj.getIconPkg(), Util.getInstalledApps()).size());
+                attr.setSize(Util.getApkSize(obj.getIconPkg()));
                 obj.setAdditional(attr.toString());
                 ipObjDao.insert(obj);
                 sendIntent(pkgName);
@@ -134,8 +134,8 @@ public class IconPackManager {
                 IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
                 if (obj2.getMissed() == 0 || obj2.getAdditional() == null) {
                     attr.setDeleted(false);
-                    obj2.setMissed(ip.getMissingApps(mContext, obj2.getIconPkg(), Util.getInstalledApps(mContext)).size());
-                    attr.setSize(Util.getApkSize(mContext, obj2.getIconPkg()));
+                    obj2.setMissed(ip.getMissingApps(obj2.getIconPkg(), Util.getInstalledApps()).size());
+                    attr.setSize(Util.getApkSize(obj2.getIconPkg()));
                     obj2.setAdditional(attr.toString());
                     ipObjDao.update(obj2);
                 }

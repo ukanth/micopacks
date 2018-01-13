@@ -50,9 +50,9 @@ public class IconPackUtil {
     private Resources iconPackres = null;
 
     @NonNull
-    public int calcTotal(@NonNull Context mContext, String packageName) {
+    public int calcTotal(@NonNull String packageName) {
         Set icons = new HashSet();
-        XmlPullParser parser = getXmlParser(mContext, packageName, "drawable");
+        XmlPullParser parser = getXmlParser(packageName, "drawable");
         try {
             if (parser != null) {
                 int eventType = parser.getEventType();
@@ -68,10 +68,10 @@ public class IconPackUtil {
         return icons.size();
     }
 
-    private XmlPullParser getXmlParser(Context mContext, String packageName, String type) {
+    private XmlPullParser getXmlParser(String packageName, String type) {
         XmlPullParser parser = null;
         try {
-            PackageManager pm = mContext.getPackageManager();
+            PackageManager pm = App.getContext().getPackageManager();
             iconPackres = pm.getResourcesForApplication(packageName);
 
             int appfilter = iconPackres.getIdentifier(type, "xml", packageName);
@@ -108,14 +108,14 @@ public class IconPackUtil {
         return Bitmap.createScaledBitmap(image, bitmapWidth, bitmapHeight, filter);
     }
 
-    public Set<Icon> getIcons(Context mContext, String packageName) {
+    public Set<Icon> getIcons(String packageName) {
         Set<Icon> mBackImages = new HashSet<Icon>();
 
         Bitmap mMaskImage;
         Bitmap mFrontImage;
 
         try {
-            XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
+            XmlPullParser xpp = getXmlParser(packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("iconback")) {
@@ -157,7 +157,7 @@ public class IconPackUtil {
         List<Bitmap> mMaskImage = new ArrayList<>();
         List<Bitmap> mFrontImage = new ArrayList<>();
         try {
-            XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
+            XmlPullParser xpp = getXmlParser(packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("iconback")) {
@@ -206,13 +206,12 @@ public class IconPackUtil {
         }
     }
 
-    public Set<Icon> getListIcons(Context mContext, String packageName) {
+    public Set<Icon> getListIcons(String packageName) {
         Set<Icon> icons = new HashSet<>();
         Key key = Key.ACTIVITY;
         List<Attrb> items = new ArrayList<>();
-        //HashMap listMap = getIconsList(mContext, packageName);
         try {
-            XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
+            XmlPullParser xpp = getXmlParser(packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("item")) {
@@ -230,7 +229,7 @@ public class IconPackUtil {
                 }
                 xpp.next();
             }
-            icons = processXpp(mContext, packageName, items);
+            icons = processXpp(packageName, items);
         } catch (Exception e) {
             Log.e("MICO", e.getMessage(), e);
         }
@@ -365,22 +364,17 @@ public class IconPackUtil {
 
     }
 
-    public Set<Icon> processXpp(final Context mContext, final String packageName, List<Attrb> input) {
+    public Set<Icon> processXpp(final String packageName, List<Attrb> input) {
         try {
             ExecutorService service = Executors.newFixedThreadPool(5);
-            final List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
+            final List<ResolveInfo> listPackages = Util.getInstalledApps();
             List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
             for (final Attrb attr : input) {
                 Callable<Icon> callable = new Callable<Icon>() {
                     public Icon call() throws Exception {
-                        if (isSupported(mContext, packageName, listPackages, attr.key)) {
+                        if (isSupported(listPackages, attr.key)) {
                             Bitmap iconBitmap = loadBitmap(attr.value, packageName);
                             if (iconBitmap != null) {
-                                //iconBitmap = generateBitmap(iconBitmap, mBackImages, mFactor, mPaint, maskImage, frontImage);
-                               /* Intent intent = new Intent(mContext, IconPreviewActivity.class);
-                                intent.setAction("iconupdate");
-                                intent.putExtra("icon",new Icon(attr.value, iconBitmap));
-                                mContext.sendBroadcast(intent);*/
                                 return new Icon(attr.value, iconBitmap);
                             }
                         }
@@ -403,11 +397,11 @@ public class IconPackUtil {
     }
 
 
-    public HashMap<String, String> getAppFilter(String packageName, Context mContext, Key key) {
+    public HashMap<String, String> getAppFilter(String packageName, Key key) {
         HashMap<String, String> activities = new HashMap<>();
 
         try {
-            XmlPullParser xpp = getXmlParser(mContext, packageName, "appfilter");
+            XmlPullParser xpp = getXmlParser(packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
                 if (xpp.getEventType() == XmlPullParser.START_TAG) {
                     if (xpp.getName().equals("item")) {
@@ -429,7 +423,7 @@ public class IconPackUtil {
         return activities;
     }
 
-    public boolean isSupported(@NonNull Context context, String currentPackage, List<ResolveInfo> listPackages, String currentActivity) {
+    public boolean isSupported(List<ResolveInfo> listPackages, String currentActivity) {
         for (ResolveInfo app : listPackages) {
             String activity = app.activityInfo.packageName + "/" + app.activityInfo.name;
             if (currentActivity.equals(activity)) {
@@ -440,10 +434,10 @@ public class IconPackUtil {
     }
 
     @NonNull
-    public List<String> getMissingApps(@NonNull Context context, String currentPackage, List<ResolveInfo> listPackages) {
+    public List<String> getMissingApps(String currentPackage, List<ResolveInfo> listPackages) {
         List<String> requests = new ArrayList<>();
-        PackageManager packageManager = context.getPackageManager();
-        HashMap<String, String> appFilter = getAppFilter(currentPackage, context, Key.ACTIVITY);
+        PackageManager packageManager = App.getContext().getPackageManager();
+        HashMap<String, String> appFilter = getAppFilter(currentPackage, Key.ACTIVITY);
         for (ResolveInfo app : listPackages) {
             String packageName = app.activityInfo.packageName;
             String activity = packageName + "/" + app.activityInfo.name;
@@ -517,10 +511,11 @@ public class IconPackUtil {
         return result;
     }*/
 
-    public Set<Icon> getNonThemeIcons(Context context, String currentPackage) throws ExecutionException, InterruptedException {
+    public Set<Icon> getNonThemeIcons(String currentPackage) throws ExecutionException, InterruptedException {
+        Context context = App.getContext();
         PackageManager packageManager = context.getPackageManager();
-        List<ResolveInfo> listPackages = Util.getInstalledApps(context);
-        HashMap<String, String> appFilter = getAppFilter(currentPackage, context, Key.ACTIVITY);
+        List<ResolveInfo> listPackages = Util.getInstalledApps();
+        HashMap<String, String> appFilter = getAppFilter(currentPackage, Key.ACTIVITY);
         HashMap<String, List<Bitmap>> listMap = getIconsList(context, currentPackage);
         List<Bitmap> mBackImages = listMap.get("back");
         List<Bitmap> mMaskImages = listMap.get("mask");
@@ -544,7 +539,7 @@ public class IconPackUtil {
             String value = appFilter.get(activity);
             if (value == null) {
                 Callable<Icon> callable = () -> {
-                    String label = (String)  app.activityInfo.applicationInfo.loadLabel(packageManager);
+                    String label = (String) app.activityInfo.applicationInfo.loadLabel(packageManager);
                     //String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
                     try {
                         Drawable drawable = packageManager.getApplicationIcon(packageName);

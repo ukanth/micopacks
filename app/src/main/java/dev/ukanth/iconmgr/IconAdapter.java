@@ -70,7 +70,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                         currentItem.setAdditional(new Gson().toJson(attr).toString());
                         App app = ((App) ctx.getApplicationContext());
                         app.getDaoSession().getIPObjDao().update(currentItem);
-                        if(attr.isFavorite()) {
+                        if (attr.isFavorite()) {
                             iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
                             Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
@@ -217,18 +217,17 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
     @Override
     public void onBindViewHolder(IconPackViewHolder personViewHolder, int i) {
-        //ctx = personViewHolder.itemView.getContext();
         View currentView = personViewHolder.itemView;
         currentView.setTag(personViewHolder);
         IPObj obj = iconPacks.get(i);
-        if(Prefs.useFavorite(ctx)) {
+        if (Prefs.useFavorite()) {
             personViewHolder.iconImp.setVisibility(View.VISIBLE);
         } else {
             personViewHolder.iconImp.setVisibility(View.GONE);
         }
         personViewHolder.iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
         IconAttr attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
-        if(attr.isFavorite()) {
+        if (attr.isFavorite()) {
             personViewHolder.iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
         }
         personViewHolder.localIcon = new LocalIcon();
@@ -238,19 +237,19 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         StringBuilder builder = new StringBuilder();
         boolean isshown = false;
 
-        if (Prefs.isTotalIcons(ctx)) {
+        if (Prefs.isTotalIcons()) {
             builder.append(ctx.getString(R.string.noicons) + " " + Integer.toString(obj.getTotal()));
             isshown = true;
         }
-        if (Prefs.showSize(ctx)) {
-            if (Prefs.isTotalIcons(ctx)) {
+        if (Prefs.showSize()) {
+            if (Prefs.isTotalIcons()) {
                 builder.append(" - ");
             }
             isshown = true;
             builder.append(attr.getSize() + " MB");
         }
-        if (Prefs.showPercentage(ctx)) {
-            if (Prefs.isTotalIcons(ctx) || Prefs.showSize(ctx)) {
+        if (Prefs.showPercentage()) {
+            if (Prefs.isTotalIcons() || Prefs.showSize()) {
                 builder.append(" - ");
             }
             isshown = true;
@@ -261,8 +260,8 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             builder.append(" " + result);
         }
 
-        if (Prefs.sortBy(ctx).equals("s1")) {
-            if (Prefs.isTotalIcons(ctx) || Prefs.showSize(ctx) || Prefs.showPercentage(ctx)) {
+        if (Prefs.sortBy().equals("s1")) {
+            if (Prefs.isTotalIcons() || Prefs.showSize() || Prefs.showPercentage()) {
                 builder.append(" - ");
             }
             builder.append(" " + Util.prettyFormat(new Date(System.currentTimeMillis() - obj.getInstallTime())));

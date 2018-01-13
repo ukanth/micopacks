@@ -105,7 +105,7 @@ public final class FireReceiver extends BroadcastReceiver {
                 //String launcherName = LauncherHelper.getLauncherName(context, launcherPack);
                 switch (LauncherHelper.getLauncherId(launcherPack)) {
                     case LauncherHelper.NOVA:
-                        if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                        if (RootTools.isRootAvailable() && Prefs.useRoot()) {
                             Util.changeSharedPreferences(context, "com.teslacoilsw.launcher", "theme_icon_pack", iconName + ":GO:" + iconPackage, "com.teslacoilsw.launcher" + "_preferences.xml");
                             Util.restartLauncher(context, "com.teslacoilsw.launcher");
                         } else {
@@ -124,7 +124,7 @@ public final class FireReceiver extends BroadcastReceiver {
                         HashMap<String, String> data = new HashMap<>();
                         data.put("cur_iconpack_package", iconPackage);
                         data.put("cur_iconpack_name", iconName);
-                        if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                        if (RootTools.isRootAvailable() && Prefs.useRoot()) {
                             Util.changeSharedPreferences(context, "com.microsoft.launcher", data, "GadernSalad.xml", true);
                         } else {
                             Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
@@ -134,7 +134,7 @@ public final class FireReceiver extends BroadcastReceiver {
                         data = new HashMap<>();
                         data.put("package_name", iconPackage);
                         data.put("label", iconName);
-                        if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                        if (RootTools.isRootAvailable() && Prefs.useRoot()) {
                             Util.changeSharedPreferences(context, "is.shortcut", data, "com.voxel.simplesearchlauncher.iconpack.IconPackManager.pref.xml", true);
                         } else {
                             Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();

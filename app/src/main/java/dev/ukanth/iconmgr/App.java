@@ -1,53 +1,65 @@
-package dev.ukanth.iconmgr;
+    package dev.ukanth.iconmgr;
 
-import android.app.Application;
+    import android.app.Application;
+    import android.content.Context;
 
-import org.greenrobot.greendao.database.Database;
+    import org.greenrobot.greendao.database.Database;
 
-import dev.ukanth.iconmgr.dao.DaoMaster;
-import dev.ukanth.iconmgr.dao.DaoSession;
+    import dev.ukanth.iconmgr.dao.DaoMaster;
+    import dev.ukanth.iconmgr.dao.DaoSession;
 
-/**
- * Created by ukanth on 13/8/17.
- */
+    /**
+     * Created by ukanth on 13/8/17.
+     */
 
-public class App extends Application {
+    public class App extends Application {
 
-    private DaoSession daoSession;
-    private DaoSession daoSessionHistory;
+        private static App instance;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+        public static App getInstance() {
+            return instance;
+        }
 
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
-        Database db = helper.getWritableDb();
-        daoSession = new DaoMaster(db).newSession();
+        public static Context getContext() {
+            return instance;
+        }
 
-        DaoMaster.DevOpenHelper helper2 = new DaoMaster.DevOpenHelper(this, "history-db");
-        Database db2 = helper2.getWritableDb();
-        daoSessionHistory = new DaoMaster(db2).newSession();
-    }
+        private DaoSession daoSession;
+        private DaoSession daoSessionHistory;
 
-    public DaoSession getDaoSession() {
-        if (daoSession != null) {
-            return daoSession;
-        } else {
+        @Override
+        public void onCreate() {
+            instance = this;
+            super.onCreate();
+
             DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
             Database db = helper.getWritableDb();
             daoSession = new DaoMaster(db).newSession();
-            return daoSession;
-        }
-    }
 
-    public DaoSession getHistoryDaoSession() {
-        if (daoSessionHistory != null) {
-            return daoSessionHistory;
-        } else {
-            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "history-db");
-            Database db = helper.getWritableDb();
-            daoSessionHistory = new DaoMaster(db).newSession();
-            return daoSessionHistory;
+            DaoMaster.DevOpenHelper helper2 = new DaoMaster.DevOpenHelper(this, "history-db");
+            Database db2 = helper2.getWritableDb();
+            daoSessionHistory = new DaoMaster(db2).newSession();
+        }
+
+        public DaoSession getDaoSession() {
+            if (daoSession != null) {
+                return daoSession;
+            } else {
+                DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
+                Database db = helper.getWritableDb();
+                daoSession = new DaoMaster(db).newSession();
+                return daoSession;
+            }
+        }
+
+        public DaoSession getHistoryDaoSession() {
+            if (daoSessionHistory != null) {
+                return daoSessionHistory;
+            } else {
+                DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "history-db");
+                Database db = helper.getWritableDb();
+                daoSessionHistory = new DaoMaster(db).newSession();
+                return daoSessionHistory;
+            }
         }
     }
-}

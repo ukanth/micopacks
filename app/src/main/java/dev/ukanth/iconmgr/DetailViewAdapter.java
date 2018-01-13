@@ -49,8 +49,8 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int TYPE_CONTENT_PERCENT = 2;
     private static final int TYPE_ICON_MASK = 3;
 
-    public DetailViewAdapter(@NonNull Context activityContext, @NonNull Context context, List<Detail> homes, int orientation, @NonNull IPObj pkgName) {
-        this.mContext = context;
+    public DetailViewAdapter(@NonNull Context activityContext, List<Detail> homes, int orientation, @NonNull IPObj pkgName) {
+        this.mContext = App.getContext();
         this.activityContext = activityContext;
         this.mHomes = homes;
         this.pkgObj = pkgName;
@@ -167,7 +167,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 //refresh package
                 if (pkgObj.getMissed() == 0) {
                     final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait_normal).progress(true, 0).show();
-                    IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
+                    IconDetails.process(pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
                         @Override
                         public void processFinish(HashMap<String, List> output) {
                             plsWait.dismiss();
@@ -213,7 +213,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }, "MISSED");
                 } else {
                     final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait_normal).progress(true, 0).show();
-                    IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
+                    IconDetails.process(pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
                         @Override
                         public void processFinish(HashMap<String, List> output) {
                             if (output != null) {
@@ -245,7 +245,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                                 addNewContent(d);
 
-                                IconDetails.process(mContext, pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
+                                IconDetails.process(pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
                                     @Override
                                     public void processFinish(HashMap<String, List> output) {
                                         if (output != null) {

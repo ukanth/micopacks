@@ -61,7 +61,7 @@ public class IconPreviewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (Prefs.isDarkTheme(getApplicationContext())) {
+        if (Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
         } else {
             setTheme(R.style.AppTheme_Light);
@@ -98,12 +98,12 @@ public class IconPreviewActivity extends AppCompatActivity {
             }
         });
 
-        if (!Prefs.isFabShow(getApplicationContext())) {
+        if (!Prefs.isFabShow()) {
             fab.setVisibility(View.GONE);
         }
 
         gridLayout = (GridLayout) findViewById(R.id.iconpreview);
-        int colNumber = Prefs.getCol(getApplicationContext());
+        int colNumber = Prefs.getCol();
         gridLayout.setColumnCount(colNumber);
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int screenWidth = metrics.widthPixels;
@@ -146,9 +146,9 @@ public class IconPreviewActivity extends AppCompatActivity {
             while (!isCancelled()) {
                 try {
                     IconPackUtil packUtil = new IconPackUtil();
-                    themed_icons = packUtil.getListIcons(mContext, packageName);
-                    if (Prefs.isNonPreview(getApplicationContext())) {
-                        nonthemed_icons = packUtil.getNonThemeIcons(mContext, packageName);
+                    themed_icons = packUtil.getListIcons(packageName);
+                    if (Prefs.isNonPreview()) {
+                        nonthemed_icons = packUtil.getNonThemeIcons(packageName);
                     }
                     return true;
                 } catch (Exception e) {
@@ -177,7 +177,7 @@ public class IconPreviewActivity extends AppCompatActivity {
 
             if (themed_icons != null) {
                 List<Icon> list = new ArrayList<Icon>(themed_icons);
-                if (Prefs.isNonPreview(getApplicationContext()) && nonthemed_icons != null) {
+                if (Prefs.isNonPreview() && nonthemed_icons != null) {
                     List<Icon> listNonTheme = new ArrayList<Icon>(nonthemed_icons);
                     list.addAll(listNonTheme);
                 }

@@ -29,7 +29,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        if (Prefs.isDarkTheme(getApplicationContext())) {
+        if (Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
         } else {
             setTheme(R.style.AppTheme_Light);
@@ -44,7 +44,7 @@ public class DetailsActivity extends AppCompatActivity {
         final String pkgName = bundle.getString("pkg");
 
 
-        if (Prefs.isNotify(getApplicationContext())) {
+        if (Prefs.isNotify()) {
             NotificationManager notificationmanager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationmanager.cancel(Util.hash(pkgName));
         }
@@ -79,11 +79,11 @@ public class DetailsActivity extends AppCompatActivity {
                 LauncherHelper.apply(getApplicationContext(), pkgName, launcherPack);
             }
         });
-        if (!Prefs.isFabShow(getApplicationContext())) {
+        if (!Prefs.isFabShow()) {
             fab.setVisibility(View.GONE);
         }
 
-        DetailViewAdapter rcAdapter = new DetailViewAdapter(DetailsActivity.this, getApplicationContext(), homes, 1, pkgObj);
+        DetailViewAdapter rcAdapter = new DetailViewAdapter(DetailsActivity.this, homes, 1, pkgObj);
         recyclerView.setAdapter(rcAdapter);
     }
 

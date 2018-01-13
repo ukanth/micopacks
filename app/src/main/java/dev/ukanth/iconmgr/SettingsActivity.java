@@ -76,7 +76,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Prefs.isDarkTheme(getApplicationContext())) {
+        if (Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
         } else {
             setTheme(R.style.AppTheme_Light);

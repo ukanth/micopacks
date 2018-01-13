@@ -1,6 +1,5 @@
 package dev.ukanth.iconmgr;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -23,86 +22,86 @@ public class Prefs {
     public static final String PS = "PS";
     public static final String FAV = "show_favorites";
 
-    public static boolean isDarkTheme(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isDarkTheme() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(THEME_RES_ID, false);
     }
 
-    public static boolean useRoot(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean useRoot() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(ROOT_TASKER, true);
     }
 
-    public static boolean useFavorite(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean useFavorite() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(FAV, false);
     }
 
-    public static boolean showSize(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean showSize() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(SHOW_SIZE, false);
     }
 
 
-    public static boolean isTotalIcons(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isTotalIcons() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(TOTAL_ICONS, false);
     }
 
-    public static boolean isNonPreview(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isNonPreview() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(PREVIEW, false);
     }
 
-    public static boolean isNotify(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isNotify() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(NOTIFY, false);
     }
 
-    public static boolean isFabShow(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isFabShow() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(FAB, false);
     }
 
 
-    public static boolean isFirstTime(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isFirstTime() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(IS_FIRST_TIME, true);
     }
 
-    public static String sortBy(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static String sortBy() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getString(SORT_BY, "s0");
     }
 
-    public static void sortBy(Context context, String value) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static void sortBy(String value) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         prefs.edit().putString(SORT_BY, value).commit();
     }
 
-    public static int getCol(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static int getCol() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         String currentValue = prefs.getString(LIST_COL, "5");
         return Integer.parseInt(currentValue);
     }
 
-    public static void setFirstRun(Context context, boolean b) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static void setFirstRun(boolean b) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         prefs.edit().putBoolean(IS_FIRST_TIME, b).commit();
     }
 
-    public static void setLicensed(Context context, boolean b) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static void setLicensed(boolean b) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         prefs.edit().putBoolean(PS, b).commit();
     }
 
-    public static boolean isPS(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean isPS() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(PS, false);
     }
 
-    public static boolean showPercentage(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public static boolean showPercentage() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(SHOW_PERCENT, false);
     }
 }

@@ -35,19 +35,19 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
 
     private String type = "ALL";
 
-    public IconDetails(Context context, String packageName, AsyncResponse response, String type) {
+    public IconDetails(String packageName, AsyncResponse response, String type) {
         this.delegate = response;
-        this.mContext = context;
+        this.mContext = App.getContext();
         this.packageName = packageName;
         this.type = type;
     }
 
-    public AsyncTask process(@NonNull Context context, String packageName, AsyncResponse response, String type) {
-        return process(context, packageName, SERIAL_EXECUTOR, response, type);
+    public AsyncTask process(@NonNull String packageName, AsyncResponse response, String type) {
+        return process(packageName, SERIAL_EXECUTOR, response, type);
     }
 
-    public static AsyncTask process(@NonNull Context context, String packageName, @NonNull Executor executor, AsyncResponse response, String type) {
-        return new IconDetails(context, packageName, response, type).executeOnExecutor(executor);
+    public static AsyncTask process(@NonNull String packageName, @NonNull Executor executor, AsyncResponse response, String type) {
+        return new IconDetails(packageName, response, type).executeOnExecutor(executor);
     }
 
     @Override
@@ -58,27 +58,27 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
                 HashMap<String, List> returnData = new HashMap<>();
                 switch (type) {
                     case "MISSED":
-                        List<ResolveInfo> listPackages = Util.getInstalledApps(mContext);
-                        List<String> missPackage = ip.getMissingApps(mContext, packageName, listPackages);
+                        List<ResolveInfo> listPackages = Util.getInstalledApps();
+                        List<String> missPackage = ip.getMissingApps(packageName, listPackages);
                         returnData.put("package", missPackage);
                         returnData.put("install", listPackages);
                         break;
                     case "BITMAP":
-                        Set<Icon> icons = ip.getIcons(mContext, packageName);
+                        Set<Icon> icons = ip.getIcons( packageName);
                         List<Icon> listBitMap = new ArrayList<Icon>(icons);
                         returnData.put("bitmap", listBitMap);
                         break;
                     case "INSTALL":
-                        listPackages = Util.getInstalledApps(mContext);
+                        listPackages = Util.getInstalledApps();
                         returnData.put("install", listPackages);
                         break;
                     default:
-                        listPackages = Util.getInstalledApps(mContext);
-                        missPackage = ip.getMissingApps(mContext, packageName, listPackages);
+                        listPackages = Util.getInstalledApps();
+                        missPackage = ip.getMissingApps(packageName, listPackages);
                         returnData.put("package", missPackage);
                         returnData.put("install", listPackages);
 
-                        icons = ip.getIcons(mContext, packageName);
+                        icons = ip.getIcons(packageName);
                         listBitMap = new ArrayList<Icon>(icons);
                         returnData.put("bitmap", listBitMap);
 

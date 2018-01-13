@@ -25,8 +25,7 @@ public class InstallReceiver extends BroadcastReceiver {
                 App app = ((App) context.getApplicationContext());
                 DaoSession daoSession = app.getDaoSession();
                 IPObjDao ipObjDao = daoSession.getIPObjDao();
-                IconPackManager iconPackManager = new IconPackManager(context);
-                iconPackManager.insertIconPack(ipObjDao, packageName);
+                new IconPackManager().insertIconPack(ipObjDao, packageName);
             } catch (Exception e) {
                 Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());
             }

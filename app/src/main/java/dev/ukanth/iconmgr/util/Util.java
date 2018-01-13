@@ -44,6 +44,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import dev.ukanth.iconmgr.ActionReceiver;
+import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.DetailsActivity;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
@@ -379,9 +380,10 @@ public class Util {
     }
 
 
-    public static void showNotification(Context context, String packageName, String name) {
+    public static void showNotification(String packageName, String name) {
+        Context context = App.getContext();
 
-        if (Prefs.isNotify(context)) {
+        if (Prefs.isNotify()) {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
 
             int uid = 0;
@@ -427,9 +429,9 @@ public class Util {
     }
 
 
-    public static long getApkSize(Context context, String packageName)
+    public static long getApkSize(String packageName)
             throws PackageManager.NameNotFoundException {
-        long sizeInBytes = new File(context.getPackageManager().getApplicationInfo(
+        long sizeInBytes = new File(App.getContext().getPackageManager().getApplicationInfo(
                 packageName, 0).publicSourceDir).length();
         if (sizeInBytes > 0) {
             long sizeInMb = (sizeInBytes + 9216000) / (1024 * 1024);
@@ -458,10 +460,10 @@ public class Util {
         return ((ri.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
     }
 
-    public static List<ResolveInfo> getInstalledApps(Context context) {
+    public static List<ResolveInfo> getInstalledApps() {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        return context.getPackageManager().queryIntentActivities(
+        return App.getContext().getPackageManager().queryIntentActivities(
                 intent, PackageManager.GET_RESOLVED_FILTER);
     }
 

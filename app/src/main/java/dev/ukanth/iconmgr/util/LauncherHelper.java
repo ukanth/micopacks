@@ -306,7 +306,7 @@ public class LauncherHelper {
                     HashMap<String, String> data = new HashMap<>();
                     data.put("cur_iconpack_package", launcherPackage);
                     data.put("cur_iconpack_name", getLabel(launcherPackage, context));
-                    if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                    if (RootTools.isRootAvailable() && Prefs.useRoot()) {
                         Util.changeSharedPreferences(context, "com.microsoft.launcher", data, "GadernSalad.xml", true);
                     } else {
                         Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
@@ -458,7 +458,7 @@ public class LauncherHelper {
                     HashMap<String, String> data = new HashMap<>();
                     data.put("package_name", launcherPackage);
                     data.put("label", getLabel(launcherPackage, context));
-                    if (RootTools.isRootAvailable() && Prefs.useRoot(context)) {
+                    if (RootTools.isRootAvailable() && Prefs.useRoot()) {
                         Util.changeSharedPreferences(context, "is.shortcut", data, "com.voxel.simplesearchlauncher.iconpack.IconPackManager.pref.xml", true);
                     } else {
                         Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();

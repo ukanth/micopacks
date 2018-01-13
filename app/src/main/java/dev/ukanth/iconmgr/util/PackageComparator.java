@@ -16,16 +16,9 @@ import dev.ukanth.iconmgr.dao.IPObj;
 
 public class PackageComparator implements Comparator<IPObj> {
 
-    public PackageComparator setCtx(Context ctx) {
-        this.ctx = ctx;
-        return this;
-    }
-
-    private Context ctx;
-
     @Override
     public int compare(IPObj o1, IPObj o2) {
-        switch (Prefs.sortBy(ctx)) {
+        switch (Prefs.sortBy()) {
             case "s0":
                 return String.CASE_INSENSITIVE_ORDER.compare(o1.getIconName(), o2.getIconName());
             case "s1":

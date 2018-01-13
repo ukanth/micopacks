@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         DaoSession daoSession = ((App) getApplication()).getDaoSession();
         ipObjDao = daoSession.getIPObjDao();
 
-        if (Prefs.isDarkTheme(getApplicationContext())) {
+        if (Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
         } else {
             setTheme(R.style.AppTheme_Light);
@@ -181,14 +181,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
             String licenseKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApXY+Hz2FyJ7rgvDjNiisklEMS6o0fRtQHgPi8uDpJxhr5IrOBu0LE8utemYXZYkYU8Hx4dhFr/lcgXJf9Sg6XXMybSwq0mS/N6OFAhI6Mo9Hjaw7sKfmf/8ogyMMQ0s88qjE4A7J0Eu8I12Bw0e2zPSb3Nz/oi3Wz9G0weGf6lNAqcrGaZwxSN/5fVOjy5fafKlH52Iln0t2GSuW97yiakD2XERTeQGlpTq5Dm7Lp4Ve4SqfmFi9m9w5PKLZJgkotFPcH8VsZgqElAwM3UK0Q4+J1TvBeQxugZHI6Uc5vUJeFvPpL8lGK80Dh16Z4kMcJyJsZpjFz6aoI2VdFrNhkQIDAQAB";
 
-            if (Prefs.isFirstTime(getApplicationContext())) {
+            if (Prefs.isFirstTime()) {
                 mLicenseHelper = new LicenseHelper(this);
                 mLicenseHelper.run(licenseKey, salt, new LicenseCallbackHelper(MainActivity.this));
                 return;
             }
 
-            if (!Prefs.isPS(getApplicationContext())) {
-                if (!Prefs.isPS(getApplicationContext())) {
+            if (!Prefs.isPS()) {
+                if (!Prefs.isPS()) {
                     new MaterialDialog.Builder(MainActivity.this)
                             .title(R.string.license_check)
                             .content(getString(R.string.license_check_failed))
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                switch (Prefs.sortBy(getApplicationContext())) {
+                switch (Prefs.sortBy()) {
                     case "s0":
                         mainMenu.findItem(R.id.sort_alpha).setChecked(true);
                         break;
@@ -424,27 +424,27 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 callRandom();
                 return true;
             case R.id.sort_alpha:
-                Prefs.sortBy(getApplicationContext(), "s0");
+                Prefs.sortBy( "s0");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_lastupdate:
-                Prefs.sortBy(getApplicationContext(), "s1");
+                Prefs.sortBy( "s1");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_count:
-                Prefs.sortBy(getApplicationContext(), "s2");
+                Prefs.sortBy( "s2");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_size:
-                Prefs.sortBy(getApplicationContext(), "s3");
+                Prefs.sortBy( "s3");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_percent:
-                Prefs.sortBy(getApplicationContext(), "s4");
+                Prefs.sortBy( "s4");
                 item.setChecked(true);
                 reload();
                 return true;
@@ -454,7 +454,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void reload() {
-        Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
+        Collections.sort(iconPacksList, new PackageComparator());
         adapter = new IconAdapter(iconPacksList, installed);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -507,7 +507,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(String query) {
         List<IPObj> filteredModelList = filter(query);
 
-        Collections.sort(new ArrayList(filteredModelList), new PackageComparator().setCtx(getApplicationContext()));
+        Collections.sort(new ArrayList(filteredModelList), new PackageComparator());
 
         adapter = new IconAdapter(filteredModelList, installed);
         recyclerView.setAdapter(adapter);
@@ -550,8 +550,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                new IconPackManager(getApplicationContext()).updateIconPacks(ipObjDao, forceLoad, plsWait);
-                installed = Util.getInstalledApps(getApplicationContext()).size();
+                new IconPackManager().updateIconPacks(ipObjDao, forceLoad, plsWait);
+                installed = Util.getInstalledApps().size();
                 if (isCancelled())
                     return null;
                 return null;
@@ -582,8 +582,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
-                    Collections.sort(iconPacksList, new PackageComparator().setCtx(getApplicationContext()));
-                    if (Prefs.useFavorite(getApplicationContext())) {
+                    Collections.sort(iconPacksList, new PackageComparator());
+                    if (Prefs.useFavorite()) {
                         Collections.sort(iconPacksList, new Comparator<IPObj>() {
                             @Override
                             public int compare(IPObj o1, IPObj o2) {

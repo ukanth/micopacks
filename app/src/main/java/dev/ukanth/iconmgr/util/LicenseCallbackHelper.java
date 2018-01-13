@@ -90,11 +90,11 @@ public class LicenseCallbackHelper implements LicenseCallback {
 
     private void onLicenseChecked(LicenseHelper.Status status) {
 
-        Prefs.setFirstRun(mContext, false);
+        Prefs.setFirstRun(false);
         if (status == LicenseHelper.Status.SUCCESS) {
-            Prefs.setLicensed(mContext, true);
+            Prefs.setLicensed(true);
         } else if (status == LicenseHelper.Status.FAILED) {
-            Prefs.setLicensed(mContext, false);
+            Prefs.setLicensed(false);
             ((AppCompatActivity) mContext).finish();
         }
     }

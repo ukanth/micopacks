@@ -29,7 +29,7 @@ public class LocaleEdit extends AppCompatActivity {
 
     protected void onCreate(Bundle paramBundle) {
 
-        if(Prefs.isDarkTheme(getApplicationContext())) {
+        if(Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
         }
 
