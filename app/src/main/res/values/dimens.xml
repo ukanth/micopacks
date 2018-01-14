@@ -19,6 +19,8 @@
 
     <dimen name="icon_star">35dp</dimen>
 
+    <dimen name="ic_clear_margin">16dp</dimen>
+
 
     <dimen name="content_padding">8dp</dimen>
     <dimen name="content_padding_reverse">-8.5dp</dimen>

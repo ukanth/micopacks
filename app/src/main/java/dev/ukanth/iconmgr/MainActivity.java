@@ -13,15 +13,20 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.Menu;
@@ -151,8 +156,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         registerReceiver(mMessageReceiver, filter);
         registerReceiver(updateReceiver, insertFilter);
-
-
+        //setUpItemTouchHelper();
     }
 
     private void callRandom() {
@@ -528,6 +532,68 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
 
+    private void setUpItemTouchHelper() {
+
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            Drawable background;
+            Drawable xMark;
+            int xMarkMargin;
+            boolean initiated;
+            private void init() {
+                background = new ColorDrawable(Color.WHITE);
+                xMark = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_clear_24dp);
+                xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+                xMarkMargin = (int) MainActivity.this.getResources().getDimension(R.dimen.ic_clear_margin);
+                initiated = true;
+            }
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder)
+            {
+                int position = viewHolder.getAdapterPosition();
+                IconAdapter testAdapter = (IconAdapter) recyclerView.getAdapter();
+                return super.getSwipeDirs(recyclerView, viewHolder);
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                int swipedPosition = viewHolder.getAdapterPosition();
+                IconAdapter adapter = (IconAdapter) recyclerView.getAdapter();
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                View itemView = viewHolder.itemView;
+                if (viewHolder.getAdapterPosition() == -1) {
+                    return;
+                }
+                if (!initiated) {
+                    init();
+                }
+                background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                background.draw(c);
+
+                int itemHeight = itemView.getBottom() - itemView.getTop();
+                int intrinsicWidth = xMark.getIntrinsicWidth();
+                int intrinsicHeight = xMark.getIntrinsicWidth();
+                int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
+                int xMarkRight = itemView.getRight() - xMarkMargin;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight)/2;
+                int xMarkBottom = xMarkTop + intrinsicHeight;
+                xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
+                xMark.draw(c);
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+        };
+        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        mItemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
     public class LoadAppList extends AsyncTask<Void, Integer, Void> {
 
         Context context = null;
@@ -597,6 +663,30 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     recyclerView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
 
+
+                    /*
+
+                    new SwipeHelper(getApplicationContext(), recyclerView) {
+                        @Override
+                        public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
+                            underlayButtons.add(new SwipeHelper.UnderlayButton(
+                                    "Apply",
+                                    0,
+                                    Color.parseColor("#FF3C30"),
+                                    pos -> {
+                                    }
+                            ));
+
+                            underlayButtons.add(new SwipeHelper.UnderlayButton(
+                                    "Details",
+                                    0,
+                                    Color.parseColor("#FF9502"),
+                                    pos -> {
+                                    }
+                            ));
+                        }
+                    };
+                     */
                     List<ShortcutInfo> list = new ArrayList<>();
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
                         ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
