@@ -42,8 +42,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
 import com.google.gson.Gson;
-import com.squareup.haha.perflib.Main;
-import com.squareup.leakcanary.LeakCanary;
 
 import java.io.File;
 import java.io.FileOutputStream;
