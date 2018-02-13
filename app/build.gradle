@@ -9,8 +9,8 @@ android {
         applicationId "dev.ukanth.iconmanager"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 2000
-        versionName "2.0.0"
+        versionCode 2100
+        versionName "2.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "boolean", "PAID", "true"
         buildConfigField "boolean", "LICENSE", "false"
@@ -78,5 +78,8 @@ dependencies {
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
 
     testCompile 'junit:junit:4.12'
+
+    //debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    //releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
 }

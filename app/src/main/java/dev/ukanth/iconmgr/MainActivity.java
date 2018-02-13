@@ -18,7 +18,9 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -40,9 +42,12 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
 import com.google.gson.Gson;
+import com.squareup.haha.perflib.Main;
+import com.squareup.leakcanary.LeakCanary;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -87,6 +92,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+       /* if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(App.getInstance());*/
 
         DaoSession daoSession = ((App) getApplication()).getDaoSession();
         ipObjDao = daoSession.getIPObjDao();
@@ -153,6 +163,15 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             }
         };
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            try {
+                getApplicationContext().getPackageManager().getUserBadgedLabel("", android.os.Process.myUserHandle());
+                //above is reflection for below...
+                //UserManager.get();
+            } catch (Throwable e) {
+            }
+        }
 
         registerReceiver(mMessageReceiver, filter);
         registerReceiver(updateReceiver, insertFilter);
