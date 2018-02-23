@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
-
+    <changelogversion versionName="2.1.0" changeDate="">
+        <changelogtext>Bug: Fixed memory leak on app exit</changelogtext>
+        <changelogtext>Bug: Unable to add more than 5 favorites due to shortcut limit</changelogtext>
+        <changelogtext>Bug: Removed annoying toast when add/remove favorites</changelogtext>
+        <changelogtext>Bug: Fixed reported crashes</changelogtext>
+    </changelogversion>
 
     <changelogversion versionName="2.0.0" changeDate="">
         <changelogtext>Feature: Add/Remove Favorite Iconpack</changelogtext>

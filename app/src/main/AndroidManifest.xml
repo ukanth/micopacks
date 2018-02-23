@@ -111,6 +111,16 @@
         </receiver>
 
         <activity android:name=".RandomActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+
+        <provider
+            android:name=".GenericFileProvider"
+            android:authorities="${applicationId}.dev.ukanth.iconmgr.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
     </application>
 
 </manifest>

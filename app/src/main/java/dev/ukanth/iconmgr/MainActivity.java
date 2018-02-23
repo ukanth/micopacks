@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -181,13 +183,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
         if (currentLauncher != null) {
             if (ipObj != null) {
-                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
-                LauncherHelper.apply(getApplicationContext(), ipObj.getIconPkg(), currentLauncher);
+                Toast.makeText(MainActivity.this, getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
+                LauncherHelper.apply(MainActivity.this, ipObj.getIconPkg(), currentLauncher);
             } else {
-                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getApplicationContext().getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -278,70 +280,94 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private void shareBitmap(Bitmap src, String fileName) {
         try {
 
-            int w = src.getWidth();
-            int h = src.getHeight();
-            Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());
-            Canvas canvas = new Canvas(result);
-            canvas.drawBitmap(src, 0, 0, null);
-            Paint paint = new Paint();
-            paint.setColor(Color.YELLOW);
-            paint.setTextSize(50);
-            paint.setAntiAlias(true);
-            canvas.drawText("Micopacks", 400, 60, paint);
+            if(src != null) {
+                int w = src.getWidth();
+                int h = src.getHeight();
+                Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());
+                Canvas canvas = new Canvas(result);
+                canvas.drawBitmap(src, 0, 0, null);
+                Paint paint = new Paint();
+                paint.setColor(Color.YELLOW);
+                paint.setTextSize(50);
+                paint.setAntiAlias(true);
+                canvas.drawText("Micopacks", 400, 60, paint);
 
-            File file = new File(getCacheDir(), fileName + ".png");
-            FileOutputStream fOut = new FileOutputStream(file);
-            result.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-            fOut.flush();
-            fOut.close();
-            file.setReadable(true, false);
-            final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-            intent.setType("image/png");
-            startActivity(intent);
+                File file = new File(getExternalCacheDir(), fileName + ".png");
+                FileOutputStream fOut = new FileOutputStream(file);
+                result.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                fOut.flush();
+                fOut.close();
+                file.setReadable(true, false);
+                Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".dev.ukanth.iconmgr.provider", file);
+                //Uri fileUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getApplicationContext().getPackageName() + ".GenericFileProvider", file.getAbsoluteFile());
+                final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                String ext = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+                String type = mime.getMimeTypeFromExtension(ext);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    //Uri contentUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".dev.ukanth.iconmgr.provider", file);
+                    intent.setDataAndType(contentUri, type);
+                } else {
+                    intent.setDataAndType(Uri.fromFile(file), type);
+                }
+
+                intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                intent.setType("image/png");
+                startActivity(intent);
+            } else {
+
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.unable_screenshot), Toast.LENGTH_SHORT).show());
         }
-
     }
 
 
     public Bitmap getScreenshotFromRecyclerView(RecyclerView view) {
-        RecyclerView.Adapter adapter = view.getAdapter();
         Bitmap bigBitmap = null;
-        if (adapter != null) {
-            int size = adapter.getItemCount();
-            int height = 0;
-            Paint paint = new Paint();
-            int iHeight = 0;
-            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-            final int cacheSize = maxMemory / 8;
-            LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
-            for (int i = 0; i < size; i++) {
-                RecyclerView.ViewHolder holder = adapter.createViewHolder(view, adapter.getItemViewType(i));
-                adapter.onBindViewHolder(holder, i);
-                holder.itemView.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(), holder.itemView.getMeasuredHeight());
-                holder.itemView.setDrawingCacheEnabled(true);
-                holder.itemView.buildDrawingCache();
-                Bitmap drawingCache = holder.itemView.getDrawingCache();
-                if (drawingCache != null) {
-                    bitmaCache.put(String.valueOf(i), drawingCache);
-                }
-                height += holder.itemView.getMeasuredHeight();
-            }
-            bigBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
-            Canvas bigCanvas = new Canvas(bigBitmap);
-            bigCanvas.drawColor(Color.BLACK);
-            for (int i = 0; i < size; i++) {
-                Bitmap bitmap = bitmaCache.get(String.valueOf(i));
-                bigCanvas.drawBitmap(bitmap, 0f, iHeight, paint);
-                iHeight += bitmap.getHeight();
-                bitmap.recycle();
-            }
+        try {
 
+            RecyclerView.Adapter adapter = view.getAdapter();
+
+            if (adapter != null) {
+                int size = adapter.getItemCount();
+                int height = 0;
+                Paint paint = new Paint();
+                int iHeight = 0;
+                final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+                final int cacheSize = maxMemory / 8;
+                LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
+                for (int i = 0; i < size; i++) {
+                    RecyclerView.ViewHolder holder = adapter.createViewHolder(view, adapter.getItemViewType(i));
+                    adapter.onBindViewHolder(holder, i);
+                    holder.itemView.measure(View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                    holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(), holder.itemView.getMeasuredHeight());
+                    holder.itemView.setDrawingCacheEnabled(true);
+                    holder.itemView.buildDrawingCache();
+                    Bitmap drawingCache = holder.itemView.getDrawingCache();
+                    if (drawingCache != null) {
+                        bitmaCache.put(String.valueOf(i), drawingCache);
+                    }
+                    height += holder.itemView.getMeasuredHeight();
+                }
+                bigBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
+                Canvas bigCanvas = new Canvas(bigBitmap);
+                bigCanvas.drawColor(Color.BLACK);
+                for (int i = 0; i < size; i++) {
+                    Bitmap bitmap = bitmaCache.get(String.valueOf(i));
+                    bigCanvas.drawBitmap(bitmap, 0f, iHeight, paint);
+                    iHeight += bitmap.getHeight();
+                    bitmap.recycle();
+                }
+
+            }
+        } catch (OutOfMemoryError outOfMemoryError) {
+            runOnUiThread(() -> Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.unable_screenshot), Toast.LENGTH_SHORT).show());
         }
         return bigBitmap;
     }
@@ -445,27 +471,27 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 callRandom();
                 return true;
             case R.id.sort_alpha:
-                Prefs.sortBy( "s0");
+                Prefs.sortBy("s0");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_lastupdate:
-                Prefs.sortBy( "s1");
+                Prefs.sortBy("s1");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_count:
-                Prefs.sortBy( "s2");
+                Prefs.sortBy("s2");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_size:
-                Prefs.sortBy( "s3");
+                Prefs.sortBy("s3");
                 item.setChecked(true);
                 reload();
                 return true;
             case R.id.sort_percent:
-                Prefs.sortBy( "s4");
+                Prefs.sortBy("s4");
                 item.setChecked(true);
                 reload();
                 return true;
@@ -556,6 +582,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             Drawable xMark;
             int xMarkMargin;
             boolean initiated;
+
             private void init() {
                 background = new ColorDrawable(Color.WHITE);
                 xMark = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_clear_24dp);
@@ -563,14 +590,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 xMarkMargin = (int) MainActivity.this.getResources().getDimension(R.dimen.ic_clear_margin);
                 initiated = true;
             }
+
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
-            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder)
-            {
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 int position = viewHolder.getAdapterPosition();
                 IconAdapter testAdapter = (IconAdapter) recyclerView.getAdapter();
                 return super.getSwipeDirs(recyclerView, viewHolder);
@@ -599,7 +626,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 int intrinsicHeight = xMark.getIntrinsicWidth();
                 int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
                 int xMarkRight = itemView.getRight() - xMarkMargin;
-                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight)/2;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
                 int xMarkBottom = xMarkTop + intrinsicHeight;
                 xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
                 xMark.draw(c);

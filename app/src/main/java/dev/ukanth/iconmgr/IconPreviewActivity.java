@@ -94,7 +94,7 @@ public class IconPreviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
-                LauncherHelper.apply(getApplicationContext(), pkgName, launcherPack);
+                LauncherHelper.apply(IconPreviewActivity.this, pkgName, launcherPack);
             }
         });
 

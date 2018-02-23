@@ -28,7 +28,7 @@ public class RandomActivity extends AppCompatActivity {
         if (currentLauncher != null) {
             if (ipObj != null) {
                 Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_SHORT).show();
-                LauncherHelper.apply(getApplicationContext(), ipObj.getIconPkg(), currentLauncher);
+                LauncherHelper.apply(RandomActivity.this, ipObj.getIconPkg(), currentLauncher);
             } else {
                 Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
             }

@@ -64,11 +64,12 @@ public class DetailsActivity extends AppCompatActivity {
         IPObj pkgObj = null;
         if (ipObjDao != null) {
             pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
-
-            homes.add(new Detail(-1, String.valueOf(pkgObj.getTotal()),
-                    getResources().getString(R.string.iconCount),
-                    Detail.Type.TOTAL));
-            setTitle(pkgObj.getIconName());
+            if(pkgObj != null) {
+                homes.add(new Detail(-1, String.valueOf(pkgObj.getTotal()),
+                        getResources().getString(R.string.iconCount),
+                        Detail.Type.TOTAL));
+                setTitle(pkgObj.getIconName());
+            }
         }
 
         fab = (FloatingActionButton) findViewById(R.id.fabdetail);
@@ -76,7 +77,7 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
-                LauncherHelper.apply(getApplicationContext(), pkgName, launcherPack);
+                LauncherHelper.apply(DetailsActivity.this, pkgName, launcherPack);
             }
         });
         if (!Prefs.isFabShow()) {
