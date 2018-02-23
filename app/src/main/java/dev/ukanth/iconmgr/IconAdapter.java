@@ -72,7 +72,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                         app.getDaoSession().getIPObjDao().update(currentItem);
                         if (attr.isFavorite()) {
                             iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
-                            Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
                                 Intent intent = new Intent(ctx, RandomActivity.class);
                                 intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
@@ -83,13 +83,15 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                                         .setLongLabel(currentItem.getIconName())
                                         .setIntent(intent)
                                         .build();
-                                ctx.getSystemService(ShortcutManager.class).addDynamicShortcuts(
-                                        Arrays.asList(shortcut));
+                                ShortcutManager manager = ctx.getSystemService(ShortcutManager.class);
+                                if (manager.getDynamicShortcuts().size()  < manager.getMaxShortcutCountPerActivity()) {
+                                    manager.addDynamicShortcuts(Arrays.asList(shortcut));
+                                }
                             }
 
                         } else {
                             iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
-                            Toast.makeText(ctx, "Removed to Favorites", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(ctx, "Removed to Favorites", Toast.LENGTH_SHORT).show();
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
                                 ctx.getSystemService(ShortcutManager.class).removeDynamicShortcuts(Arrays.asList(currentItem.getIconPkg()));
                             }
@@ -98,7 +100,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                     }
                 }
             });
-            icon.setOnClickListener(new ImageView.OnClickListener() {
+            icon.setOnClickListener(new ImageView.OnClickListener()
+
+            {
                 @Override
                 public void onClick(View view) {
                     if (currentItem != null && currentItem.getIconPkg() != null) {
@@ -109,7 +113,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
                 }
             });
-            view.setOnClickListener(new View.OnClickListener() {
+            view.setOnClickListener(new View.OnClickListener()
+
+            {
                 @Override
                 public void onClick(View v) {
                     new MaterialDialog.Builder(ctx)
