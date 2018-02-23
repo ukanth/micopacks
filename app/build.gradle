@@ -12,8 +12,8 @@ android {
         versionCode 2100
         versionName "2.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField "boolean", "PAID", "true"
-        buildConfigField "boolean", "LICENSE", "false"
+        buildConfigField "boolean", "PAID", "false"
+        buildConfigField "boolean", "LICENSE", "true"
     }
 
     compileOptions {

@@ -2,6 +2,7 @@
 <changelog bulletedList="false">
 
     <changelogversion versionName="2.1.0" changeDate="">
+        <changelogtext>Bug: Share list not working on pixel2 or latest versions of android</changelogtext>
         <changelogtext>Bug: Fixed memory leak on app exit</changelogtext>
         <changelogtext>Bug: Unable to add more than 5 favorites due to shortcut limit</changelogtext>
         <changelogtext>Bug: Removed annoying toast when add/remove favorites</changelogtext>
