@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'com.google.gms.google-services'
 
 
 android {
@@ -9,10 +10,10 @@ android {
         applicationId "dev.ukanth.iconmanager"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 2100
-        versionName "2.1.0"
+        versionCode 2200
+        versionName "2.2.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField "boolean", "PAID", "false"
+        buildConfigField "boolean", "PAID", "true"
         buildConfigField "boolean", "LICENSE", "true"
     }
 
@@ -52,6 +53,8 @@ dependencies {
     compile 'com.android.support:palette-v7:27.0.0'
 
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
+
+    compile 'com.google.firebase:firebase-core:11.8.0'
 
     //root library
     compile 'eu.chainfire:libsuperuser:1.0.0.201602271131'
