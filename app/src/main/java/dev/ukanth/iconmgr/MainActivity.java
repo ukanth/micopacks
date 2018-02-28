@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
 
             }
-        } catch (OutOfMemoryError outOfMemoryError) {
+        } catch (OutOfMemoryError | IllegalArgumentException outOfMemoryError) {
             runOnUiThread(() -> Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.unable_screenshot), Toast.LENGTH_SHORT).show());
         }
         return bigBitmap;
