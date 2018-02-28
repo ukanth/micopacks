@@ -54,6 +54,8 @@
                 android:id="@+id/icon_star"
                 android:layout_width="@dimen/icon_star"
                 android:layout_height="@dimen/icon_star"
+                android:layout_centerInParent="true"
+                android:scaleType="fitStart"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:tint="@color/icon_tint_normal" />
