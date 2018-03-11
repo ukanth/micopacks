@@ -245,8 +245,15 @@ public class IconPackUtil {
         if (mBackImages.size() == 0) {
             return defaultBitmap;
         }
+
         // Get a random back image
         Bitmap backImage = getMostAppropriateBackImage(defaultBitmap, mBackImages);
+
+        Bitmap emptyBitmap = Bitmap.createBitmap(backImage.getWidth(), backImage.getHeight(), backImage.getConfig());
+        if (backImage.sameAs(emptyBitmap)) {
+            mFactor = 1.0f;
+        }
+
 
         int backImageWidth = backImage.getWidth();
         int backImageHeight = backImage.getHeight();
@@ -268,6 +275,8 @@ public class IconPackUtil {
                 defaultBitmap.getWidth(),
                 defaultBitmap.getHeight()
         );
+
+
         float scaledWidth = mFactor * ((float) backImageWidth);
         float scaledHeight = mFactor * ((float) backImageHeight);
         RectF destRect = new RectF(
@@ -303,7 +312,7 @@ public class IconPackUtil {
             );
         }
         // Draw the front image
-        if (mFrontImage != null) {
+        if (mFrontImage != null ) {
             canvas.drawBitmap(mFrontImage, 0, 0, mPaint);
         }
         return result;
@@ -370,16 +379,14 @@ public class IconPackUtil {
             final List<ResolveInfo> listPackages = Util.getInstalledApps();
             List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
             for (final Attrb attr : input) {
-                Callable<Icon> callable = new Callable<Icon>() {
-                    public Icon call() throws Exception {
-                        if (isSupported(listPackages, attr.key)) {
-                            Bitmap iconBitmap = loadBitmap(attr.value, packageName);
-                            if (iconBitmap != null) {
-                                return new Icon(attr.value, iconBitmap);
-                            }
+                Callable<Icon> callable = () -> {
+                    if (isSupported(listPackages, attr.key)) {
+                        Bitmap iconBitmap = loadBitmap(attr.value, packageName);
+                        if (iconBitmap != null) {
+                            return new Icon(attr.value, iconBitmap);
                         }
-                        return new Icon("");
                     }
+                    return new Icon("");
                 };
                 futures.add(service.submit(callable));
             }
@@ -522,7 +529,7 @@ public class IconPackUtil {
         Bitmap maskImage = mMaskImages.size() > 0 ? mMaskImages.get(0) : null;
         List<Bitmap> mFrontImages = listMap.get("front");
         Bitmap frontImage = mFrontImages.size() > 0 ? mFrontImages.get(0) : null;
-        float mFactor = 1.0f;
+        float mFactor = 0.6f;
         Paint mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
@@ -540,7 +547,6 @@ public class IconPackUtil {
             if (value == null) {
                 Callable<Icon> callable = () -> {
                     String label = (String) app.activityInfo.applicationInfo.loadLabel(packageManager);
-                    //String name = app.activityInfo.applicationInfo.loadLabel(packageManager).toString();
                     try {
                         Drawable drawable = packageManager.getApplicationIcon(packageName);
                         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();

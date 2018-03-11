@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
+
+
+    <changelogversion versionName="2.2.0" changeDate="">
+        <changelogtext>New improved way of previewing icons(it was a bug, but lets call it feature)</changelogtext>
+        <changelogtext>Minor UI adjustments</changelogtext>
+        <changelogtext>Bug: More possible memory leaks</changelogtext>
+        <changelogtext>Bug: Fixed reported crashes</changelogtext>
+    </changelogversion>
+
+
     <changelogversion versionName="2.1.0" changeDate="">
         <changelogtext>Bug: Share list not working on pixel2 or latest versions of android</changelogtext>
         <changelogtext>Bug: Fixed memory leak on app exit</changelogtext>

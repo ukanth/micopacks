@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
 
 
 android {
@@ -36,11 +36,11 @@ greendao {
 
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+  /*  compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
+*/
     compile 'com.android.support:appcompat-v7:27.0.0'
     compile 'com.android.support:cardview-v7:27.0.0'
     compile 'com.android.support:recyclerview-v7:27.0.0'
@@ -53,8 +53,6 @@ dependencies {
     compile 'com.android.support:palette-v7:27.0.0'
 
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
-
-    compile 'com.google.firebase:firebase-core:11.8.0'
 
     //root library
     compile 'eu.chainfire:libsuperuser:1.0.0.201602271131'
@@ -79,8 +77,6 @@ dependencies {
 
     //prettytime
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
-
-    testCompile 'junit:junit:4.12'
 
     //debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     //releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'

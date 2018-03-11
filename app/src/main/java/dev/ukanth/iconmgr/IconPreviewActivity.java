@@ -182,18 +182,14 @@ public class IconPreviewActivity extends AppCompatActivity {
                     list.addAll(listNonTheme);
                 }
                 if (list != null && list.size() > 0) {
-                    Collections.sort(list, new Comparator<Icon>() {
-                        public int compare(Icon o1, Icon o2) {
-                            return String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle());
-                        }
-                    });
+                    Collections.sort(list, (o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getTitle(), o2.getTitle()));
 
                     for (final Icon icon : list) {
                         if (icon.getIconBitmap() != null) {
                             ImageView image = new ImageView(mContext);
                             image.setLayoutParams(params);
                             image.setPadding(15, 15, 15, 15);
-                            image.setScaleType(ImageView.ScaleType.FIT_XY);
+                            image.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
                             image.setOnClickListener(new ImageView.OnClickListener() {
                                 @Override
