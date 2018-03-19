@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -21,7 +22,7 @@ import dev.ukanth.iconmgr.util.Util;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private StaggeredGridLayoutManager staggeredGridLayoutManager;
+    private GridLayoutManager gridLayoutManager;
 
     private FloatingActionButton fab;
 
@@ -52,9 +53,25 @@ public class DetailsActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_details);
         recyclerView.setHasFixedSize(true);
 
-        staggeredGridLayoutManager = new StaggeredGridLayoutManager(2,
-                StaggeredGridLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(staggeredGridLayoutManager);
+        gridLayoutManager = new GridLayoutManager(getApplicationContext(),2);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                //define span size for this position
+                //some example for your first three items
+                if(position == 1) {
+                    return 1; //item will take 1/3 space of row
+                } else if(position == 2) {
+                    return 1; //you will have 2/3 space of row
+                } else if(position == 3) {
+                    return 2; //you will have full row size item
+                } else {
+                    return 2;
+                }
+            }
+        });
+
+        recyclerView.setLayoutManager(gridLayoutManager);
 
         List<Detail> homes = new ArrayList<>();
 

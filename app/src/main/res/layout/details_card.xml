@@ -26,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawablePadding="@dimen/button_margin"
-            android:gravity="center_vertical"
+            android:gravity="center"
+            android:layout_gravity="center"
             android:text="@string/icon_progress"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/text_content_title" />

@@ -85,7 +85,7 @@
 
     <string name="iconCount">Total Icons</string>
 
-    <string name="iconPercent">Installed icons supported !</string>
+    <string name="iconPercent">Covered</string>
     <string name="iconinstalled"> Iconpack installed/updated</string>
     <string name="iconMask">Preview of Iconmask</string>
     <string name="enable_fab_button">Show Apply Button</string>

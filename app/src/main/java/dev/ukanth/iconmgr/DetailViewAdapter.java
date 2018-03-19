@@ -10,8 +10,9 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -91,9 +92,9 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         try {
             if (holder.itemView != null) {
-                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams)
+                GridLayoutManager.LayoutParams layoutParams = (GridLayoutManager.LayoutParams)
                         holder.itemView.getLayoutParams();
-                layoutParams.setFullSpan(isFullSpan(holder.getItemViewType()));
+                //layoutParams.setFullSpan(isFullSpan(holder.getItemViewType()));
             }
         } catch (Exception e) {
         }
@@ -311,7 +312,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             CardView card = (CardView) itemView.findViewById(R.id.content_card);
             card.setUseCompatPadding(false);
             int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
-            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
+            GridLayoutManager.LayoutParams params = (GridLayoutManager.LayoutParams) card.getLayoutParams();
             params.setMargins(0, 0, margin, margin);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 params.setMarginEnd(margin);
@@ -332,7 +333,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             CardView card = (CardView) itemView.findViewById(R.id.iconview_card);
             card.setUseCompatPadding(false);
             int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
-            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
+            GridLayoutManager.LayoutParams params = (GridLayoutManager.LayoutParams) card.getLayoutParams();
             params.setMargins(0, 0, margin, margin);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 params.setMarginEnd(margin);
@@ -357,7 +358,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             CardView card = (CardView) itemView.findViewById(R.id.card);
             card.setUseCompatPadding(false);
             int margin = mContext.getResources().getDimensionPixelSize(R.dimen.card_margin);
-            StaggeredGridLayoutManager.LayoutParams params = (StaggeredGridLayoutManager.LayoutParams) card.getLayoutParams();
+            GridLayoutManager.LayoutParams params = (GridLayoutManager.LayoutParams) card.getLayoutParams();
             params.setMargins(0, 0, margin, margin);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {

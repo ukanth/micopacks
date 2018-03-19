@@ -24,7 +24,7 @@
 
     <dimen name="content_padding">8dp</dimen>
     <dimen name="content_padding_reverse">-8.5dp</dimen>
-    <dimen name="content_margin">16dp</dimen>
+    <dimen name="content_margin">14dp</dimen>
     <dimen name="content_margin_title">24dp</dimen>
 
     <dimen name="content_divider_size">1dp</dimen>
@@ -86,7 +86,7 @@
     <dimen name="icon_size_tiny">12dp</dimen>
 
     <!-- Text -->
-    <dimen name="text_max_size">56sp</dimen>
+    <dimen name="text_max_size">46sp</dimen>
     <dimen name="text_title">24sp</dimen>
     <dimen name="text_content_header">18sp</dimen>
     <dimen name="text_content_title">16sp</dimen>

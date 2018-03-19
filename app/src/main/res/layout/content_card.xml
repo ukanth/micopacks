@@ -22,22 +22,23 @@
         android:padding="@dimen/content_margin">
 
         <TextView
-            android:id="@+id/title_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawablePadding="@dimen/button_margin"
-            android:gravity="center_vertical"
-            android:textColor="?android:attr/textColorPrimary"
-            android:textSize="@dimen/text_max_size" />
-
-        <TextView
             android:id="@+id/subtitle_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:gravity="center"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/text_content"
             android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/title_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawablePadding="@dimen/button_margin"
+            android:gravity="center"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="@dimen/text_max_size" />
 
     </LinearLayout>
 

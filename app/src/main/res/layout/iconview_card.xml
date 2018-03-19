@@ -27,6 +27,7 @@
             android:id="@+id/subtitle_content_mask"
             android:layout_width="match_parent"
             android:padding="2dp"
+            android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/text_content" />

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
+    <changelogversion versionName="2.3.0" changeDate="">
+        <changelogtext>launcher Icon - Adaptive </changelogtext>
+    </changelogversion>
 
 
     <changelogversion versionName="2.2.0" changeDate="">
