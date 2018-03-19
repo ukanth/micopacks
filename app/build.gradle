@@ -10,8 +10,8 @@ android {
         applicationId "dev.ukanth.iconmanager"
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 2200
-        versionName "2.2.0"
+        versionCode 2300
+        versionName "2.3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "boolean", "PAID", "true"
         buildConfigField "boolean", "LICENSE", "true"
