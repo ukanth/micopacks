@@ -105,11 +105,11 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 int finalPosition = position - 1;
                 contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
 
-                if (!BuildConfig.PAID) {
+               /* if (!BuildConfig.FULLFEATURE) {
                     float radius = contentViewHolder.autoFitTitle.getTextSize() / 3;
                     BlurMaskFilter filter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
                     contentViewHolder.autoFitTitle.getPaint().setMaskFilter(filter);
-                }
+                }*/
 
                 if (mHomes.get(finalPosition).getSubtitle().length() > 0) {
                     contentViewHolder.subtitle.setText(mHomes.get(finalPosition).getSubtitle());
@@ -122,11 +122,11 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
 
-                if (!BuildConfig.PAID) {
+                /*if (!BuildConfig.FULLFEATURE) {
                     float radius = contentViewHolder.autoFitTitle.getTextSize() / 3;
                     BlurMaskFilter filter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);
                     contentViewHolder.autoFitTitle.getPaint().setMaskFilter(filter);
-                }
+                }*/
 
                 if (mHomes.get(finalPosition).getSubtitle().length() > 0) {
                     contentViewHolder.subtitle.setText(mHomes.get(finalPosition).getSubtitle());
@@ -166,7 +166,7 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             case TYPE_ICON_REQUEST: {
                 final IconRequestViewHolder iconRequestViewHolder = (IconRequestViewHolder) holder;
                 //refresh package
-                if (pkgObj.getMissed() == 0) {
+                if (pkgObj != null && pkgObj.getMissed() == 0) {
                     final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait_normal).progress(true, 0).show();
                     IconDetails.process(pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
                         @Override

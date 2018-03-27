@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mSwipeLayout.setOnRefreshListener(this);
 
         loadApp(false);
-        if (BuildConfig.LICENSE) {
+        if (BuildConfig.LICENSECHECK) {
             startLicenseCheck();
         }
 
@@ -232,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         } catch (Exception e) {
             Log.e("MICO", e.getMessage(), e);
             Toast.makeText(getApplicationContext(), "Unable to validate license", Toast.LENGTH_LONG);
+            finish();
         }
     }
 
@@ -280,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private void shareBitmap(Bitmap src, String fileName) {
         try {
 
-            if(src != null) {
+            if (src != null) {
                 int w = src.getWidth();
                 int h = src.getHeight();
                 Bitmap result = Bitmap.createBitmap(w, h, src.getConfig());

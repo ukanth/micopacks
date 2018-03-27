@@ -2,7 +2,11 @@
 <changelog bulletedList="false">
 
     <changelogversion versionName="2.3.0" changeDate="">
-        <changelogtext>launcher Icon - Adaptive </changelogtext>
+        <changelogtext>Compact statistics screen</changelogtext>
+        <changelogtext>Minor UI enhancements</changelogtext>
+        <changelogtext>Adaptive icons for micopacks</changelogtext>
+        <changelogtext>Updated support libraries</changelogtext>
+        <changelogtext>User reported crash fixes</changelogtext>
     </changelogversion>
 
 

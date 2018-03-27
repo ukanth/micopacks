@@ -147,12 +147,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
 
-            if (!BuildConfig.PAID) {
+            /*if (!BuildConfig.PAID) {
                 getPreferenceScreen().findPreference("dark_theme").setEnabled(false);
                 getPreferenceScreen().findPreference("dark_theme").setTitle(getString(R.string.use_dark_paid));
                 getPreferenceScreen().findPreference("notify_install").setEnabled(false);
                 getPreferenceScreen().findPreference("notify_install").setTitle(getString(R.string.show_notification_paid));
-            }
+            }*/
             setHasOptionsMenu(true);
         }
 
