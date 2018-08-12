@@ -121,12 +121,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                     new MaterialDialog.Builder(ctx)
                             .title(ctx.getString(R.string.title) + " " + currentItem.getIconName())
                             .items(R.array.items)
-                            .itemsCallback(new MaterialDialog.ListCallback() {
-                                @Override
-                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                    performAction(which, currentItem);
-                                }
-                            })
+                            .itemsCallback((dialog, view1, which, text) -> performAction(which, currentItem))
                             .show();
                 }
             });
@@ -140,19 +135,28 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 determineApply(ctx, currentItem);
                 break;
             case 1:
-                stats(ctx, currentItem);
+                preview(ctx, currentItem);
                 break;
             case 2:
-                openPlay(ctx, currentItem);
+                stats(ctx, currentItem);
                 break;
             case 3:
-                openApp(ctx, currentItem);
+                openPlay(ctx, currentItem);
                 break;
             case 4:
+                openApp(ctx, currentItem);
+                break;
+            case 5:
                 uninstall(ctx, currentItem);
                 break;
 
         }
+    }
+
+    private void preview(Context ctx, IPObj currentItem) {
+        Intent intent = new Intent(ctx, IconPreviewActivity.class);
+        intent.putExtra("pkg", currentItem.getIconPkg());
+        ctx.startActivity(intent);
     }
 
     private void stats(Context ctx, IPObj currentItem) {

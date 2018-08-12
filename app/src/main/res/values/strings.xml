@@ -110,7 +110,7 @@
     <string name="generating">Generating image, please wait ...</string>
     <string name="random_shortcut_short_label1">Random</string>
     <string name="random_shortcut_long_label1">Apply random iconpack</string>
-    <string name="show_favs">Use Favorites</string>
+    <string name="show_favs">Enable Favorites</string>
     <string name="unable_iconpack">No iconpack found</string>
     <string name="unable_screenshot">Sorry! Unable to create screenshot</string>
 </resources>

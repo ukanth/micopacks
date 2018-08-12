@@ -17,9 +17,7 @@ import static dev.ukanth.iconmgr.util.Util.getCurrentLauncher;
  * Created by ukanth on 16/8/17.
  */
 
-public class ActionReceiver extends BroadcastReceiver {
-    public static final String APPLY_ACTION = "APPLY_ACTION";
-    public static final String PREVIEW_ACTION = "PREVIEW_ACTION";
+public class PreviewActionReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -27,16 +25,7 @@ public class ActionReceiver extends BroadcastReceiver {
         Bundle bundle = intent.getExtras();
         String pkgName = bundle.getString("pkg");
 
-        if (APPLY_ACTION.equals(action)) {
-            NotificationManager notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-            cancelNotification(context, notificationmanager,pkgName);
-            String currentLauncher = getCurrentLauncher(context);
-            if (currentLauncher != null) {
-                LauncherHelper.apply(context, pkgName, currentLauncher);
-            } else {
-                Toast.makeText(context, context.getString(R.string.nodefault), Toast.LENGTH_LONG).show();
-            }
-        } else if (PREVIEW_ACTION.equals(action)) {
+       if ("dev.ukanth.iconmgr.PREVIEW_ACTION".equals(action)) {
             NotificationManager notificationmanager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
             cancelNotification(context, notificationmanager,pkgName);
             Intent previewIntent = new Intent(context, IconPreviewActivity.class);

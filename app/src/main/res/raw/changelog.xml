@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <changelog bulletedList="false">
 
+    <changelogversion versionName="2.4.0" changeDate="">
+        <changelogtext>Support for Oreo and Pie</changelogtext>
+        <changelogtext>Fixed Icon Preview missing icons</changelogtext>
+        <changelogtext>Added preview in menu</changelogtext>
+        <changelogtext>Support for Nova launcher Beta</changelogtext>
+        <changelogtext>Added Flick Launcher Support</changelogtext>
+        <changelogtext>Updated support libraries</changelogtext>
+    </changelogversion>
+
     <changelogversion versionName="2.3.0" changeDate="">
         <changelogtext>Compact statistics screen</changelogtext>
         <changelogtext>Minor UI enhancements</changelogtext>

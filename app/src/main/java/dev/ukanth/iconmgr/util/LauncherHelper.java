@@ -9,6 +9,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -55,6 +56,7 @@ public class LauncherHelper {
     // public static final int HOLO = 8;
     //public static final int HOLOHD = 9;
     //public static final int LGHOME = 10;
+    private static final int LAWNCHAIR = 10;
     //public static final int LGHOME3 = 11;
     public static final int LUCID = 12;
     // public static final int MINI = 13;
@@ -70,6 +72,8 @@ public class LauncherHelper {
     public static final int ABC = 23;
     public static final int EVIE = 24;
     public static final int ARROW = 25;
+    public static final int FLICK = 26;
+    public static final int PIXEL = 27;
 
     public static int getLauncherId(String packageName) {
         if (packageName == null) return UNKNOWN;
@@ -99,6 +103,12 @@ public class LauncherHelper {
                return LGHOME;
             case "com.lge.launcher3":
                return LGHOME3;*/
+
+            case "ch.deletescape.lawnchair":
+            case "ch.deletescape.lawnchair.plah":
+            case "ch.deletescape.lawnchair.ci":
+                return LAWNCHAIR;
+
             case "com.powerpoint45.launcher":
                 return LUCID;
             /*case "com.jiubang.go.mini.launcher":
@@ -131,6 +141,10 @@ public class LauncherHelper {
                 return EVIE;
             case "com.microsoft.launcher":
                 return ARROW;
+            case "com.universallauncher.universallauncher":
+                return FLICK;
+            case "com.google.android.apps.nexuslauncher":
+                return PIXEL;
             default:
                 return UNKNOWN;
         }
@@ -355,6 +369,15 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
+            case LAWNCHAIR:
+                try {
+                    final Intent lawnchair = new Intent("ch.deletescape.lawnchair.APPLY_ICONS", null);
+                    lawnchair.putExtra("packageName", context.getPackageName());
+                    context.startActivity(lawnchair);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, "ch.deletescape.lawnchair.plah", launcherName);
+                }
             case NOUGAT:
                 try {
                     /*
@@ -463,6 +486,31 @@ public class LauncherHelper {
                     } else {
                         Toast.makeText(context, context.getString(R.string.onlysupportedroot), Toast.LENGTH_SHORT).show();
                     }
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+            case FLICK:
+                //Todo: fix direct apply for flick launcher
+                try {
+                    final Intent flick = context.getPackageManager().getLaunchIntentForPackage(
+                            "com.universallauncher.universallauncher");
+                    final Intent flickAction = new Intent("com.android.launcher3.FLICK_ICON_PACK_APPLIER");
+                    flickAction.putExtra("com.android.launcher3.extra.ICON_THEME_PACKAGE", context.getPackageName());
+                    flick.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.sendBroadcast(flickAction);
+                    context.startActivity(flick);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+            case PIXEL:
+                try {
+                    final Intent pixelAction = new Intent("com.android.launcher3.FLICK_ICON_PACK_APPLIER");
+                    pixelAction.putExtra("com.android.launcher3.extra.ICON_THEME_PACKAGE", context.getPackageName());
+                    context.sendBroadcast(pixelAction);
+                    ((AppCompatActivity) context).finish();
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }

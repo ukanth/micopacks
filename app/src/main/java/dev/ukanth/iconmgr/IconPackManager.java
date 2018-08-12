@@ -74,6 +74,10 @@ public class IconPackManager {
         List<ResolveInfo> rinfo = pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA);
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
+        rinfo.addAll(pm.queryIntentActivities(new Intent("com.teslacoilsw.launcher.THEME"), PackageManager.GET_META_DATA));
+        rinfo.addAll(pm.queryIntentActivities(new Intent("com.anddoes.launcher.THEME"), PackageManager.GET_META_DATA));
+        rinfo.addAll(pm.queryIntentActivities(new Intent("com.fede.launcher.THEME_ICONPACK"), PackageManager.GET_META_DATA));
+
         for (ResolveInfo ri : rinfo) {
             if (ri.activityInfo.packageName.equals(packageName)) {
                 IPObj obj = new IPObj();

@@ -1,5 +1,6 @@
 package dev.ukanth.iconmgr.util;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,32 +23,21 @@ import com.stericson.roottools.RootTools;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.TimeUnit;
 import org.ocpsoft.prettytime.units.JustNow;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import dev.ukanth.iconmgr.ActionReceiver;
+import dev.ukanth.iconmgr.ApplyActionReceiver;
 import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.DetailsActivity;
 import dev.ukanth.iconmgr.Prefs;
+import dev.ukanth.iconmgr.PreviewActionReceiver;
 import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
@@ -382,9 +373,20 @@ public class Util {
 
     public static void showNotification(String packageName, String name) {
         Context context = App.getContext();
+        String CHANNEL_ID = "my_channel_01";
 
         if (Prefs.isNotify()) {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                /* Create or update. */
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                        "New Icon pack",
+                        NotificationManager.IMPORTANCE_HIGH);
+                channel.setDescription("Micopacks");
+                channel.setShowBadge(true);
+                notificationManager.createNotificationChannel(channel);
+            }
 
             int uid = 0;
             try {
@@ -397,17 +399,17 @@ public class Util {
             PendingIntent pIntent = PendingIntent.getActivity(context, uid, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-            Intent applyReceive = new Intent();
+            Intent applyReceive = new Intent("dev.ukanth.iconmgr.APPLY_ACTION");
             applyReceive.putExtra("pkg", packageName);
             applyReceive.putExtra(Intent.EXTRA_TITLE, packageName);
-            applyReceive.setAction(ActionReceiver.APPLY_ACTION);
+            applyReceive.setClass(context, ApplyActionReceiver.class);
             PendingIntent applyIntentYes = PendingIntent.getBroadcast(context, uid, applyReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
-            Intent previewReceive = new Intent();
+            Intent previewReceive = new Intent("dev.ukanth.iconmgr.PREVIEW_ACTION");
             previewReceive.putExtra("pkg", packageName);
             previewReceive.putExtra(Intent.EXTRA_TITLE, packageName);
-            previewReceive.setAction(ActionReceiver.PREVIEW_ACTION);
+            previewReceive.setClass(context, PreviewActionReceiver.class);
             PendingIntent previewIntent = PendingIntent.getBroadcast(context, uid, previewReceive, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
@@ -417,14 +419,15 @@ public class Util {
             NotificationCompat.Action previewAction =
                     new NotificationCompat.Action.Builder(R.drawable.ic_preview, "Preview", previewIntent).build();
 
-            NotificationCompat.Builder noti = new NotificationCompat.Builder(context)
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context,"default")
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(name + " " + context.getString(R.string.iconinstalled))
                     .setSmallIcon(R.drawable.iconpack)
                     .setContentIntent(pIntent)
+                    .setChannelId(CHANNEL_ID)
                     .addAction(applyAction)
                     .addAction(previewAction);
-            notificationManager.notify(hash(packageName), noti.build());
+            notificationManager.notify(hash(packageName), mBuilder.build());
         }
     }
 

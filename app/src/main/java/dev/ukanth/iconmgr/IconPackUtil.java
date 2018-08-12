@@ -47,6 +47,7 @@ import dev.ukanth.iconmgr.util.Util;
  */
 
 public class IconPackUtil {
+    private static final String TAG = "MicoPacks";
     private Resources iconPackres = null;
 
     @NonNull
@@ -236,8 +237,18 @@ public class IconPackUtil {
         return icons;
     }
 
-    private Bitmap generateBitmap(Bitmap defaultBitmap, List mBackImages, float mFactor, Paint mPaint, Bitmap mMaskImage, Bitmap mFrontImage) {
+    private Bitmap generateBitmap(Bitmap defaultBitmap, List mBackImages, Paint mPaint, Bitmap mMaskImage, Bitmap mFrontImage,  String packageName) {
         // No need to go through below process id defaultBitmap is null
+
+        Log.d(TAG, "-------- " + packageName + " -----------");
+
+        if(packageName.equals("com.act.mobile.apps")) {
+            // we need to check now
+            Log.e(TAG, packageName);
+        }
+
+        float mFactor = 0.8f;
+
         if (defaultBitmap == null) {
             return null;
         }
@@ -249,14 +260,17 @@ public class IconPackUtil {
         // Get a random back image
         Bitmap backImage = getMostAppropriateBackImage(defaultBitmap, mBackImages);
 
-        Bitmap emptyBitmap = Bitmap.createBitmap(backImage.getWidth(), backImage.getHeight(), backImage.getConfig());
+        /*Bitmap emptyBitmap = Bitmap.createBitmap(backImage.getWidth(), backImage.getHeight(), backImage.getConfig());
+
         if (backImage.sameAs(emptyBitmap)) {
             mFactor = 1.0f;
-        }
+        }*/
 
 
         int backImageWidth = backImage.getWidth();
         int backImageHeight = backImage.getHeight();
+
+
         // Create a bitmap for the result
         Bitmap result;
         try {
@@ -264,10 +278,10 @@ public class IconPackUtil {
         } catch (OutOfMemoryError e) {
             return null;
         }
-        // Instantiate a canvas to combine the icon / background
+        // Instantiate a canvas to combinecanvas the icon / background
         Canvas canvas = new Canvas(result);
         // Draw the background first
-        canvas.drawBitmap(backImage, 0, 0, null);
+        canvas.drawBitmap(backImage, 0, 0, mPaint);
         // Create rects for scaling the default bitmap
         Rect srcRect = new Rect(
                 0,
@@ -279,12 +293,15 @@ public class IconPackUtil {
 
         float scaledWidth = mFactor * ((float) backImageWidth);
         float scaledHeight = mFactor * ((float) backImageHeight);
-        RectF destRect = new RectF(
-                ((float) backImageWidth) / 2.0f - scaledWidth / 2.0f,
-                ((float) backImageHeight) / 2.0f - scaledHeight / 2.0f,
-                ((float) backImageWidth) / 2.0f + scaledWidth / 2.0f,
-                ((float) backImageHeight) / 2.0f + scaledHeight / 2.0f
-        );
+
+        float left = ((float) backImageWidth) / 2.0f - scaledWidth / 2.0f;
+        float top = ((float) backImageHeight) / 2.0f - scaledHeight / 2.0f;
+
+        float right = ((float) backImageWidth) / 2.0f + scaledWidth / 2.0f;
+        float bottom = ((float) backImageHeight) / 2.0f + scaledHeight / 2.0f;
+
+        RectF destRect = new RectF(left, top, right, bottom);
+
         // Handle mask image
         if (mMaskImage != null) {
             // First get mask bitmap
@@ -292,7 +309,7 @@ public class IconPackUtil {
             try {
                 mask = Bitmap.createBitmap(backImageWidth, backImageHeight, Bitmap.Config.ARGB_8888);
             } catch (OutOfMemoryError e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 return null;
             }
             // Make a temp mask canvas
@@ -307,12 +324,10 @@ public class IconPackUtil {
             canvas.drawBitmap(mask, 0, 0, mPaint);
         } else {
             // Draw the scaled bitmap without mask
-            canvas.drawBitmap(
-                    defaultBitmap, srcRect, destRect, mPaint
-            );
+            canvas.drawBitmap(defaultBitmap, srcRect, destRect, mPaint);
         }
         // Draw the front image
-        if (mFrontImage != null ) {
+        if (mFrontImage != null) {
             canvas.drawBitmap(mFrontImage, 0, 0, mPaint);
         }
         return result;
@@ -529,16 +544,20 @@ public class IconPackUtil {
         Bitmap maskImage = mMaskImages.size() > 0 ? mMaskImages.get(0) : null;
         List<Bitmap> mFrontImages = listMap.get("front");
         Bitmap frontImage = mFrontImages.size() > 0 ? mFrontImages.get(0) : null;
-        float mFactor = 0.6f;
+        //float mFactor = 1.0f;
+
         Paint mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setFilterBitmap(true);
+        //mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
         mPaint.setDither(true);
 
-        List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
-        ExecutorService service = Executors.newFixedThreadPool(8);
 
+        List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
+        ExecutorService service = Executors.newSingleThreadExecutor();
+
+        Set<Icon> outputs = new HashSet<>();
 
         for (ResolveInfo app : listPackages) {
             String packageName = app.activityInfo.packageName;
@@ -551,7 +570,7 @@ public class IconPackUtil {
                         Drawable drawable = packageManager.getApplicationIcon(packageName);
                         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
                         bitmap = getResizedBitmap(bitmap, 256, 256, true);
-                        bitmap = generateBitmap(bitmap, mBackImages, mFactor, mPaint, maskImage, frontImage);
+                        bitmap = generateBitmap(bitmap, mBackImages, mPaint, maskImage, frontImage,packageName);
                         //try to mask icon
                         if (bitmap != null) {
                             return new Icon(label, bitmap);
@@ -563,10 +582,7 @@ public class IconPackUtil {
                 futures.add(service.submit(callable));
             }
         }
-
         service.shutdown();
-
-        Set<Icon> outputs = new HashSet<>();
         for (Future<Icon> future : futures) {
             outputs.add(future.get());
         }
