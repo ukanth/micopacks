@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -47,9 +46,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -175,7 +172,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         registerReceiver(mMessageReceiver, filter);
         registerReceiver(updateReceiver, insertFilter);
+
+        registerService();;
         //setUpItemTouchHelper();
+    }
+
+    private void registerService() {
+        Intent i= new Intent(getApplicationContext(), InstallNotificationService.class);
+        startService(i);
     }
 
     private void callRandom() {

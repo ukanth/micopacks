@@ -111,6 +111,7 @@
 
         <service
             android:name=".InstallNotificationService"
+            android:stopWithTask="false"
             android:enabled="true">
         </service>
 

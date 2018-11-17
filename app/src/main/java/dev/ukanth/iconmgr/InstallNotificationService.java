@@ -14,6 +14,10 @@ public class InstallNotificationService extends Service {
 
     @Override
     public void onCreate() {
+        registerService();
+    }
+
+    private void registerService() {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
         intentFilter.addDataScheme("package");
         receiver = new InstallReceiver();
@@ -29,5 +33,14 @@ public class InstallNotificationService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if(receiver != null) {
+            unregisterReceiver(receiver);
+            registerService();
+        }
+        return START_STICKY;
     }
 }
