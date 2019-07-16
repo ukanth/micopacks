@@ -34,6 +34,7 @@ public class IconPackManager {
     private Context mContext;
     private HashSet<String> unique;
 
+    private List<String> excludePackages;
     public IconPackManager() {
         mContext = App.getContext();
     }
@@ -42,6 +43,11 @@ public class IconPackManager {
         if (forceReload) {
             ipObjDao.deleteAll();
         }
+
+        excludePackages = new ArrayList<>();
+        excludePackages.add("com.arun.kustomiconpack");
+        excludePackages.add("ginlemon.iconpackstudio");
+
         PackageManager pm = mContext.getPackageManager();
         int flags = PackageManager.GET_META_DATA |
                 PackageManager.GET_SHARED_LIBRARY_FILES;
@@ -62,7 +68,7 @@ public class IconPackManager {
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
 
-        loadIconPack(rinfo, ipObjDao, installedIconPacks, dialog);
+        loadIconPack(rinfo, ipObjDao, installedIconPacks);
         return installedIconPacks;
     }
 
@@ -159,14 +165,14 @@ public class IconPackManager {
     }
 
 
-    private void loadIconPack(List<ResolveInfo> rinfo, final IPObjDao ipObjDao, final List<IPObj> installedIconPacks, MaterialDialog dialog) {
+    private void loadIconPack(List<ResolveInfo> rinfo, final IPObjDao ipObjDao, final List<IPObj> installedIconPacks) {
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         Collection<Future<IPObj>> futures = new LinkedList<Future<IPObj>>();
         ArrayList<Callable<IPObj>> listCallables = new ArrayList<Callable<IPObj>>();
         for (ResolveInfo ri : rinfo) {
             final String pkgName = ri.activityInfo.packageName;
-            if (!unique.contains(pkgName)) {
+            if (!unique.contains(pkgName) && !excludePackages.contains(pkgName)) {
                 unique.add(pkgName);
                 final IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
                 if (obj2 == null) {

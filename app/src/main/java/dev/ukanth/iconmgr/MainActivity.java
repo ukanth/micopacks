@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mSwipeLayout.setOnRefreshListener(this);
 
         loadApp(false);
+
         if (BuildConfig.LICENSECHECK) {
             startLicenseCheck();
         }
