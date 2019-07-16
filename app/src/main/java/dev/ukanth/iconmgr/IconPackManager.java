@@ -177,10 +177,8 @@ public class IconPackManager {
                 final IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
                 if (obj2 == null) {
                     listCallables.add(new ProcessPack(pkgName, ipObjDao, false));
-                    //futures.add(executor.submit());
                 } else {
                     listCallables.add(new ProcessPack(pkgName, ipObjDao, true));
-                    //futures.add(executor.submit(new ProcessPack(pkgName, ipObjDao, true)));
                 }
             }
         }

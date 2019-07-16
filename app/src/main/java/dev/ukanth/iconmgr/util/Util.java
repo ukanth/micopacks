@@ -10,10 +10,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -52,15 +54,12 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class Util {
 
     public static final String CMD_FIND_XML_FILES = "find /data/data/%s -type f -name \\*.xml";
-    private static final String TAG = "MICOPACK";
-
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
     public static final String CMD_CHOWN = "chown %s.%s \"%s\"";
     public static final String CMD_CAT_FILE = "cat \"%s\"";
     public static final String CMD_CP = "cp \"%s\" \"%s\"";
     public static final String TMP_FILE = ".temp";
-
+    private static final String TAG = "MICOPACK";
 
     public static void updateFile(final String fileName, final String packageName, final String key, final String value, final Context ctx) {
         Log.i(TAG, String.format("Read Preference - (%s)", fileName));
@@ -419,7 +418,7 @@ public class Util {
             NotificationCompat.Action previewAction =
                     new NotificationCompat.Action.Builder(R.drawable.ic_preview, "Preview", previewIntent).build();
 
-            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context,"default")
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, "default")
                     .setContentTitle(context.getString(R.string.app_name))
                     .setContentText(name + " " + context.getString(R.string.iconinstalled))
                     .setSmallIcon(R.drawable.iconpack)
@@ -445,18 +444,22 @@ public class Util {
 
 
     public static Drawable resizeImage(Context context, Drawable image) {
-        if (image instanceof BitmapDrawable) {
-            Bitmap b = ((BitmapDrawable) image).getBitmap();
+        Bitmap bitmap = getBitmapFromDrawable(image);
+        int SIZE_DP = 60;
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int p = (int) (SIZE_DP * scale + 0.5f);
 
-            int SIZE_DP = 60;
-            final float scale = context.getResources().getDisplayMetrics().density;
-            int p = (int) (SIZE_DP * scale + 0.5f);
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, p, p, false);
+        return new BitmapDrawable(context.getResources(), bitmapResized);
+    }
 
-            Bitmap bitmapResized = Bitmap.createScaledBitmap(b, p, p, false);
-            return new BitmapDrawable(context.getResources(), bitmapResized);
-        } else {
-            return image;
-        }
+    @NonNull
+    private static Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
     }
 
     private static boolean isSystemPackage(ResolveInfo ri) {
@@ -489,8 +492,7 @@ public class Util {
                 return list.get(random);
             }
         } catch (IllegalArgumentException |
-                NullPointerException e)
-        {
+                NullPointerException e) {
             Log.e("MICO", e.getMessage(), e);
         }
         return null;

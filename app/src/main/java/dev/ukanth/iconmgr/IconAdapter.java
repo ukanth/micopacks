@@ -9,9 +9,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -303,6 +310,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             final LocalIcon icon = (LocalIcon) params[2];
             final View viewToUpdate = (View) params[3];
             try {
+
                 icon.setDrawable(Util.resizeImage(ctx, pkgMgr.getApplicationIcon(ipObj.getIconPkg())));
             } catch (PackageManager.NameNotFoundException e) {
             }
@@ -317,6 +325,42 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 Log.e(TAG, "Error showing icon", e);
             }
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Bitmap getAppIcon(PackageManager mPackageManager, String packageName) {
+        try {
+            Drawable drawable = mPackageManager.getApplicationIcon(packageName);
+
+            if (drawable instanceof BitmapDrawable) {
+                return ((BitmapDrawable) drawable).getBitmap();
+            } else if (drawable instanceof AdaptiveIconDrawable) {
+                Drawable backgroundDr = ((AdaptiveIconDrawable) drawable).getBackground();
+                Drawable foregroundDr = ((AdaptiveIconDrawable) drawable).getForeground();
+
+                Drawable[] drr = new Drawable[2];
+                drr[0] = backgroundDr;
+                drr[1] = foregroundDr;
+
+                LayerDrawable layerDrawable = new LayerDrawable(drr);
+
+                int width = layerDrawable.getIntrinsicWidth();
+                int height = layerDrawable.getIntrinsicHeight();
+
+                Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+                Canvas canvas = new Canvas(bitmap);
+
+                layerDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                layerDrawable.draw(canvas);
+
+                return bitmap;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private class LocalIcon {
