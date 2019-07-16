@@ -75,6 +75,11 @@ public class LauncherHelper {
     public static final int FLICK = 26;
     public static final int PIXEL = 27;
 
+
+    public static final int POSIDON = 28;
+
+
+
     public static int getLauncherId(String packageName) {
         if (packageName == null) return UNKNOWN;
         switch (packageName) {
@@ -145,6 +150,9 @@ public class LauncherHelper {
                 return FLICK;
             case "com.google.android.apps.nexuslauncher":
                 return PIXEL;
+            case "posidon.launcher":
+                return POSIDON;
+
             default:
                 return UNKNOWN;
         }
@@ -510,6 +518,19 @@ public class LauncherHelper {
                     final Intent pixelAction = new Intent("com.android.launcher3.FLICK_ICON_PACK_APPLIER");
                     pixelAction.putExtra("com.android.launcher3.extra.ICON_THEME_PACKAGE", context.getPackageName());
                     context.sendBroadcast(pixelAction);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+
+            case POSIDON:
+                try {
+                    final  Intent i = new Intent(Intent.ACTION_MAIN);
+                    i.setComponent(new ComponentName("posidon.launcher", "posidon.launcher.applyicons"));
+                    i.putExtra("iconpack", launcherPackage);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(i);
                     ((AppCompatActivity) context).finish();
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
