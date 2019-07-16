@@ -77,6 +77,8 @@ public class LauncherHelper {
 
 
     public static final int POSIDON = 28;
+    public static final int TOTAL = 29;
+
 
 
 
@@ -152,7 +154,8 @@ public class LauncherHelper {
                 return PIXEL;
             case "posidon.launcher":
                 return POSIDON;
-
+            case "com.ss.launcher2":
+                return TOTAL;
             default:
                 return UNKNOWN;
         }
@@ -387,6 +390,24 @@ public class LauncherHelper {
                     lawnchair.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.sendBroadcast(lawnchairAction);
                     context.startActivity(lawnchair);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    e.printStackTrace();
+                    //openGooglePlay(context, "ch.deletescape.lawnchair.plah", launcherName);
+                }
+                break;
+            case TOTAL:
+                try {
+
+                    final Intent total = context.getPackageManager().getLaunchIntentForPackage(
+                            "com.ss.launcher2");
+
+                    final Intent totalIntent = new Intent("com.ss.launcher2.ACTION_APPLY_ICONPACK");
+                    totalIntent.putExtra("com.ss.iconpack.PickIconActivity.extra.ICON_PACK", launcherPackage);
+                    totalIntent.putExtra("com.ss.iconpack.PickIconActivity.extra.ICON", launcherPackage);
+                    context.sendBroadcast(totalIntent);
+                    total.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(total);
                     ((AppCompatActivity) context).finish();
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     e.printStackTrace();
