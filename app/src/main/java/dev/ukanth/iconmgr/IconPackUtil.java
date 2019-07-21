@@ -18,6 +18,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
 
@@ -27,6 +28,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -134,7 +136,18 @@ public class IconPackUtil {
         try {
             int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
             if (id > 0) {
-                return GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
+                Bitmap bitmap = GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+
+                new Thread(() -> {
+                    Intent broadcastIntent = new Intent();
+                    broadcastIntent.putExtra("image",byteArray);
+                    broadcastIntent.setAction("UPDATEUI");
+                    LocalBroadcastManager.getInstance(App.getContext()).sendBroadcast(broadcastIntent);
+                }).start();
+                return bitmap;
             }
         } catch (Exception e) {
             return null;

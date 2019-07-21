@@ -1,9 +1,13 @@
 package dev.ukanth.iconmgr;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -11,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -56,7 +61,8 @@ public class IconPreviewActivity extends AppCompatActivity {
     private LinearLayout.LayoutParams params;
 
     private GridLayout gridLayout;
-
+    private BroadcastReceiver uiProgressReceiver;
+    private IntentFilter uiFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +97,8 @@ public class IconPreviewActivity extends AppCompatActivity {
             }
         }
 
+        registerUIbroadcast();
+
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
@@ -112,6 +120,37 @@ public class IconPreviewActivity extends AppCompatActivity {
                 previewLoader.getStatus() == AsyncTask.Status.FINISHED)) {
             previewLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
+    }
+
+    private void registerUIbroadcast() {
+        uiFilter = new IntentFilter("UPDATEUI");
+
+        uiProgressReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                byte[] byteArray = intent.getByteArrayExtra("image");
+                Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                ImageView image = new ImageView(getApplicationContext());
+                image.setLayoutParams(params);
+                image.setPadding(15, 15, 15, 15);
+                image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                image.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
+                gridLayout.addView(image);
+            }
+        };
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(uiProgressReceiver, uiFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(uiProgressReceiver);
     }
 
     @Override
@@ -175,6 +214,8 @@ public class IconPreviewActivity extends AppCompatActivity {
                 plsWait.dismiss();
                 plsWait = null;
             }
+
+            gridLayout.removeAllViews();
 
             if (themed_icons != null) {
                 List<Icon> list = new ArrayList<Icon>(themed_icons);
