@@ -402,12 +402,15 @@ public class LauncherHelper {
                     final Intent total = context.getPackageManager().getLaunchIntentForPackage(
                             "com.ss.launcher2");
 
-                    final Intent totalIntent = new Intent("com.ss.launcher2.ACTION_APPLY_ICONPACK");
+                    final Intent totalIntent = new Intent();
+                    totalIntent.setAction("com.ss.launcher2.ACTION_APPLY_ICONPACK");
                     totalIntent.putExtra("com.ss.iconpack.PickIconActivity.extra.ICON_PACK", launcherPackage);
                     totalIntent.putExtra("com.ss.iconpack.PickIconActivity.extra.ICON", launcherPackage);
                     context.sendBroadcast(totalIntent);
+
                     total.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(total);
+
                     ((AppCompatActivity) context).finish();
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     e.printStackTrace();
