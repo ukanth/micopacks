@@ -50,6 +50,40 @@ public class IconPackUtil {
     private static final String TAG = "MicoPacks";
     private Resources iconPackres = null;
 
+    public static @ColorInt
+    int getPaletteColorFromApp(Icon app) {
+        return getPaletteColorFromBitmap(app.getIconBitmap());
+    }
+
+    public static @ColorInt
+    int getPaletteColorFromBitmap(Bitmap bitmap) {
+        Palette palette;
+        try {
+            palette = Palette.from(bitmap).generate();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return Color.BLACK;
+        }
+        if (palette.getSwatches().size() > 0) {
+            int swatchIndex = 0;
+            for (int i = 1; i < palette.getSwatches().size(); i++) {
+                if (palette.getSwatches().get(i).getPopulation()
+                        > palette.getSwatches().get(swatchIndex).getPopulation()) {
+                    swatchIndex = i;
+                }
+            }
+            return palette.getSwatches().get(swatchIndex).getRgb();
+        } else {
+            return Color.BLACK;
+        }
+    }
+
+    public static float getHueColorFromColor(@ColorInt int color) {
+        float[] hsvValues = new float[3];
+        Color.colorToHSV(color, hsvValues);
+        return hsvValues[0];
+    }
+
     @NonNull
     public int calcTotal(@NonNull String packageName) {
         Set icons = new HashSet();
@@ -96,11 +130,14 @@ public class IconPackUtil {
 
     }
 
-
     private Bitmap loadBitmap(String drawableName, String packageName) {
-        int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
-        if (id > 0) {
-            return GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
+        try {
+            int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
+            if (id > 0) {
+                return GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
+            }
+        } catch (Exception e) {
+            return null;
         }
         return null;
     }
@@ -197,16 +234,6 @@ public class IconPackUtil {
         return list;
     }
 
-    class Attrb {
-        String key;
-        String value;
-
-        Attrb(String k, String v) {
-            this.key = k;
-            this.value = v;
-        }
-    }
-
     public Set<Icon> getListIcons(String packageName) {
         Set<Icon> icons = new HashSet<>();
         Key key = Key.ACTIVITY;
@@ -237,12 +264,12 @@ public class IconPackUtil {
         return icons;
     }
 
-    private Bitmap generateBitmap(Bitmap defaultBitmap, List mBackImages, Paint mPaint, Bitmap mMaskImage, Bitmap mFrontImage,  String packageName) {
+    private Bitmap generateBitmap(Bitmap defaultBitmap, List mBackImages, Paint mPaint, Bitmap mMaskImage, Bitmap mFrontImage, String packageName) {
         // No need to go through below process id defaultBitmap is null
 
         Log.d(TAG, "-------- " + packageName + " -----------");
 
-        if(packageName.equals("com.act.mobile.apps")) {
+        if (packageName.equals("com.act.mobile.apps")) {
             // we need to check now
             Log.e(TAG, packageName);
         }
@@ -333,41 +360,6 @@ public class IconPackUtil {
         return result;
     }
 
-
-    public static @ColorInt
-    int getPaletteColorFromApp(Icon app) {
-        return getPaletteColorFromBitmap(app.getIconBitmap());
-    }
-
-    public static @ColorInt
-    int getPaletteColorFromBitmap(Bitmap bitmap) {
-        Palette palette;
-        try {
-            palette = Palette.from(bitmap).generate();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return Color.BLACK;
-        }
-        if (palette.getSwatches().size() > 0) {
-            int swatchIndex = 0;
-            for (int i = 1; i < palette.getSwatches().size(); i++) {
-                if (palette.getSwatches().get(i).getPopulation()
-                        > palette.getSwatches().get(swatchIndex).getPopulation()) {
-                    swatchIndex = i;
-                }
-            }
-            return palette.getSwatches().get(swatchIndex).getRgb();
-        } else {
-            return Color.BLACK;
-        }
-    }
-
-    public static float getHueColorFromColor(@ColorInt int color) {
-        float[] hsvValues = new float[3];
-        Color.colorToHSV(color, hsvValues);
-        return hsvValues[0];
-    }
-
     private Bitmap getMostAppropriateBackImage(Bitmap defaultBitmap, List<Bitmap> mBackImages) {
         if (mBackImages.size() == 1) {
             return mBackImages.get(0);
@@ -417,7 +409,6 @@ public class IconPackUtil {
         }
         return new HashSet<>();
     }
-
 
     public HashMap<String, String> getAppFilter(String packageName, Key key) {
         HashMap<String, String> activities = new HashMap<>();
@@ -471,6 +462,62 @@ public class IconPackUtil {
             }
         }
         return requests;
+    }
+
+    public Set<Icon> getNonThemeIcons(String currentPackage) throws ExecutionException, InterruptedException {
+        Context context = App.getContext();
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> listPackages = Util.getInstalledApps();
+        HashMap<String, String> appFilter = getAppFilter(currentPackage, Key.ACTIVITY);
+        HashMap<String, List<Bitmap>> listMap = getIconsList(context, currentPackage);
+        List<Bitmap> mBackImages = listMap.get("back");
+        List<Bitmap> mMaskImages = listMap.get("mask");
+        Bitmap maskImage = mMaskImages.size() > 0 ? mMaskImages.get(0) : null;
+        List<Bitmap> mFrontImages = listMap.get("front");
+        Bitmap frontImage = mFrontImages.size() > 0 ? mFrontImages.get(0) : null;
+        //float mFactor = 1.0f;
+
+        Paint mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setFilterBitmap(true);
+        //mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
+        mPaint.setDither(true);
+
+
+        List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
+        ExecutorService service = Executors.newSingleThreadExecutor();
+
+        Set<Icon> outputs = new HashSet<>();
+
+        for (ResolveInfo app : listPackages) {
+            String packageName = app.activityInfo.packageName;
+            String activity = packageName + "/" + app.activityInfo.name;
+            String value = appFilter.get(activity);
+            if (value == null) {
+                Callable<Icon> callable = () -> {
+                    String label = (String) app.activityInfo.applicationInfo.loadLabel(packageManager);
+                    try {
+                        Drawable drawable = packageManager.getApplicationIcon(packageName);
+                        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                        bitmap = getResizedBitmap(bitmap, 256, 256, true);
+                        bitmap = generateBitmap(bitmap, mBackImages, mPaint, maskImage, frontImage, packageName);
+                        //try to mask icon
+                        if (bitmap != null) {
+                            return new Icon(label, bitmap);
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                    }
+                    return new Icon("");
+                };
+                futures.add(service.submit(callable));
+            }
+        }
+        service.shutdown();
+        for (Future<Icon> future : futures) {
+            outputs.add(future.get());
+        }
+        return outputs;
     }
 
     /*public static Set<String> getInstalledIconPacks(Context mContext) {
@@ -533,59 +580,13 @@ public class IconPackUtil {
         return result;
     }*/
 
-    public Set<Icon> getNonThemeIcons(String currentPackage) throws ExecutionException, InterruptedException {
-        Context context = App.getContext();
-        PackageManager packageManager = context.getPackageManager();
-        List<ResolveInfo> listPackages = Util.getInstalledApps();
-        HashMap<String, String> appFilter = getAppFilter(currentPackage, Key.ACTIVITY);
-        HashMap<String, List<Bitmap>> listMap = getIconsList(context, currentPackage);
-        List<Bitmap> mBackImages = listMap.get("back");
-        List<Bitmap> mMaskImages = listMap.get("mask");
-        Bitmap maskImage = mMaskImages.size() > 0 ? mMaskImages.get(0) : null;
-        List<Bitmap> mFrontImages = listMap.get("front");
-        Bitmap frontImage = mFrontImages.size() > 0 ? mFrontImages.get(0) : null;
-        //float mFactor = 1.0f;
+    class Attrb {
+        String key;
+        String value;
 
-        Paint mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setFilterBitmap(true);
-        //mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
-        mPaint.setDither(true);
-
-
-        List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
-        ExecutorService service = Executors.newSingleThreadExecutor();
-
-        Set<Icon> outputs = new HashSet<>();
-
-        for (ResolveInfo app : listPackages) {
-            String packageName = app.activityInfo.packageName;
-            String activity = packageName + "/" + app.activityInfo.name;
-            String value = appFilter.get(activity);
-            if (value == null) {
-                Callable<Icon> callable = () -> {
-                    String label = (String) app.activityInfo.applicationInfo.loadLabel(packageManager);
-                    try {
-                        Drawable drawable = packageManager.getApplicationIcon(packageName);
-                        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
-                        bitmap = getResizedBitmap(bitmap, 256, 256, true);
-                        bitmap = generateBitmap(bitmap, mBackImages, mPaint, maskImage, frontImage,packageName);
-                        //try to mask icon
-                        if (bitmap != null) {
-                            return new Icon(label, bitmap);
-                        }
-                    } catch (PackageManager.NameNotFoundException e) {
-                    }
-                    return new Icon("");
-                };
-                futures.add(service.submit(callable));
-            }
+        Attrb(String k, String v) {
+            this.key = k;
+            this.value = v;
         }
-        service.shutdown();
-        for (Future<Icon> future : futures) {
-            outputs.add(future.get());
-        }
-        return outputs;
     }
 }

@@ -81,25 +81,24 @@ public class IconPreviewActivity extends AppCompatActivity {
         App app = ((App) getApplicationContext());
         DaoSession daoSession = app.getDaoSession();
         IPObjDao ipObjDao = daoSession.getIPObjDao();
+        String iconName = "";
         IPObj pkgObj;
         if (ipObjDao != null) {
             pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
             if (pkgObj != null) {
-                setTitle(pkgObj.getIconName());
+                iconName = pkgObj.getIconName();
+                setTitle(iconName);
             }
         }
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
-                LauncherHelper.apply(IconPreviewActivity.this, pkgName, launcherPack);
-            }
+        fab.setOnClickListener(view -> {
+            String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
+            LauncherHelper.apply(IconPreviewActivity.this, pkgName, launcherPack);
         });
 
         if (!Prefs.isFabShow()) {
-            fab.setVisibility(View.GONE);
+            fab.hide();
         }
 
         gridLayout = (GridLayout) findViewById(R.id.iconpreview);
@@ -108,7 +107,7 @@ public class IconPreviewActivity extends AppCompatActivity {
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int screenWidth = metrics.widthPixels;
         params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
-        IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreviewActivity.this, pkgName);
+        IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconPreviewActivity.this, pkgName, iconName);
         if (plsWait == null && (previewLoader.getStatus() == AsyncTask.Status.PENDING ||
                 previewLoader.getStatus() == AsyncTask.Status.FINISHED)) {
             previewLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -130,10 +129,12 @@ public class IconPreviewActivity extends AppCompatActivity {
         private String packageName;
         private Set<Icon> themed_icons;
         private Set<Icon> nonthemed_icons;
+        private String iconName;
 
-        private IconsPreviewLoader(Context context, String packageName) {
+        private IconsPreviewLoader(Context context, String packageName, String iconName) {
             this.mContext = context;
             this.packageName = packageName;
+            this.iconName = iconName;
         }
 
         @Override
@@ -191,29 +192,22 @@ public class IconPreviewActivity extends AppCompatActivity {
                             image.setPadding(15, 15, 15, 15);
                             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
-                            image.setOnClickListener(new ImageView.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show();
+                            image.setOnClickListener(view -> Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show());
+                            image.setOnLongClickListener(view -> {
+                                if (isStoragePermissionGranted()) {
+                                    saveImage(icon, packageName);
                                 }
-                            });
-                            image.setOnLongClickListener(new ImageView.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View view) {
-                                    if (isStoragePermissionGranted()) {
-                                        saveImage(icon, packageName);
-                                    }
-                                    return true;
-                                }
+                                return true;
                             });
                             gridLayout.addView(image);
                         }
                     }
+                    setTitle(iconName + "(" + list.size() + "-icons)");
                     GlideBitmapPool.clearMemory();
                     //processInputs(list, res, params, gridLayout);
                 } else {
                     emptyView.setVisibility(View.VISIBLE);
-                    fab.setVisibility(View.GONE);
+                    fab.hide();
                 }
 
             }

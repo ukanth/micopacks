@@ -1,8 +1,10 @@
 Version 3.0
 
 * Feature: Posidon Launcher support
-* Bug : App Icon size issue on main list
-* Bug : Exclude other icon managers on main list
+* Bug: App Icon size issue on main list
+* Bug: Exclude other icon managers on main list
+* Bug: Masked icon preview always shows as empty (whitecons etc.,)
+* 
 
 Version 1.3
 

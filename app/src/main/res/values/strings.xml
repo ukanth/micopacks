@@ -1,4 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/tools" android:autoLink="web">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" android:autoLink="web">
     <string name="app_name">MicoPacks</string>
     <string name="app_name_free">MicoPacks Free</string>
     <string name="loading">Loading Iconpacks</string>
