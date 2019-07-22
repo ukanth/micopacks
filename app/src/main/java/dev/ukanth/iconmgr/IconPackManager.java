@@ -33,8 +33,8 @@ import dev.ukanth.iconmgr.util.Util;
 public class IconPackManager {
     private Context mContext;
     private HashSet<String> unique;
-
     private List<String> excludePackages;
+
     public IconPackManager() {
         mContext = App.getContext();
     }
@@ -44,9 +44,7 @@ public class IconPackManager {
             ipObjDao.deleteAll();
         }
 
-        excludePackages = new ArrayList<>();
-        excludePackages.add("com.arun.kustomiconpack");
-        excludePackages.add("ginlemon.iconpackstudio");
+        excludePackages = Util.getExcludedPackages();
 
         PackageManager pm = mContext.getPackageManager();
         int flags = PackageManager.GET_META_DATA |
@@ -83,9 +81,9 @@ public class IconPackManager {
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.teslacoilsw.launcher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.anddoes.launcher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.fede.launcher.THEME_ICONPACK"), PackageManager.GET_META_DATA));
-
+        List<String> excludedPackage = Util.getExcludedPackages();
         for (ResolveInfo ri : rinfo) {
-            if (ri.activityInfo.packageName.equals(packageName)) {
+            if (ri.activityInfo.packageName.equals(packageName) && !excludePackages.contains(packageName)) {
                 IPObj obj = new IPObj();
                 IconAttr attr = new IconAttr();
                 obj.setIconPkg(packageName);

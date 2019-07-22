@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -26,7 +27,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.StackingBehavior;
 import com.glidebitmappool.GlideBitmapPool;
 
 import java.io.File;
@@ -161,6 +165,64 @@ public class IconPreviewActivity extends AppCompatActivity {
         }*/
     }
 
+    private void saveImage(Icon icon, String packageName) {
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/micopacks/" + packageName);
+        myDir.mkdirs();
+        String fname = icon.getTitle() + ".png";
+        File file = new File(myDir, fname);
+        if (file.exists())
+            file.delete();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            icon.getIconBitmap().compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.flush();
+            out.close();
+            Toast.makeText(getApplicationContext(), "Saved successfully: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e("MICO", e.getMessage(), e);
+        }
+    }
+
+    private boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v("MICO", "Permission is granted");
+                return true;
+            } else {
+
+                Log.v("MICO", "Permission is revoked");
+                ActivityCompat.requestPermissions(IconPreviewActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                return false;
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("MICO", "Permission is granted");
+            return true;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+        }
+    }
 
     private class IconsPreviewLoader extends AsyncTask<Void, Void, Boolean> {
 
@@ -233,7 +295,23 @@ public class IconPreviewActivity extends AppCompatActivity {
                             image.setPadding(15, 15, 15, 15);
                             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
-                            image.setOnClickListener(view -> Toast.makeText(mContext, icon.getTitle(), Toast.LENGTH_SHORT).show());
+                            image.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    new MaterialDialog.Builder(mContext)
+                                            .title(icon.getTitle())
+                                            .positiveText(R.string.save)
+                                            .onPositive((dialog, which) -> {
+                                                if (isStoragePermissionGranted()) {
+                                                    saveImage(icon, packageName);
+                                                    dialog.dismiss();
+                                                }
+                                            })
+                                            .negativeText(R.string.close)
+                                            .icon(new BitmapDrawable(getResources(), icon.getIconBitmap()))
+                                            .show();
+                                }
+                            });
                             image.setOnLongClickListener(view -> {
                                 if (isStoragePermissionGranted()) {
                                     saveImage(icon, packageName);
@@ -243,7 +321,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                             gridLayout.addView(image);
                         }
                     }
-                    setTitle(iconName + "(" + list.size() + "-icons)");
+                    setTitle(iconName + "(" + (list.size() - 1) + "-icons)");
                     GlideBitmapPool.clearMemory();
                     //processInputs(list, res, params, gridLayout);
                 } else {
@@ -281,64 +359,5 @@ public class IconPreviewActivity extends AppCompatActivity {
                 Log.e("MICO", e.getMessage(), e);
             }
         }*/
-    }
-
-    private void saveImage(Icon icon, String packageName) {
-        String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root + "/micopacks/" + packageName);
-        myDir.mkdirs();
-        String fname = icon.getTitle() + ".png";
-        File file = new File(myDir, fname);
-        if (file.exists())
-            file.delete();
-        try {
-            FileOutputStream out = new FileOutputStream(file);
-            icon.getIconBitmap().compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-            Toast.makeText(getApplicationContext(), "Saved successfully: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Log.e("MICO", e.getMessage(), e);
-        }
-    }
-
-    private boolean isStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v("MICO", "Permission is granted");
-                return true;
-            } else {
-
-                Log.v("MICO", "Permission is revoked");
-                ActivityCompat.requestPermissions(IconPreviewActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
-                return false;
-            }
-        } else { //permission is automatically granted on sdk<23 upon installation
-            Log.v("MICO", "Permission is granted");
-            return true;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case WRITE_EXTERNAL_STORAGE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-        }
     }
 }

@@ -29,6 +29,7 @@ import org.ocpsoft.prettytime.units.JustNow;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -369,6 +370,13 @@ public class Util {
         return h;
     }
 
+
+    public static List<String> getExcludedPackages(){
+        List<String> excludePackages = new ArrayList<>();
+        excludePackages.add("com.arun.kustomiconpack");
+        excludePackages.add("ginlemon.iconpackstudio");
+        return excludePackages;
+    }
 
     public static void showNotification(String packageName, String name) {
         Context context = App.getContext();

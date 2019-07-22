@@ -113,4 +113,5 @@
     <string name="show_favs">Enable Favorites</string>
     <string name="unable_iconpack">No iconpack found</string>
     <string name="unable_screenshot">Sorry! Unable to create screenshot</string>
+    <string name="save">Save</string>
 </resources>
