@@ -175,7 +175,7 @@ public class IconPreviewActivity extends AppCompatActivity {
             file.delete();
         try {
             FileOutputStream out = new FileOutputStream(file);
-            icon.getIconBitmap().compress(Bitmap.CompressFormat.PNG, 100, out);
+            icon.getIconBitmap().compress(Bitmap.CompressFormat.PNG, 85, out);
             out.flush();
             out.close();
             Toast.makeText(getApplicationContext(), "Saved successfully: " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();

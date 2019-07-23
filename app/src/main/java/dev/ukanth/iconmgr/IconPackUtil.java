@@ -247,6 +247,9 @@ public class IconPackUtil {
         return list;
     }
 
+
+
+
     public Set<Icon> getListIcons(String packageName) {
         Set<Icon> icons = new HashSet<>();
         Key key = Key.ACTIVITY;
@@ -262,6 +265,36 @@ public class IconPackUtil {
                             if (sKey != null) {
                                 String name = xpp.getAttributeValue(null, "drawable");
                                 if (name != null) {
+                                    items.add(new Attrb(sKey, name));
+                                }
+                            }
+                        }
+                    }
+                }
+                xpp.next();
+            }
+            icons = processXpp(packageName, items);
+        } catch (Exception e) {
+            Log.e("MICO", e.getMessage(), e);
+        }
+        return icons;
+    }
+
+    public Set<Icon> getFilterIcons(String packageName,String query) {
+        Set<Icon> icons = new HashSet<>();
+        Key key = Key.ACTIVITY;
+        List<Attrb> items = new ArrayList<>();
+        try {
+            XmlPullParser xpp = getXmlParser(packageName, "appfilter");
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (xpp.getEventType() == XmlPullParser.START_TAG) {
+                    if (xpp.getName().equals("item")) {
+                        String sKey = xpp.getAttributeValue(null, key.getKey());
+                        if (sKey != null) {
+                            sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
+                            if (sKey != null) {
+                                String name = xpp.getAttributeValue(null, "drawable");
+                                if (name != null && name.contains(query)) {
                                     items.add(new Attrb(sKey, name));
                                 }
                             }

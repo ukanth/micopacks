@@ -1,5 +1,6 @@
 package dev.ukanth.iconmgr;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -435,6 +436,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.pref:
                 showPreference();
                 return true;
+            case R.id.iconsearch:
+                showIconSearch();
+                return true;
             case R.id.about:
                 showAbout();
                 return true;
@@ -504,6 +508,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showIconSearch() {
+        Intent myIntent = new Intent(MainActivity.this, IconSearchActivity.class);
+        startActivity(myIntent);
     }
 
     private void reload() {

@@ -48,6 +48,12 @@
             </group>
         </menu>
     </item>
+
+    <item
+        android:id="@+id/iconsearch"
+        android:title="@string/icon_search"
+        app:showAsAction="collapseActionView" />
+
     <item
         android:id="@+id/pref"
         android:title="@string/preferences"

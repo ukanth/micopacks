@@ -103,6 +103,17 @@
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
 
+        <activity
+            android:name=".IconSearchActivity"
+            android:parentActivityName=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.ukanth.iconmgr.MainActivity" />
+        </activity>
+
         <receiver android:name=".ApplyActionReceiver">
         </receiver>
 
