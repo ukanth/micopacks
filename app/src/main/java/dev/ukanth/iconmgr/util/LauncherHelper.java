@@ -78,7 +78,7 @@ public class LauncherHelper {
 
     public static final int POSIDON = 28;
     public static final int TOTAL = 29;
-
+    public static final int ROOTLESS = 30;
 
 
 
@@ -156,6 +156,8 @@ public class LauncherHelper {
                 return POSIDON;
             case "com.ss.launcher2":
                 return TOTAL;
+            case "amirz.rootless.nexuslauncher":
+                return ROOTLESS;
             default:
                 return UNKNOWN;
         }

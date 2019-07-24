@@ -42,6 +42,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.util.Util;
 
 /**
@@ -51,6 +52,17 @@ import dev.ukanth.iconmgr.util.Util;
 public class IconPackUtil {
     private static final String TAG = "MicoPacks";
     private Resources iconPackres = null;
+
+
+    public final static String[] ICON_INTENTS = new String[] {
+            "com.fede.launcher.THEME_ICONPACK",
+            "com.anddoes.launcher.THEME",
+            "com.novalauncher.THEME",
+            "com.teslacoilsw.launcher.THEME",
+            "com.gau.go.launcherex.theme",
+            "org.adw.launcher.THEMES",
+            "org.adw.launcher.icons.ACTION_PICK_ICON"
+    };
 
     public static @ColorInt
     int getPaletteColorFromApp(Icon app) {
@@ -140,7 +152,6 @@ public class IconPackUtil {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] byteArray = stream.toByteArray();
-
                 new Thread(() -> {
                     Intent broadcastIntent = new Intent();
                     broadcastIntent.putExtra("image",byteArray);
@@ -426,6 +437,27 @@ public class IconPackUtil {
 
     }
 
+    /*public List<Icon> lookUpSearch(final String searchQuery, List<IPObj> objList) {
+        try {
+            ExecutorService service = Executors.newFixedThreadPool(3);
+            List<Future<Set<Icon>>> futures = new ArrayList<Future<Set<Icon>>>();
+            for (final IPObj attr : objList) {
+                Callable<Set<Icon>> callable = () -> getFilterIcons(attr.getIconPkg(), searchQuery);
+                futures.add(service.submit(callable));
+            }
+            service.shutdown();
+
+            List<Icon> outputs = new ArrayList<>();
+            for (Future<Set<Icon>> future : futures) {
+                outputs.addAll(future.get());
+            }
+            return outputs;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new ArrayList();
+    }*/
+
     public Set<Icon> processXpp(final String packageName, List<Attrb> input) {
         try {
             ExecutorService service = Executors.newFixedThreadPool(5);
@@ -436,7 +468,7 @@ public class IconPackUtil {
                     if (isSupported(listPackages, attr.key)) {
                         Bitmap iconBitmap = loadBitmap(attr.value, packageName);
                         if (iconBitmap != null) {
-                            return new Icon(attr.value, iconBitmap);
+                            return new Icon(attr.value, packageName, iconBitmap);
                         }
                     }
                     return new Icon("");

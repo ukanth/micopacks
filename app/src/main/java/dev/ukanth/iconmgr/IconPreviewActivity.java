@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,8 @@ import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.StackingBehavior;
 import com.glidebitmappool.GlideBitmapPool;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -160,9 +163,6 @@ public class IconPreviewActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        /*if (iconViewReceiver != null) {
-            unregisterReceiver(iconViewReceiver);
-        }*/
     }
 
     private void saveImage(Icon icon, String packageName) {
@@ -279,6 +279,7 @@ public class IconPreviewActivity extends AppCompatActivity {
 
             gridLayout.removeAllViews();
 
+
             if (themed_icons != null) {
                 List<Icon> list = new ArrayList<Icon>(themed_icons);
                 if (Prefs.isNonPreview() && nonthemed_icons != null) {
@@ -290,34 +291,37 @@ public class IconPreviewActivity extends AppCompatActivity {
 
                     for (final Icon icon : list) {
                         if (icon.getIconBitmap() != null) {
+                            /*RelativeLayout relativeLayout=new RelativeLayout(mContext);
+                            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+                            relativeLayout.setLayoutParams(params);
+                            TextView textView = new TextView(mContext);
+                            textView.setText(icon.getPackageName());*/
                             ImageView image = new ImageView(mContext);
                             image.setLayoutParams(params);
                             image.setPadding(15, 15, 15, 15);
                             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
-                            image.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    new MaterialDialog.Builder(mContext)
-                                            .title(icon.getTitle())
-                                            .positiveText(R.string.save)
-                                            .onPositive((dialog, which) -> {
-                                                if (isStoragePermissionGranted()) {
-                                                    saveImage(icon, packageName);
-                                                    dialog.dismiss();
-                                                }
-                                            })
-                                            .negativeText(R.string.close)
-                                            .icon(new BitmapDrawable(getResources(), icon.getIconBitmap()))
-                                            .show();
-                                }
-                            });
+                            image.setOnClickListener(v -> new MaterialDialog.Builder(mContext)
+                                     .title(icon.getTitle())
+                                    .positiveText(R.string.save)
+                                    .onPositive((dialog, which) -> {
+                                        if (isStoragePermissionGranted()) {
+                                            saveImage(icon, icon.getPackageName());
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .negativeText(R.string.close)
+                                    .icon(new BitmapDrawable(getResources(), icon.getIconBitmap()))
+                                    .show());
                             image.setOnLongClickListener(view -> {
                                 if (isStoragePermissionGranted()) {
                                     saveImage(icon, packageName);
                                 }
                                 return true;
                             });
+                            //relativeLayout.addView(image);
+                            //relativeLayout.addView(textView);
                             gridLayout.addView(image);
                         }
                     }

@@ -62,10 +62,10 @@ public class IconPackManager {
                 packageList.add(info.packageName);
             }
         }
-        List<ResolveInfo> rinfo = pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA);
-        rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
-        rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
-
+        List<ResolveInfo> rinfo = new ArrayList<>();
+        for (String intent : IconPackUtil.ICON_INTENTS) {
+            rinfo.addAll(pm.queryIntentActivities(new Intent(intent), PackageManager.GET_META_DATA));
+        }
         loadIconPack(rinfo, ipObjDao, installedIconPacks);
         return installedIconPacks;
     }
@@ -75,12 +75,16 @@ public class IconPackManager {
         final PackageManager pm = mContext.getPackageManager();
         final IconPackUtil ip = new IconPackUtil();
         //detect if it's iconpack or not
-        List<ResolveInfo> rinfo = pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA);
+        List<ResolveInfo> rinfo = new ArrayList<>();
+        for (String intent : IconPackUtil.ICON_INTENTS) {
+            rinfo.addAll(pm.queryIntentActivities(new Intent(intent), PackageManager.GET_META_DATA));
+        }
+        /*List<ResolveInfo> rinfo = pm.queryIntentActivities(new Intent("com.gau.go.launcherex.theme"), PackageManager.GET_META_DATA);
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.novalauncher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("org.adw.launcher.THEMES"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.teslacoilsw.launcher.THEME"), PackageManager.GET_META_DATA));
         rinfo.addAll(pm.queryIntentActivities(new Intent("com.anddoes.launcher.THEME"), PackageManager.GET_META_DATA));
-        rinfo.addAll(pm.queryIntentActivities(new Intent("com.fede.launcher.THEME_ICONPACK"), PackageManager.GET_META_DATA));
+        rinfo.addAll(pm.queryIntentActivities(new Intent("com.fede.launcher.THEME_ICONPACK"), PackageManager.GET_META_DATA));*/
         List<String> excludedPackage = Util.getExcludedPackages();
         for (ResolveInfo ri : rinfo) {
             if (ri.activityInfo.packageName.equals(packageName) && !excludePackages.contains(packageName)) {
@@ -105,6 +109,53 @@ public class IconPackManager {
                     Log.e("MICO", "Exception in InstallReceiver" + e.getMessage(), e);
                 }
             }
+        }
+    }
+
+    private void sendIntent(String pkgName) {
+        Intent intentNotify = new Intent();
+        intentNotify.setAction("insertlist");
+        intentNotify.putExtra("pkgName", pkgName);
+        mContext.sendBroadcast(intentNotify);
+    }
+
+    private void loadIconPack(List<ResolveInfo> rinfo, final IPObjDao ipObjDao, final List<IPObj> installedIconPacks) {
+
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+        Collection<Future<IPObj>> futures = new LinkedList<Future<IPObj>>();
+        ArrayList<Callable<IPObj>> listCallables = new ArrayList<Callable<IPObj>>();
+        for (ResolveInfo ri : rinfo) {
+            final String pkgName = ri.activityInfo.packageName;
+            if (!unique.contains(pkgName) && !excludePackages.contains(pkgName)) {
+                unique.add(pkgName);
+                final IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                if (obj2 == null) {
+                    listCallables.add(new ProcessPack(pkgName, ipObjDao, false));
+                } else {
+                    listCallables.add(new ProcessPack(pkgName, ipObjDao, true));
+                }
+            }
+        }
+        try {
+            futures = executor.invokeAll(listCallables);
+            for (Future<IPObj> future : futures) {
+                installedIconPacks.add(future.get());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            Log.e("MICO", e.getMessage(), e);
+        }
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
+                // pool didn't terminate after the second try
+            }
+        } catch (InterruptedException ex) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -153,53 +204,5 @@ public class IconPackManager {
             return obj;
         }
 
-    }
-
-    private void sendIntent(String pkgName) {
-        Intent intentNotify = new Intent();
-        intentNotify.setAction("insertlist");
-        intentNotify.putExtra("pkgName", pkgName);
-        mContext.sendBroadcast(intentNotify);
-    }
-
-
-    private void loadIconPack(List<ResolveInfo> rinfo, final IPObjDao ipObjDao, final List<IPObj> installedIconPacks) {
-
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
-        Collection<Future<IPObj>> futures = new LinkedList<Future<IPObj>>();
-        ArrayList<Callable<IPObj>> listCallables = new ArrayList<Callable<IPObj>>();
-        for (ResolveInfo ri : rinfo) {
-            final String pkgName = ri.activityInfo.packageName;
-            if (!unique.contains(pkgName) && !excludePackages.contains(pkgName)) {
-                unique.add(pkgName);
-                final IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
-                if (obj2 == null) {
-                    listCallables.add(new ProcessPack(pkgName, ipObjDao, false));
-                } else {
-                    listCallables.add(new ProcessPack(pkgName, ipObjDao, true));
-                }
-            }
-        }
-        try {
-            futures = executor.invokeAll(listCallables);
-            for (Future<IPObj> future : futures) {
-                installedIconPacks.add(future.get());
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            Log.e("MICO", e.getMessage(), e);
-        }
-
-        executor.shutdown();
-        try {
-            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                executor.shutdownNow();
-            }
-            if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                // pool didn't terminate after the second try
-            }
-        } catch (InterruptedException ex) {
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
     }
 }
