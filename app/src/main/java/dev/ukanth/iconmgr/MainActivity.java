@@ -79,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private BroadcastReceiver updateReceiver;
 
+    private BroadcastReceiver packageReceiver;
+    private IntentFilter packageFilter;
+
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
     }
@@ -162,6 +165,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 }
             }
         };
+
+
+        packageReceiver = new PackageBroadcast();
+
+        packageFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+        packageFilter.addDataScheme("package");
+        registerReceiver(packageReceiver, packageFilter);
+
+        packageFilter = new IntentFilter(Intent.ACTION_PACKAGE_REMOVED);
+        packageFilter.addDataScheme("package");
+        registerReceiver(packageReceiver, packageFilter);
+
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
@@ -253,6 +268,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         if (updateReceiver != null) {
             unregisterReceiver(updateReceiver);
+        }
+        if(packageReceiver !=null) {
+            unregisterReceiver(packageReceiver);
         }
     }
 

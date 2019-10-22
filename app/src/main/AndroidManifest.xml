@@ -11,6 +11,7 @@
         android:smallScreens="true"
         android:xlargeScreens="true" />
 
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -71,7 +72,7 @@
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".UninstallReceiver">
+        <!--<receiver android:name=".UninstallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
 
@@ -86,7 +87,7 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
                 <data android:scheme="package" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <activity
             android:name=".DetailsActivity"

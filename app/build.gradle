@@ -10,8 +10,8 @@ android {
         applicationId "dev.ukanth.iconmanager"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 3001
-        versionName "3.0.1"
+        versionCode 3002
+        versionName "3.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "boolean", "LICENSECHECK", "true"
     }

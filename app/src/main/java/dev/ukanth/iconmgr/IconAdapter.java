@@ -107,31 +107,19 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                     }
                 }
             });
-            icon.setOnClickListener(new ImageView.OnClickListener()
-
-            {
-                @Override
-                public void onClick(View view) {
-                    if (currentItem != null && currentItem.getIconPkg() != null) {
-                        Intent intent = new Intent(ctx, IconPreviewActivity.class);
-                        intent.putExtra("pkg", currentItem.getIconPkg());
-                        ctx.startActivity(intent);
-                    }
-
+            icon.setOnClickListener(view12 -> {
+                if (currentItem != null && currentItem.getIconPkg() != null) {
+                    Intent intent = new Intent(ctx, IconPreviewActivity.class);
+                    intent.putExtra("pkg", currentItem.getIconPkg());
+                    ctx.startActivity(intent);
                 }
-            });
-            view.setOnClickListener(new View.OnClickListener()
 
-            {
-                @Override
-                public void onClick(View v) {
-                    new MaterialDialog.Builder(ctx)
-                            .title(ctx.getString(R.string.title) + " " + currentItem.getIconName())
-                            .items(R.array.items)
-                            .itemsCallback((dialog, view1, which, text) -> performAction(which, currentItem))
-                            .show();
-                }
             });
+            view.setOnClickListener(v -> new MaterialDialog.Builder(ctx)
+                    .title(ctx.getString(R.string.title) + " " + currentItem.getIconName())
+                    .items(R.array.items)
+                    .itemsCallback((dialog, view1, which, text) -> performAction(which, currentItem))
+                    .show());
         }
     }
 
