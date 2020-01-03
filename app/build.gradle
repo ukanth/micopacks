@@ -10,8 +10,8 @@ android {
         applicationId "dev.ukanth.iconmanager"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 3002
-        versionName "3.0.2"
+        versionCode 3003
+        versionName "3.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "boolean", "LICENSECHECK", "true"
     }
@@ -76,7 +76,7 @@ dependencies {
     implementation 'com.amitshekhar.android:glide-bitmap-pool:0.0.1'
 
     //gson
-    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     //prettytime
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
