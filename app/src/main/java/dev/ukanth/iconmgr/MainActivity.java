@@ -410,20 +410,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         mainMenu = menu;
         //make sure we update sort entry
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                switch (Prefs.sortBy()) {
-                    case "s0":
-                        mainMenu.findItem(R.id.sort_alpha).setChecked(true);
-                        break;
-                    case "s1":
-                        mainMenu.findItem(R.id.sort_lastupdate).setChecked(true);
-                        break;
-                    case "s2":
-                        mainMenu.findItem(R.id.sort_count).setChecked(true);
-                        break;
-                }
+        runOnUiThread(() -> {
+            switch (Prefs.sortBy()) {
+                case "s0":
+                    mainMenu.findItem(R.id.sort_alpha).setChecked(true);
+                    break;
+                case "s1":
+                    mainMenu.findItem(R.id.sort_lastupdate).setChecked(true);
+                    break;
+                case "s2":
+                    mainMenu.findItem(R.id.sort_count).setChecked(true);
+                    break;
             }
         });
 

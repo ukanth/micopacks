@@ -14,10 +14,13 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
@@ -542,6 +545,17 @@ public class IconPackUtil {
         return requests;
     }
 
+
+    @NonNull
+    private Bitmap getBitmapFromDrawable(@NonNull Drawable drawable) {
+        final Bitmap bmp = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(bmp);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bmp;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public Set<Icon> getNonThemeIcons(String currentPackage) throws ExecutionException, InterruptedException {
         Context context = App.getContext();
         PackageManager packageManager = context.getPackageManager();
@@ -577,7 +591,7 @@ public class IconPackUtil {
                     String label = (String) app.activityInfo.applicationInfo.loadLabel(packageManager);
                     try {
                         Drawable drawable = packageManager.getApplicationIcon(packageName);
-                        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+                        Bitmap bitmap = getBitmapFromDrawable(drawable);
                         bitmap = getResizedBitmap(bitmap, 256, 256, true);
                         bitmap = generateBitmap(bitmap, mBackImages, mPaint, maskImage, frontImage, packageName);
                         //try to mask icon
