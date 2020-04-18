@@ -185,7 +185,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             //seems like theme changed
             if (key.equals(THEME_RES_ID)) {
-                MainActivity.setReloadTheme(true);
+                getActivity().recreate();
+                //MainActivity.setReloadTheme(true);
             }
             if (key.equals(TOTAL_ICONS) || key.equals(SHOW_PERCENT) || key.equals(SHOW_SIZE)) {
                 MainActivity.setReloadApp(true);
