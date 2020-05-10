@@ -17,7 +17,6 @@ public class RandomActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         DaoSession daoSession = ((App) getApplication()).getDaoSession();
         IPObjDao ipObjDao = daoSession.getIPObjDao();
-        String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
         IPObj ipObj = null;
         String pkgName = getIntent().getStringExtra("pack");
         if(pkgName.isEmpty()) {
@@ -25,16 +24,7 @@ public class RandomActivity extends AppCompatActivity {
         } else {
             ipObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
         }
-        if (currentLauncher != null) {
-            if (ipObj != null) {
-                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_SHORT).show();
-                LauncherHelper.apply(RandomActivity.this, ipObj.getIconPkg(), currentLauncher);
-            } else {
-                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_SHORT).show();
-        }
+        Util.determineApply(getApplicationContext(), ipObj);
         finish();
     }
 }

@@ -200,18 +200,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void callRandom() {
-        String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
+        //String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
         IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
-        if (currentLauncher != null) {
-            if (ipObj != null) {
-                Toast.makeText(MainActivity.this, getApplicationContext().getString(R.string.selected_pack) + ipObj.getIconName(), Toast.LENGTH_LONG).show();
-                LauncherHelper.apply(MainActivity.this, ipObj.getIconPkg(), currentLauncher);
-            } else {
-                Toast.makeText(MainActivity.this, getApplicationContext().getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(MainActivity.this, getApplicationContext().getString(R.string.nodefault), Toast.LENGTH_LONG).show();
-        }
+        Util.determineApply(getApplicationContext(),ipObj);
     }
 
     private void startLicenseCheck() {

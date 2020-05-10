@@ -118,4 +118,6 @@
     <string name="app_label">app</string>
     <string name="search_hint">Search Icons</string>
     <string name="searching">Searching</string>
+    <string name="select_launcher">Select Launcher to apply iconpack</string>
+    <string name="apply">Apply</string>
 </resources>

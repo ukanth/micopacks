@@ -19,7 +19,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.stericson.roottools.RootTools;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -39,6 +42,7 @@ import java.util.Random;
 import dev.ukanth.iconmgr.ApplyActionReceiver;
 import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.DetailsActivity;
+import dev.ukanth.iconmgr.MainActivity;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.PreviewActionReceiver;
 import dev.ukanth.iconmgr.R;
@@ -346,6 +350,51 @@ public class Util {
         return doc;
 
     }*/
+
+    public static void determineApply(Context ctx, IPObj currentItem) {
+        String currentLauncher = getCurrentLauncher(ctx);
+        if (currentLauncher != null) {
+            if(currentItem != null) {
+                LauncherHelper.apply(ctx, currentItem.getIconPkg(), currentLauncher);
+            } else {
+                Toast.makeText(ctx, ctx.getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            showInstalledLaunchers(currentItem, ctx);
+        }
+    }
+
+    public static void showInstalledLaunchers(IPObj currentItem, Context ctx) {
+        PackageManager pm = ctx.getPackageManager();
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        List<ResolveInfo> lst = pm.queryIntentActivities(i, 0);
+        HashMap<String,String> launcherMap=new HashMap<>();
+        List<String> launchers = new ArrayList<>();
+        for (ResolveInfo resolveInfo : lst) {
+            try {
+                if(!resolveInfo.activityInfo.packageName.equals("com.android.settings")){
+                    String app_name = (String) pm.getApplicationLabel(
+                            pm.getApplicationInfo(resolveInfo.activityInfo.packageName
+                                    , PackageManager.GET_META_DATA));
+                    launcherMap.put(app_name,resolveInfo.activityInfo.packageName);
+                    launchers.add(app_name);
+                }
+            } catch(Exception e){
+                Log.e("MICO", e.getMessage(), e);
+            }
+        }
+
+        new MaterialDialog.Builder(ctx)
+                .title(R.string.select_launcher)
+                .items(launchers)
+                .itemsCallbackSingleChoice(-1, (dialog, view, which, text) -> {
+                    LauncherHelper.apply(ctx, currentItem.getIconPkg(), launcherMap.get(text.toString()));
+                    return true;
+                })
+                .positiveText(R.string.apply)
+                .show();
+    }
 
     public static String getCurrentLauncher(Context ctx) {
         String name = null;

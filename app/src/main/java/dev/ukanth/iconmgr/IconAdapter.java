@@ -7,6 +7,7 @@ package dev.ukanth.iconmgr;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -127,7 +129,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     private void performAction(int which, IPObj currentItem) {
         switch (which) {
             case 0:
-                determineApply(ctx, currentItem);
+                Util.determineApply(ctx, currentItem);
                 break;
             case 1:
                 preview(ctx, currentItem);
@@ -193,14 +195,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         }
     }
 
-    private void determineApply(Context ctx, IPObj currentItem) {
-        String currentLauncher = getCurrentLauncher(ctx);
-        if (currentLauncher != null) {
-            LauncherHelper.apply(ctx, currentItem.getIconPkg(), currentLauncher);
-        } else {
-            Toast.makeText(ctx, ctx.getString(R.string.nodefault), Toast.LENGTH_LONG).show();
-        }
-    }
+
 
 
     IconAdapter(List<IPObj> ipacks, int installed) {
