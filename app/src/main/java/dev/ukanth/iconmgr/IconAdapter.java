@@ -315,7 +315,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    /*@RequiresApi(api = Build.VERSION_CODES.O)
     public static Bitmap getAppIcon(PackageManager mPackageManager, String packageName) {
         try {
             Drawable drawable = mPackageManager.getApplicationIcon(packageName);
@@ -349,7 +349,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         }
 
         return null;
-    }
+    }*/
 
     private class LocalIcon {
         public Drawable getDrawable() {

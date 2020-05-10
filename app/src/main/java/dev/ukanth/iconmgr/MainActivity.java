@@ -605,7 +605,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
 
-    private void setUpItemTouchHelper() {
+    /*private void setUpItemTouchHelper() {
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             Drawable background;
@@ -666,7 +666,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         };
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
-    }
+    }*/
 
     public class LoadAppList extends AsyncTask<Void, Integer, Void> {
 

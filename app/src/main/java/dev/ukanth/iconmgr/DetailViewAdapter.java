@@ -168,47 +168,44 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 //refresh package
                 if (pkgObj != null && pkgObj.getMissed() == 0) {
                     final MaterialDialog plsWait = new MaterialDialog.Builder(activityContext).cancelable(false).title(mContext.getString(R.string.loading_stats)).content(R.string.please_wait_normal).progress(true, 0).show();
-                    IconDetails.process(pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, new IconDetails.AsyncResponse() {
-                        @Override
-                        public void processFinish(HashMap<String, List> output) {
-                            plsWait.dismiss();
-                            if (output != null) {
-                                List<Icon> bitMap = output.get("bitmap");
-                                List<ResolveInfo> resolveInfos = output.get("install");
-                                int installed = resolveInfos.size();
-                                int missed = output.get("package").size();
-                                int themed = installed - missed;
+                    IconDetails.process(pkgObj.getIconPkg(), AsyncTask.THREAD_POOL_EXECUTOR, output -> {
+                        plsWait.dismiss();
+                        if (output != null) {
+                            List<Icon> bitMap = output.get("bitmap");
+                            List<ResolveInfo> resolveInfos = output.get("install");
+                            int installed = resolveInfos.size();
+                            int missed = output.get("package").size();
+                            int themed = installed - missed;
 
-                                double percent = ((double) themed / installed) * 100;
-                                String result = String.format("%.2f", percent) + "%";
+                            double percent = ((double) themed / installed) * 100;
+                            String result = String.format("%.2f", percent) + "%";
 
 
-                                iconRequestViewHolder.installedApps.setText(String.format(
-                                        mContext.getResources().getString(R.string.icon_request_installed_apps),
-                                        installed, result));
-                                iconRequestViewHolder.missedApps.setText(String.format(
-                                        mContext.getResources().getString(R.string.icon_request_missed_apps),
-                                        missed));
-                                iconRequestViewHolder.themedApps.setText(String.format(
-                                        mContext.getResources().getString(R.string.icon_request_themed_apps),
-                                        themed));
+                            iconRequestViewHolder.installedApps.setText(String.format(
+                                    mContext.getResources().getString(R.string.icon_request_installed_apps),
+                                    installed, result));
+                            iconRequestViewHolder.missedApps.setText(String.format(
+                                    mContext.getResources().getString(R.string.icon_request_missed_apps),
+                                    missed));
+                            iconRequestViewHolder.themedApps.setText(String.format(
+                                    mContext.getResources().getString(R.string.icon_request_themed_apps),
+                                    themed));
 
-                                iconRequestViewHolder.progress.setMax(installed);
-                                iconRequestViewHolder.progress.setProgress(themed);
+                            iconRequestViewHolder.progress.setMax(installed);
+                            iconRequestViewHolder.progress.setProgress(themed);
 
-                                Detail d = new Detail(-1, String.valueOf(result),
-                                        mContext.getResources().getString(R.string.iconPercent),
-                                        Detail.Type.PERCENT);
+                            Detail d = new Detail(-1, String.valueOf(result),
+                                    mContext.getResources().getString(R.string.iconPercent),
+                                    Detail.Type.PERCENT);
 
+                            addNewContent(d);
+
+                            if (bitMap != null && bitMap.size() > 0) {
+                                d = new Detail(-1, "",
+                                        mContext.getResources().getString(R.string.iconMask),
+                                        Detail.Type.MASK);
+                                d.setListIcons(bitMap);
                                 addNewContent(d);
-
-                                if (bitMap != null && bitMap.size() > 0) {
-                                    d = new Detail(-1, "",
-                                            mContext.getResources().getString(R.string.iconMask),
-                                            Detail.Type.MASK);
-                                    d.setListIcons(bitMap);
-                                    addNewContent(d);
-                                }
                             }
                         }
                     }, "MISSED");

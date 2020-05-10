@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -147,11 +148,32 @@ public class IconPackUtil {
 
     }
 
+
+    public static Bitmap drawableToBitmap (Drawable drawable) {
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable)drawable).getBitmap();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
     private Bitmap loadBitmap(String drawableName, String packageName) {
         try {
+
             int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
             if (id > 0) {
-                Bitmap bitmap = GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
+                Bitmap bitmap;
+                try {
+                    bitmap = GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
+                } catch (Exception e) {
+                    bitmap = drawableToBitmap(iconPackres.getDrawable(id));
+                }
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] byteArray = stream.toByteArray();
@@ -555,7 +577,6 @@ public class IconPackUtil {
         return bmp;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public Set<Icon> getNonThemeIcons(String currentPackage) throws ExecutionException, InterruptedException {
         Context context = App.getContext();
         PackageManager packageManager = context.getPackageManager();
