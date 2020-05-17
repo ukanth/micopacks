@@ -21,6 +21,7 @@ public class Prefs {
     public static final String IS_FIRST_TIME = "isFirstTime";
     public static final String PS = "PS";
     public static final String FAV = "show_favorites";
+    public static final String ENABLE_PROMPT="use_launcher_menu";
 
     public static boolean isDarkTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
@@ -30,6 +31,11 @@ public class Prefs {
     public static boolean useRoot() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(ROOT_TASKER, true);
+    }
+
+    public static boolean usePrompt() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        return prefs.getBoolean(ENABLE_PROMPT, false);
     }
 
     public static boolean useFavorite() {

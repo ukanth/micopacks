@@ -61,6 +61,10 @@
             android:defaultValue="true"
             android:key="use_root_tasker"
             android:title="@string/use_root" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="use_launcher_menu"
+            android:title="@string/use_launcher_menu" />
     </PreferenceCategory>
 
 

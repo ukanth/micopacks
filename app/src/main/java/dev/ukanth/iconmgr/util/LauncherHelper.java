@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.util.TypefaceHelper;
 import com.stericson.roottools.RootTools;
 
 import java.util.HashMap;
@@ -79,6 +80,8 @@ public class LauncherHelper {
     public static final int POSIDON = 28;
     public static final int TOTAL = 29;
     public static final int ROOTLESS = 30;
+
+    private static final int POCO = 31;
 
 
 
@@ -158,6 +161,8 @@ public class LauncherHelper {
                 return TOTAL;
             case "amirz.rootless.nexuslauncher":
                 return ROOTLESS;
+            case "com.mi.android.globallauncher":
+                return POCO;
             default:
                 return UNKNOWN;
         }
@@ -569,9 +574,44 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
+            case POCO:
+                //Todo: fix direct apply for flick launcher
+                try {
+                    final Intent poco = context.getPackageManager().getLaunchIntentForPackage(
+                            "com.mi.android.globallauncher");
+                    //openhelper(context, launcherPackage, launcherName,"com.miui.home.settings.HomeSettingsActivity");
+                    //((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
             default:
                 Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
         }
+    }
+
+    private static void openhelper(Context context, String packageName, String launcherName, String cls) {
+
+        new MaterialDialog.Builder(context)
+                .title(launcherName)
+                .content(context.getResources().getString(R.string.apply_manual,
+                        launcherName,
+                        context.getResources().getString(R.string.app_name)) +"\n\n"+
+                        context.getResources().getString(R.string.apply_manual_evie,
+                                context.getResources().getString(R.string.app_name)))
+                .positiveText(context.getResources().getString(R.string.open))
+                .onPositive((dialog, which) -> {
+                    try {
+                        final Intent intent = new Intent();
+                        intent.setComponent(new ComponentName(packageName, cls));
+                        context.startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(context, context.getResources().getString(
+                                R.string.no_browser), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .negativeText(android.R.string.cancel)
+                .show();
     }
 
     private static String getLabel(String launcherPackage, Context context) {

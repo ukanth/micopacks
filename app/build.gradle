@@ -13,7 +13,7 @@ android {
         versionCode 3100
         versionName "3.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField "boolean", "LICENSECHECK", "false"
+        buildConfigField "boolean", "LICENSECHECK", "true"
     }
 
     compileOptions {

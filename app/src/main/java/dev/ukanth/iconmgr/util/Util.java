@@ -353,7 +353,7 @@ public class Util {
 
     public static void determineApply(Context ctx, IPObj currentItem) {
         String currentLauncher = getCurrentLauncher(ctx);
-        if (currentLauncher != null) {
+        if (currentLauncher != null && !Prefs.usePrompt()) {
             if(currentItem != null) {
                 LauncherHelper.apply(ctx, currentItem.getIconPkg(), currentLauncher);
             } else {
