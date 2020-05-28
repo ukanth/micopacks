@@ -36,7 +36,9 @@ public class LicenseCallbackHelper implements LicenseCallback {
     @Override
     public void onLicenseCheckStart() {
         try {
-            mDialog.show();
+            if(!mDialog.isCancelled()) {
+                mDialog.show();
+            }
         } catch (Exception e){
 
         }

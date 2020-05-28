@@ -24,6 +24,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.graphics.Palette;
+import android.util.ArraySet;
 import android.util.Log;
 
 import com.glidebitmappool.GlideBitmapFactory;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -104,14 +106,16 @@ public class IconPackUtil {
 
     @NonNull
     public int calcTotal(@NonNull String packageName) {
-        Set icons = new HashSet();
+        Set icons = new TreeSet();
         XmlPullParser parser = getXmlParser(packageName, "drawable");
         try {
             if (parser != null) {
                 int eventType = parser.getEventType();
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
-                        icons.add(parser.getAttributeValue(null, "drawable"));
+                        String name = parser.getAttributeValue(null, "drawable");
+                        if(name != null)
+                            icons.add(name);
                     }
                     eventType = parser.next();
                 }
@@ -127,9 +131,9 @@ public class IconPackUtil {
             PackageManager pm = App.getContext().getPackageManager();
             iconPackres = pm.getResourcesForApplication(packageName);
 
-            int appfilter = iconPackres.getIdentifier(type, "xml", packageName);
-            if (appfilter > 0) {
-                parser = iconPackres.getXml(appfilter);
+            int fileIdentity = iconPackres.getIdentifier(type, "xml", packageName);
+            if (fileIdentity > 0) {
+                parser = iconPackres.getXml(fileIdentity);
             } else {
                 try {
                     InputStream appfilterstream = iconPackres.getAssets().open(type + ".xml");

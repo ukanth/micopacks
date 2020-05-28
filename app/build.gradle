@@ -61,7 +61,7 @@ dependencies {
     implementation 'eu.chainfire:libsuperuser:1.0.0.201602271131'
 
     //database
-    implementation 'org.greenrobot:greendao:3.2.2'
+    implementation 'org.greenrobot:greendao:3.3.0'
 
     //material dialog
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'

@@ -170,7 +170,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             if (currentItem != null && currentItem.getIconPkg() != null && !currentItem.getIconPkg().isEmpty()
                     && Util.isPackageExisted(ctx, currentItem.getIconPkg())) {
                 Intent i = ctx.getPackageManager().getLaunchIntentForPackage(currentItem.getIconPkg());
-                ctx.startActivity(i);
+                if(i != null) {
+                    ctx.startActivity(i);
+                }
             }
         } catch (Exception e) {
             Log.e("MICO", e.getMessage(), e);
@@ -238,7 +240,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         boolean isshown = false;
 
         if (Prefs.isTotalIcons()) {
-            builder.append(ctx.getString(R.string.noicons) + " " + Integer.toString(obj.getTotal()));
+            builder.append(ctx.getString(R.string.noicons) + " " + obj.getTotal());
             isshown = true;
         }
         if (Prefs.showSize()) {
