@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.List;
 
 import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.HistoryDao;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;

@@ -26,6 +26,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.graphics.Palette;
 import android.util.ArraySet;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.glidebitmappool.GlideBitmapFactory;
 
@@ -50,6 +51,8 @@ import java.util.concurrent.Future;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.util.Util;
+
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 /**
  * Created by ukanth on 17/7/17.
@@ -104,18 +107,67 @@ public class IconPackUtil {
         return hsvValues[0];
     }
 
-    @NonNull
-    public int calcTotal(@NonNull String packageName) {
-        Set icons = new TreeSet();
+    private int getIconCountByDrawable(@NonNull String packageName){
+        int count = 0;
+        String sectionTitle = "";
+        List<String> icons = new ArrayList<>();
         XmlPullParser parser = getXmlParser(packageName, "drawable");
+        try {
+            if (parser != null) {
+                PackageManager pm = App.getContext().getPackageManager();
+                iconPackres = pm.getResourcesForApplication(packageName);
+                int eventType = parser.getEventType();
+
+                while (eventType != XmlPullParser.END_DOCUMENT) {
+                    if (eventType == XmlPullParser.START_TAG) {
+                        if (parser.getName().equals("category")) {
+                            String title = parser.getAttributeValue(null, "title");
+                            if (!sectionTitle.equals(title)) {
+                                if (sectionTitle.length() > 0) {
+                                    count += icons.size();
+                                }
+                            }
+                            sectionTitle = title;
+                            icons = new ArrayList<>();
+                        } else if (parser.getName().equals("item")) {
+                            String name = parser.getAttributeValue(null, "drawable");
+                            if (name != null) {
+                                int id = iconPackres.getIdentifier(name, "drawable", packageName);
+                                if (id > 0) {
+                                    icons.add(name);
+                                }
+                            }
+                        }
+                    }
+                    eventType = parser.next();
+                }
+            }
+        } catch (XmlPullParserException | PackageManager.NameNotFoundException | IOException e) {
+        }
+        count += icons.size();
+        return count;
+    }
+
+    private int getIconCountByFilter(@NonNull String packageName){
+        Set icons = new HashSet();
+        XmlPullParser parser = getXmlParser(packageName, "appfilter");
         try {
             if (parser != null) {
                 int eventType = parser.getEventType();
                 while (eventType != XmlPullParser.END_DOCUMENT) {
                     if (eventType == XmlPullParser.START_TAG) {
-                        String name = parser.getAttributeValue(null, "drawable");
-                        if(name != null)
-                            icons.add(name);
+                        String parserName = parser.getName();
+                        if (parserName.equals("item")) {
+                            String name = parser.getAttributeValue(null, "drawable");
+                            if(name != null && !name.isEmpty()) {
+                                icons.add(name);
+                            }
+                        } else if (parserName.equals("calendar")) {
+                            String name = parser.getAttributeValue(null, "prefix");
+                            if(name != null && !name.isEmpty()) {
+                                icons.add(name);
+                            }
+                        }
                     }
                     eventType = parser.next();
                 }
@@ -123,6 +175,14 @@ public class IconPackUtil {
         } catch (XmlPullParserException | IOException e) {
         }
         return icons.size();
+    }
+
+    @NonNull
+    public int calcTotal(@NonNull String packageName) {
+        int drawCount = getIconCountByDrawable(packageName);
+        int filterCount = getIconCountByFilter(packageName);
+        return  drawCount > filterCount ? drawCount : filterCount;
+
     }
 
     private XmlPullParser getXmlParser(String packageName, String type) {
