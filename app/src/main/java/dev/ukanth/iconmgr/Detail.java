@@ -1,8 +1,8 @@
 package dev.ukanth.iconmgr;
 
 import android.graphics.Point;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 

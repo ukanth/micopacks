@@ -1,7 +1,7 @@
 
 package dev.ukanth.iconmgr;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Created by ukanth on 15/8/17.

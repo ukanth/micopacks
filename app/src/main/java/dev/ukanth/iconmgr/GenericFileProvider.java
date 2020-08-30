@@ -1,6 +1,6 @@
 package dev.ukanth.iconmgr;
 
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 /**
  * Created by ukanth on 23/2/18.

@@ -3,7 +3,7 @@ package dev.ukanth.iconmgr;
 import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;

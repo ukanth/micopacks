@@ -1,6 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android" android:autoLink="web">
     <string name="app_name">MicoPacks</string>
-    <string name="app_name_free">MicoPacks Free</string>
     <string name="loading">Loading Iconpacks</string>
     <string name="loading_preview">Generate preview</string>
     <string name="loading_stats">Calculating stats</string>
@@ -20,15 +19,10 @@
     <string name="nodefault">No Default Launcher found</string>
     <string name="twofortyfouram_locale_breadcrumb_format">%1$s%2$s%3$s</string>
     <string name="twofortyfouram_locale_breadcrumb_separator">\u0020&gt;\u0020</string>
-    <string name="twofortyfouram_locale_menu_dontsave">Cancel</string>
-    <string name="twofortyfouram_locale_menu_help">Help</string>
-    <string name="twofortyfouram_locale_menu_save">Done</string>
     <string name="no_data_available">No compatible icon packs found</string>
 
     <string name="no_preview">All installed icons are masked by this pack. Kindly check details view.</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="changelog_activity_settings">Changelog</string>
-    <string name="pref_header_general">General</string>
     <string name="help">Help</string>
     <string name="about">About</string>
     <string name="saverules">Save</string>
@@ -56,14 +50,9 @@
 
     <string name="about_help">Tasker plugin - Requires ROOT for Nova Launcher</string>
     <string name="notsupported">Detected %s , Sorry not supported yet!</string>
-    <string name="rootrequired">Root requires to apply the change</string>
     <string name="noicons">Icons: </string>
-    <string name="percent">Percent: </string>
     <string name="report">Report a problem</string>
     <string name="use_dark">Dark theme</string>
-    <string name="use_dark_paid">Dark theme(Paid only)</string>
-    <string name="calculate_percent">Calculate matching icons</string>
-    <string name="include_system">Include system applications</string>
     <string name="access_sort">Sort</string>
     <string name="alphabet">By alphabet</string>
     <string name="lastupdated">By last update</string>
@@ -72,8 +61,6 @@
     <string name="iconpercent">By match percent</string>
     <string name="total_icons">Show icon count</string>
     <string name="show_notification">Notify on new icon pack install</string>
-    <string name="show_notification_paid">Notify on new icon pack install(Paid only)</string>
-    <string name="match" formatted="false">Supports %s of %s apps(%s)</string>
     <string name="please_wait_normal">Please wait ... </string>
     <string name="action_search">Search</string>
     <string name="changelog">Changelog</string>
@@ -103,20 +90,15 @@
     <string name="show_percent">Show Percentage</string>
     <string name="forcereload">Rebuild list</string>
     <string name="onlysupportedroot">Supported through root mode only</string>
-    <string name="applied">Applied successfully</string>
     <string name="action_random">Random</string>
     <string name="selected_pack">Selected Pack:</string>
     <string name="sharelist">Share</string>
     <string name="generating">Generating image, please wait ...</string>
-    <string name="random_shortcut_short_label1">Random</string>
-    <string name="random_shortcut_long_label1">Apply random iconpack</string>
     <string name="show_favs">Enable Favorites</string>
     <string name="unable_iconpack">No iconpack found</string>
     <string name="unable_screenshot">Sorry! Unable to create screenshot</string>
     <string name="save">Save</string>
     <string name="icon_search">Icon Search</string>
-    <string name="app_label">app</string>
-    <string name="search_hint">Search Icons</string>
     <string name="searching">Searching</string>
     <string name="select_launcher">Select Launcher to apply iconpack</string>
     <string name="apply">Apply</string>

@@ -4,14 +4,10 @@
     <color name="colorPrimaryDark">#455A64</color>
     <color name="colorAccent">#ffea00</color>
     <color name="colorAccentDark">#607D8B</color>
-    <color name="title">#fafafa</color>
     <color name="chglib_material_color_text_1">#fff</color>
     <color name="chglib_material_color_text_2">#000</color>
     <color name="black">#000000</color>
-    <color name="white">#fff</color>
 
-    <color name="red">#f20306</color>
-    <color name="green">#22ff00</color>
     <color name="icon_tint_normal">#ffe100</color>
 
 </resources>
