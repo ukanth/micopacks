@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/itm-android.iml" filepath="$PROJECT_DIR$/itm-android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/micopacks.iml" filepath="$PROJECT_DIR$/micopacks.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/micopacks-app.iml" filepath="$PROJECT_DIR$/app/micopacks-app.iml" group="micopacks/app" />
-      <module fileurl="file://$PROJECT_DIR$/opensource-micopacks.iml" filepath="$PROJECT_DIR$/opensource-micopacks.iml" group="micopacks" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/micopacks.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/micopacks.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/opensource.micopacks.iml" filepath="$PROJECT_DIR$/.idea/modules/opensource.micopacks.iml" />
     </modules>
   </component>
 </project>

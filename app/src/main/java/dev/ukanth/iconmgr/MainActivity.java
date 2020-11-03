@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private void callRandom() {
         //String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
         IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
-        Util.determineApply(getApplicationContext(),ipObj);
+        Util.determineApply(MainActivity.this,ipObj);
     }
 
     private void startLicenseCheck() {

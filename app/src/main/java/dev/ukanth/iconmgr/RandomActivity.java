@@ -23,7 +23,7 @@ public class RandomActivity extends AppCompatActivity {
         } else {
             ipObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
         }
-        Util.determineApply(getApplicationContext(), ipObj);
+        Util.determineApply(RandomActivity.this, ipObj);
         finish();
     }
 }
