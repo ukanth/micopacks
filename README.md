@@ -3,7 +3,7 @@
 Micopacks is an open source application helps you to manage icon packs on your device along with lot of additional features including taskar plugin.
 
 ### Install from play store
-https://play.google.com/store/apps/details?id=dev.ukanth.micopacks
+https://play.google.com/store/apps/details?id=dev.ukanth.iconmanager
 
 ### Features:
 
