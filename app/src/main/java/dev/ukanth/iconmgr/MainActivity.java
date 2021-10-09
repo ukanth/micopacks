@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +26,6 @@ import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.FileProvider;
@@ -35,7 +33,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.danimahardhika.android.helpers.license.LicenseHelper;
 import com.google.gson.Gson;
@@ -50,7 +47,6 @@ import java.util.List;
 import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.util.LicenseCallbackHelper;
 import dev.ukanth.iconmgr.util.PackageComparator;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -121,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         loadApp(false);
 
-        if (BuildConfig.LICENSECHECK) {
+       /* if (BuildConfig.LICENSECHECK) {
             startLicenseCheck();
-        }
+        }*/
 
         filter = new IntentFilter();
         filter.addAction("updatelist");
@@ -199,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         Util.determineApply(MainActivity.this,ipObj);
     }
 
-    private void startLicenseCheck() {
+    /*private void startLicenseCheck() {
         try {
             byte[] salt = new byte[]{
                     -11, 115, 10, -19, -33,
@@ -240,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             Toast.makeText(getApplicationContext(), "Unable to validate license", Toast.LENGTH_LONG);
             finish();
         }
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

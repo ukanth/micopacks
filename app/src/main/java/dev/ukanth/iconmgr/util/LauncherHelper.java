@@ -83,6 +83,9 @@ public class LauncherHelper {
 
     private static final int POCO = 31;
 
+    private static final int SQUARE = 32;
+    private static final int NIAGARA = 33;
+    private static final int BLACKBERRY = 34;
 
 
     public static int getLauncherId(String packageName) {
@@ -163,6 +166,10 @@ public class LauncherHelper {
                 return ROOTLESS;
             case "com.mi.android.globallauncher":
                 return POCO;
+            case "com.ss.squarehome2":
+                return SQUARE;
+            case "bitpit.launcher":
+                return NIAGARA;
             default:
                 return UNKNOWN;
         }
@@ -198,6 +205,28 @@ public class LauncherHelper {
 
     private static void applyLauncher(@NonNull Context context, String launcherPackage, String launcherName, int id) {
         switch (id) {
+
+            case NIAGARA:
+                try {
+                    final Intent niagara = new Intent("bitpit.launcher.APPLY_ICONS");
+                    niagara.putExtra("packageName", context.getPackageName());
+                    context.startActivity(niagara);
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+
+            case SQUARE:
+                try {
+                    final Intent square = new Intent("com.ss.squarehome2.ACTION_APPLY_ICONPACK");
+                    square.setComponent(ComponentName.unflattenFromString("com.ss.squarehome2/.ApplyThemeActivity"));
+                    square.putExtra("com.ss.squarehome2.EXTRA_ICONPACK", context.getPackageName());
+                    context.startActivity(square);
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+
             case ACTION:
                 try {
                     final Intent action = context.getPackageManager().getLaunchIntentForPackage(
@@ -462,7 +491,7 @@ public class LauncherHelper {
                 break;
             case ZERO:
                 try {
-                     /*
+                    /*
                      * Just want to let anyone who is going to copy
                      * It's not easy searching for this
                      * I will be grateful if you take this with a proper credit
@@ -483,7 +512,7 @@ public class LauncherHelper {
                 break;
             case V:
                 try {
-                     /*
+                    /*
                      * Just want to let anyone who is going to copy
                      * It's not easy searching for this
                      * I will be grateful if you take this with a proper credit
@@ -504,7 +533,7 @@ public class LauncherHelper {
                 break;
             case ABC:
                 try {
-                     /*
+                    /*
                      * Just want to let anyone who is going to copy
                      * It's not easy searching for this
                      * I will be grateful if you take this with a proper credit
@@ -564,7 +593,7 @@ public class LauncherHelper {
 
             case POSIDON:
                 try {
-                    final  Intent i = new Intent(Intent.ACTION_MAIN);
+                    final Intent i = new Intent(Intent.ACTION_MAIN);
                     i.setComponent(new ComponentName("posidon.launcher", "posidon.launcher.applyicons"));
                     i.putExtra("iconpack", launcherPackage);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -596,7 +625,7 @@ public class LauncherHelper {
                 .title(launcherName)
                 .content(context.getResources().getString(R.string.apply_manual,
                         launcherName,
-                        context.getResources().getString(R.string.app_name)) +"\n\n"+
+                        context.getResources().getString(R.string.app_name)) + "\n\n" +
                         context.getResources().getString(R.string.apply_manual_evie,
                                 context.getResources().getString(R.string.app_name)))
                 .positiveText(context.getResources().getString(R.string.open))
