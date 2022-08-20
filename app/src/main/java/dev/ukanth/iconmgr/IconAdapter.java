@@ -57,43 +57,40 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             ipackCount = (TextView) view.findViewById(R.id.ipack_icon_count);
             icon = (ImageView) view.findViewById(R.id.ipack_icon);
             iconImp = (ImageView) view.findViewById(R.id.icon_star);
-            iconImp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (currentItem != null && currentItem.getIconPkg() != null) {
-                        IconAttr attr = new Gson().fromJson(currentItem.getAdditional(), IconAttr.class);
-                        attr.setFavorite(!attr.isFavorite());
-                        currentItem.setAdditional(new Gson().toJson(attr).toString());
-                        App app = ((App) ctx.getApplicationContext());
-                        app.getDaoSession().getIPObjDao().update(currentItem);
-                        if (attr.isFavorite()) {
-                            iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
-                            //Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-                                Intent intent = new Intent(ctx, RandomActivity.class);
-                                intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                intent.putExtra("pack", currentItem.getIconPkg());
-                                ShortcutInfo shortcut = new ShortcutInfo.Builder(ctx, currentItem.getIconPkg())
-                                        .setShortLabel(currentItem.getIconName())
-                                        .setLongLabel(currentItem.getIconName())
-                                        .setIntent(intent)
-                                        .build();
-                                ShortcutManager manager = ctx.getSystemService(ShortcutManager.class);
-                                if (manager.getDynamicShortcuts().size()  < manager.getMaxShortcutCountPerActivity()) {
-                                    manager.addDynamicShortcuts(Arrays.asList(shortcut));
-                                }
-                            }
-
-                        } else {
-                            iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
-                            //Toast.makeText(ctx, "Removed to Favorites", Toast.LENGTH_SHORT).show();
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-                                ctx.getSystemService(ShortcutManager.class).removeDynamicShortcuts(Arrays.asList(currentItem.getIconPkg()));
+            iconImp.setOnClickListener(view13 -> {
+                if (currentItem != null && currentItem.getIconPkg() != null) {
+                    IconAttr attr = new Gson().fromJson(currentItem.getAdditional(), IconAttr.class);
+                    attr.setFavorite(!attr.isFavorite());
+                    currentItem.setAdditional(new Gson().toJson(attr).toString());
+                    App app = ((App) ctx.getApplicationContext());
+                    app.getDaoSession().getIPObjDao().update(currentItem);
+                    if (attr.isFavorite()) {
+                        iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
+                        //Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+                            Intent intent = new Intent(ctx, RandomActivity.class);
+                            intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.putExtra("pack", currentItem.getIconPkg());
+                            ShortcutInfo shortcut = new ShortcutInfo.Builder(ctx, currentItem.getIconPkg())
+                                    .setShortLabel(currentItem.getIconName())
+                                    .setLongLabel(currentItem.getIconName())
+                                    .setIntent(intent)
+                                    .build();
+                            ShortcutManager manager = ctx.getSystemService(ShortcutManager.class);
+                            if (manager.getDynamicShortcuts().size()  < manager.getMaxShortcutCountPerActivity()) {
+                                manager.addDynamicShortcuts(Arrays.asList(shortcut));
                             }
                         }
 
+                    } else {
+                        iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
+                        //Toast.makeText(ctx, "Removed to Favorites", Toast.LENGTH_SHORT).show();
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+                            ctx.getSystemService(ShortcutManager.class).removeDynamicShortcuts(Arrays.asList(currentItem.getIconPkg()));
+                        }
                     }
+
                 }
             });
             icon.setOnClickListener(view12 -> {

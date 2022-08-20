@@ -72,7 +72,7 @@ public class LauncherHelper {
     public static final int V = 22;
     public static final int ABC = 23;
     public static final int EVIE = 24;
-    public static final int ARROW = 25;
+    public static final int MICROSOFT = 25;
     public static final int FLICK = 26;
     public static final int PIXEL = 27;
 
@@ -86,6 +86,9 @@ public class LauncherHelper {
     private static final int SQUARE = 32;
     private static final int NIAGARA = 33;
     private static final int BLACKBERRY = 34;
+    private static final int OMEGA = 36;
+    private static final int OPEN = 37;
+    private static final int NEO = 38;
 
 
     public static int getLauncherId(String packageName) {
@@ -153,7 +156,7 @@ public class LauncherHelper {
             case "is.shortcut":
                 return EVIE;
             case "com.microsoft.launcher":
-                return ARROW;
+                return MICROSOFT;
             case "com.universallauncher.universallauncher":
                 return FLICK;
             case "com.google.android.apps.nexuslauncher":
@@ -170,6 +173,12 @@ public class LauncherHelper {
                 return SQUARE;
             case "bitpit.launcher":
                 return NIAGARA;
+            case "com.blackberry.blackberrylauncher":
+                return BLACKBERRY;
+            case "com.saggitt.omega":
+                return OMEGA;
+            case "com.benny.openlauncher":
+                return OPEN;
             default:
                 return UNKNOWN;
         }
@@ -362,7 +371,7 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
-            case ARROW:
+            case MICROSOFT:
                 try {
                     HashMap<String, String> data = new HashMap<>();
                     data.put("cur_iconpack_package", launcherPackage);
@@ -568,13 +577,12 @@ public class LauncherHelper {
             case FLICK:
                 //Todo: fix direct apply for flick launcher
                 try {
-                    final Intent flick = context.getPackageManager().getLaunchIntentForPackage(
-                            "com.universallauncher.universallauncher");
-                    final Intent flickAction = new Intent("com.android.launcher3.FLICK_ICON_PACK_APPLIER");
-                    flickAction.putExtra("com.android.launcher3.extra.ICON_THEME_PACKAGE", context.getPackageName());
-                    flick.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    final Intent flickAction = new Intent("com.universallauncher.universallauncher.FLICK_ICON_PACK_APPLIER");
+                    flickAction.putExtra("com.universallauncher.universallauncher.ICON_THEME_PACKAGE", context.getPackageName());
+                    flickAction.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(flickAction);
                     context.sendBroadcast(flickAction);
-                    context.startActivity(flick);
+                    context.startActivity(flickAction);
                     ((AppCompatActivity) context).finish();
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
@@ -591,6 +599,17 @@ public class LauncherHelper {
                 }
                 break;
 
+            case OMEGA:
+                try {
+                    final Intent omega = new Intent("com.saggitt.omega.APPLY_ICONS");
+                    omega.setComponent(ComponentName.unflattenFromString("com.saggitt.omega.iconpack.ApplyIconPackActivity"));
+                    omega.putExtra("packageName", context.getPackageName());
+                    context.startActivity(omega);
+                    ((AppCompatActivity) context).finish();
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
             case POSIDON:
                 try {
                     final Intent i = new Intent(Intent.ACTION_MAIN);
@@ -614,6 +633,10 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
+            /*case BLACKBERRY:
+                applyManual(context, launcherPackage, launcherName, "com.blackberry.blackberrylauncher.MainActivity");
+                break; */
+
             default:
                 Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
         }

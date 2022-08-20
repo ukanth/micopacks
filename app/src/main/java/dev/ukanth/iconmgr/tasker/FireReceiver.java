@@ -120,7 +120,7 @@ public final class FireReceiver extends BroadcastReceiver {
                     case LauncherHelper.GO:
                         LauncherHelper.apply(context, iconPackage, launcherPack);
                         break;
-                    case LauncherHelper.ARROW:
+                    case LauncherHelper.MICROSOFT:
                         HashMap<String, String> data = new HashMap<>();
                         data.put("cur_iconpack_package", iconPackage);
                         data.put("cur_iconpack_name", iconName);

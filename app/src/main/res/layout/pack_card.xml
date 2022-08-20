@@ -5,19 +5,18 @@
     android:layout_height="wrap_content"
     android:padding="1dp">
 
-    <androidx.cardview.widget.CardView
+    <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardElevation="2dp"
         android:layout_marginTop="2dp"
-        android:foreground="?android:attr/selectableItemBackground"
         android:layout_marginBottom="2dp"
+        android:foreground="?android:attr/selectableItemBackground"
         app:cardPreventCornerOverlap="false"
-        app:cardUseCompatPadding="true">
+        app:cardUseCompatPadding="true"
+        card_view:cardCornerRadius="2dp"
+        card_view:cardElevation="2dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -28,37 +27,37 @@
                 android:id="@+id/ipack_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:scaleType="fitXY"
                 android:layout_alignParentTop="true"
-                android:layout_marginRight="10dp" />
+                android:layout_gravity="top"
+                android:layout_marginRight="10dp"
+                android:scaleType="fitXY" />
 
             <TextView
                 android:id="@+id/ipack_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/ipack_icon"
+                android:paddingBottom="8dp"
                 android:textSize="26sp" />
 
             <TextView
                 android:id="@+id/ipack_icon_count"
-                android:textAlignment="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/ipack_name"
-                android:textSize="14sp"
-                android:layout_toRightOf="@+id/ipack_icon" />
+                android:layout_toRightOf="@+id/ipack_icon"
+                android:textAlignment="center"
+                android:textSize="14sp" />
 
             <ImageView
                 android:id="@+id/icon_star"
                 android:layout_width="@dimen/icon_star"
                 android:layout_height="@dimen/icon_star"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:scaleType="fitStart"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
                 card_view:tint="@color/icon_tint_normal" />
 
 

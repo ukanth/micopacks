@@ -15,7 +15,6 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/menu_sort"
         android:icon="@drawable/sort"
         android:title="@string/access_sort"
         app:showAsAction="always">
