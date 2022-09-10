@@ -17,12 +17,16 @@ import android.os.AsyncTask;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.stericson.roottools.RootTools;
+import com.topjohnwu.superuser.Shell;
 
 import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.TimeUnit;
@@ -37,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import dev.ukanth.iconmgr.ApplyActionReceiver;
 import dev.ukanth.iconmgr.App;
@@ -46,7 +52,6 @@ import dev.ukanth.iconmgr.PreviewActionReceiver;
 import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import eu.chainfire.libsuperuser.Shell;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -66,61 +71,47 @@ public class Util {
 
     public static void updateFile(final String fileName, final String packageName, final String key, final String value, final Context ctx) {
         Log.i(TAG, String.format("Read Preference - (%s)", fileName));
-        new AsyncTask<Object, Object, StringBuilder>() {
-            @Override
-            public StringBuilder doInBackground(Object... args) {
-                StringBuilder temp = new StringBuilder();
-                List<String> lines = Shell.SU.run(String.format(CMD_CAT_FILE, fileName));
-                if (lines != null) {
-                    for (String line : lines) {
-                        temp.append(line).append(LINE_SEPARATOR);
-                    }
-                }
-                return temp;
-            }
 
-            @Override
-            public void onPostExecute(StringBuilder res) {
-                String fileContent = res.toString();
-                if (fileContent != null && !fileContent.isEmpty()) {
-                    PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
-                    Log.i(TAG, " Updating " + key + " with value: " + value);
-                    preferenceFile.updateValue(key, value);
-                    savePreferences(preferenceFile, fileName, packageName, ctx);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            StringBuilder temp = new StringBuilder();
+            List<String> lines = Shell.cmd(String.format(CMD_CAT_FILE, fileName)).exec().getOut();
+            if (lines != null) {
+                for (String line : lines) {
+                    temp.append(line).append(LINE_SEPARATOR);
                 }
             }
-        }.execute();
+            String fileContent = temp.toString();
+            if (fileContent != null && !fileContent.isEmpty()) {
+                PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
+                Log.i(TAG, " Updating " + key + " with value: " + value);
+                preferenceFile.updateValue(key, value);
+                savePreferences(preferenceFile, fileName, packageName, ctx);
+            }
+        });
     }
 
     public static void updateFile(final String fileName, final String packageName, final HashMap<String, String> data, final Context ctx, final boolean restart) {
         Log.i(TAG, String.format("Read Preference - (%s)", fileName));
-        new AsyncTask<Object, Object, StringBuilder>() {
-            @Override
-            public StringBuilder doInBackground(Object... args) {
-                StringBuilder temp = new StringBuilder();
-                List<String> lines = Shell.SU.run(String.format(CMD_CAT_FILE, fileName));
-                if (lines != null) {
-                    for (String line : lines) {
-                        temp.append(line).append(LINE_SEPARATOR);
-                    }
-                }
-                return temp;
-            }
 
-            @Override
-            public void onPostExecute(StringBuilder res) {
-                String fileContent = res.toString();
-                if (fileContent != null && !fileContent.isEmpty()) {
-                    PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
-                    for (Map.Entry<String, String> entry : data.entrySet()) {
-                        Log.i(TAG, " Updating " + entry.getKey() + " with value: " + entry.getValue());
-                        preferenceFile.updateValue(entry.getKey(), entry.getValue());
-                    }
-                    savePreferences(preferenceFile, fileName, packageName, ctx);
-                    if (restart) Util.restartLauncher(ctx, packageName);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            StringBuilder temp = new StringBuilder();
+            List<String> lines = Shell.cmd(String.format(CMD_CAT_FILE, fileName)).exec().getOut();
+            if (lines != null) {
+                for (String line : lines) {
+                    temp.append(line).append(LINE_SEPARATOR);
                 }
             }
-        }.execute();
+            String fileContent = temp.toString();
+            if (fileContent != null && !fileContent.isEmpty()) {
+                PreferenceFile preferenceFile = PreferenceFile.fromXml(fileContent);
+                for (Map.Entry<String, String> entry : data.entrySet()) {
+                    Log.i(TAG, " Updating " + entry.getKey() + " with value: " + entry.getValue());
+                    preferenceFile.updateValue(entry.getKey(), entry.getValue());
+                }
+                savePreferences(preferenceFile, fileName, packageName, ctx);
+                if (restart) Util.restartLauncher(ctx, packageName);
+            }
+        });
     }
 
 
@@ -152,7 +143,7 @@ public class Util {
             return false;
         }
 
-        Shell.SU.run(String.format(CMD_CP, tmpFile.getAbsolutePath(), file));
+        Shell.cmd(String.format(CMD_CP, tmpFile.getAbsolutePath(), file)).exec();
 
         if (!fixUserAndGroupId(ctx, file, packageName)) {
             Log.e(TAG, "Error fixUserAndGroupId");
@@ -181,21 +172,6 @@ public class Util {
         return uid;
     }
 
-    /*public static String extractFileName(String s) {
-        if (TextUtils.isEmpty(s)) {
-            return null;
-        }
-        return s.substring(s.lastIndexOf(FILE_SEPARATOR) + 1);
-    }
-
-    public static String extractFilePath(String s) {
-        if (TextUtils.isEmpty(s)) {
-            return null;
-        }
-        return s.substring(0, Math.max(s.length(), s.lastIndexOf(FILE_SEPARATOR)));
-    }*/
-
-
     private static boolean fixUserAndGroupId(Context ctx, String file, String packageName) {
         Log.d(TAG, String.format("fixUserAndGroupId(%s, %s)", file, packageName));
         String uid;
@@ -216,7 +192,7 @@ public class Util {
             return false;
         }
 
-        Shell.SU.run(String.format(CMD_CHOWN, uid, uid, file));
+        Shell.cmd(String.format(CMD_CHOWN, uid, uid, file)).exec();
         return true;
     }
 
@@ -234,15 +210,12 @@ public class Util {
     }
 
     public static void restartLauncher(final Context context, final String packageName) {
-        new AsyncTask<Object, Object, Void>() {
-            @Override
-            public Void doInBackground(Object... args) {
-                RootTools.killProcess(packageName);
-                Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-                context.startActivity(LaunchIntent);
-                return null;
-            }
-        }.execute();
+
+        Executors.newSingleThreadExecutor().execute(() -> {
+            RootTools.killProcess(packageName);
+            Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+            context.startActivity(LaunchIntent);
+        });
     }
 
    /* public static List<String> findXmlFiles(final String packageName) {
@@ -289,65 +262,6 @@ public class Util {
         }
         return res;
     }
-
-   /* private static void setElementValue(Element elem, String updateName) {
-        Node kid;
-        if (elem != null) {
-            if (elem.hasChildNodes()) {
-                for (kid = elem.getFirstChild(); kid != null; kid = kid.getNextSibling()) {
-                    if (kid.getNodeType() == Node.TEXT_NODE) {
-                        kid.setNodeValue(updateName);
-                    }
-                }
-            }
-        }
-    }
-
-    private static String getElementValue(Node elem) {
-        Node kid;
-        if (elem != null) {
-            if (elem.hasChildNodes()) {
-                for (kid = elem.getFirstChild(); kid != null; kid = kid.getNextSibling()) {
-                    if (kid.getNodeType() == Node.TEXT_NODE) {
-                        return kid.getNodeValue();
-                    }
-                }
-            }
-        }
-        return "";
-    }
-
-    private static String readTextFile(InputStream inputStream) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        final byte buf[] = new byte[4096];
-        int len;
-        try {
-            while ((len = inputStream.read(buf)) != -1) {
-                outputStream.write(buf, 0, len);
-            }
-            outputStream.close();
-            inputStream.close();
-        } catch (IOException e) {
-
-        }
-        return outputStream.toString();
-    }
-
-    private static Document XMLfromString(String v) {
-        Document doc = null;
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            InputSource is = new InputSource();
-            is.setCharacterStream(new StringReader(v));
-            doc = db.parse(is);
-        } catch (ParserConfigurationException e) {
-        } catch (SAXException e) {
-        } catch (IOException e) {
-        }
-        return doc;
-
-    }*/
 
     public static void determineApply(Context ctx, IPObj currentItem) {
         String currentLauncher = getCurrentLauncher(ctx);

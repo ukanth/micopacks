@@ -34,7 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.danimahardhika.android.helpers.license.LicenseHelper;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -53,7 +52,6 @@ import dev.ukanth.iconmgr.util.Util;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyView;
-    private LicenseHelper mLicenseHelper;
     private IconAdapter adapter;
     private IPObjDao ipObjDao;
     private List<IPObj> iconPacksList;
@@ -116,10 +114,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mSwipeLayout.setOnRefreshListener(this);
 
         loadApp(false);
-
-       /* if (BuildConfig.LICENSECHECK) {
-            startLicenseCheck();
-        }*/
 
         filter = new IntentFilter();
         filter.addAction("updatelist");
@@ -190,60 +184,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void callRandom() {
-        //String currentLauncher = Util.getCurrentLauncher(getApplicationContext());
         IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
         Util.determineApply(MainActivity.this,ipObj);
     }
 
-    /*private void startLicenseCheck() {
-        try {
-            byte[] salt = new byte[]{
-                    -11, 115, 10, -19, -33,
-                    -12, 18, -24, 21, 68,
-                    -15, -45, 97, -17, -16,
-                    -13, -11, 12, -14, 81
-            };
-
-            String licenseKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApXY+Hz2FyJ7rgvDjNiisklEMS6o0fRtQHgPi8uDpJxhr5IrOBu0LE8utemYXZYkYU8Hx4dhFr/lcgXJf9Sg6XXMybSwq0mS/N6OFAhI6Mo9Hjaw7sKfmf/8ogyMMQ0s88qjE4A7J0Eu8I12Bw0e2zPSb3Nz/oi3Wz9G0weGf6lNAqcrGaZwxSN/5fVOjy5fafKlH52Iln0t2GSuW97yiakD2XERTeQGlpTq5Dm7Lp4Ve4SqfmFi9m9w5PKLZJgkotFPcH8VsZgqElAwM3UK0Q4+J1TvBeQxugZHI6Uc5vUJeFvPpL8lGK80Dh16Z4kMcJyJsZpjFz6aoI2VdFrNhkQIDAQAB";
-
-            if (Prefs.isFirstTime()) {
-                mLicenseHelper = new LicenseHelper(this);
-                mLicenseHelper.run(licenseKey, salt, new LicenseCallbackHelper(MainActivity.this));
-                return;
-            }
-
-            if (!Prefs.isPS()) {
-                if (!Prefs.isPS()) {
-                    new MaterialDialog.Builder(MainActivity.this)
-                            .title(R.string.license_check)
-                            .content(getString(R.string.license_check_failed))
-                            .positiveText(R.string.close)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    dialog.dismiss();
-                                    finish();
-                                }
-                            })
-                            .cancelable(false)
-                            .canceledOnTouchOutside(false)
-                            .show();
-
-                }
-            }
-        } catch (Exception e) {
-            Log.e("MICO", e.getMessage(), e);
-            Toast.makeText(getApplicationContext(), "Unable to validate license", Toast.LENGTH_LONG);
-            finish();
-        }
-    }*/
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mLicenseHelper != null) {
-            mLicenseHelper.destroy();
-        }
         if (mMessageReceiver != null) {
             unregisterReceiver(mMessageReceiver);
         }

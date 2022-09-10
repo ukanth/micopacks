@@ -10,7 +10,6 @@ android {
         versionCode 20220820
         versionName "4.0.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
-        buildConfigField "boolean", "LICENSECHECK", "false"
     }
 
     buildTypes {
@@ -31,6 +30,7 @@ greendao {
 
 
 dependencies {
+    def libsuVersion = '5.0.2'
   /*  compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -51,7 +51,8 @@ dependencies {
     implementation 'androidx.palette:palette:1.0.0'
 
     //root library
-    implementation 'eu.chainfire:libsuperuser:1.0.0.201602271131'
+    //implementation 'eu.chainfire:libsuperuser:1.0.0.201602271131'
+    implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
 
     //database
     implementation 'org.greenrobot:greendao:3.3.0'
@@ -62,17 +63,14 @@ dependencies {
     //changelib
     implementation 'com.github.gabrielemariotti.changeloglib:changelog:2.1.0'
 
-    //license check
-    implementation 'com.github.danimahardhika.android-helpers:license:0.1.0'
-
     //bitmap pool
     implementation 'com.amitshekhar.android:glide-bitmap-pool:0.0.1'
 
     //gson
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.9.1'
 
     //prettytime
-    implementation 'org.ocpsoft.prettytime:prettytime:5.0.3.Final'
+    implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
 
 
 }
