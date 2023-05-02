@@ -29,7 +29,6 @@
             android:textColor="?android:attr/textColorSecondary"
             android:textSize="@dimen/text_content"
             android:visibility="gone" />
-
         <TextView
             android:id="@+id/title_content"
             android:layout_width="match_parent"
@@ -38,7 +37,6 @@
             android:gravity="center"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="@dimen/text_max_size" />
-
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

@@ -393,6 +393,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.changelog:
                 showChangelog();
                 return true;
+            case R.id.fav:
+                showFav();
+                return true;
             case R.id.help:
                 showHelp();
                 return true;
@@ -448,6 +451,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showFav() {
+        Intent myIntent = new Intent(MainActivity.this, favorites.class);
+        startActivity(myIntent);
     }
 
     private void showIconSearch() {

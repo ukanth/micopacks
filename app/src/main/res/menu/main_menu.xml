@@ -74,6 +74,10 @@
         android:title="@string/report"
         app:showAsAction="collapseActionView" />
 
+    <item
+        android:id="@+id/fav"
+        android:title="Favourites"
+        app:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/changelog"
