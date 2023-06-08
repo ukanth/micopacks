@@ -1,5 +1,8 @@
 package dev.ukanth.iconmgr.dao;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
@@ -14,7 +17,7 @@ import org.greenrobot.greendao.annotation.Unique;
         @Index(value = "iconPkg, iconType, iconName ASC", unique = true)
 })
 
-public class IPObj {
+public class IPObj implements Parcelable {
 
     @Id
     private String iconPkg;
@@ -42,6 +45,28 @@ public class IPObj {
     @Generated(hash = 66213617)
     public IPObj() {
     }
+
+    protected IPObj(Parcel in) {
+        iconPkg = in.readString();
+        iconName = in.readString();
+        iconType = in.readString();
+        installTime = in.readLong();
+        total = in.readInt();
+        missed = in.readInt();
+        additional = in.readString();
+    }
+
+    public static final Creator<IPObj> CREATOR = new Creator<IPObj>() {
+        @Override
+        public IPObj createFromParcel(Parcel in) {
+            return new IPObj(in);
+        }
+
+        @Override
+        public IPObj[] newArray(int size) {
+            return new IPObj[size];
+        }
+    };
 
     public String getAdditional() {
         return additional;
@@ -113,5 +138,21 @@ public class IPObj {
     @Override
     public int hashCode() {
         return iconPkg.hashCode();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(iconPkg);
+        dest.writeString(iconName);
+        dest.writeString(iconType);
+        dest.writeLong(installTime);
+        dest.writeInt(total);
+        dest.writeInt(missed);
+        dest.writeString(additional);
     }
 }

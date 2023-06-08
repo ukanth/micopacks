@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.LruCache;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +53,8 @@ import dev.ukanth.iconmgr.util.Util;
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     private RecyclerView recyclerView;
     private TextView emptyView;
+
+    public List<IPObj> iconPacks=new ArrayList<>();
     private IconAdapter adapter;
     private IPObjDao ipObjDao;
     private List<IPObj> iconPacksList;
@@ -67,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private BroadcastReceiver updateReceiver;
 
+    public List<IPObj> favoriteIcons = getfavoriteIcons();
+
+    ArrayList<Parcelable> parcelableList = new ArrayList<>();
     private BroadcastReceiver packageReceiver;
     private IntentFilter packageFilter;
 
@@ -394,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 showChangelog();
                 return true;
             case R.id.fav:
-                showFav();
+                showfav();
                 return true;
             case R.id.help:
                 showHelp();
@@ -453,8 +459,24 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
     }
 
-    private void showFav() {
-        Intent myIntent = new Intent(MainActivity.this, favorites.class);
+    public List<IPObj> getfavoriteIcons() {
+        List<IPObj> favoriteIcons = new ArrayList<>();
+        for (IPObj ipack : iconPacks){
+            IconAttr attr = new Gson().fromJson(ipack.getAdditional(), IconAttr.class);
+            if(attr.isFavorite()){
+                favoriteIcons.add(ipack);
+            }
+        }
+        return favoriteIcons;
+
+    }
+
+    private void showfav() {
+        for (IPObj ipack : favoriteIcons) {
+            parcelableList.add(ipack);
+        }
+        Intent myIntent = new Intent(MainActivity.this, favoriteIcons.class);
+        myIntent.putParcelableArrayListExtra("favoriteIcons", parcelableList);
         startActivity(myIntent);
     }
 

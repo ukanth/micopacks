@@ -76,7 +76,7 @@
 
     <item
         android:id="@+id/fav"
-        android:title="Favourites"
+        android:title="Favorites"
         app:showAsAction="collapseActionView" />
 
     <item

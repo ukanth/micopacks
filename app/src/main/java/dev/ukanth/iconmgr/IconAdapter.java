@@ -41,19 +41,8 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     private Context ctx;
     protected List<IPObj> iconPacks;
 
-    private List<IPObj> favoriteIconPackList;
+
     private int installed;
-
-    public IconAdapter(Context ctx, List<IPObj> favoriteIconPackList) {
-        this.iconPacks = iconPacks;
-        this.ctx = ctx;
-    }
-
-
-    public void setData(List<IPObj> favoriteIconPackList) {
-        this.favoriteIconPackList = favoriteIconPackList;
-        notifyDataSetChanged();
-    }
 
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -279,24 +268,11 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         } catch (Exception r) {
         }
     }
+
     @Override
     public int getItemCount() {
         return iconPacks.size();
     }
-
-    public List<IPObj> getFavoriteIconPackList(){
-        List<IPObj> favoriteIconPackList = new ArrayList<>();
-        for(IPObj ipObj: iconPacks){
-            IconAttr attr = new Gson().fromJson(ipObj.getAdditional(), IconAttr.class);
-            if (attr.isFavorite()) {
-                favoriteIconPackList.add(ipObj);
-            }
-        }
-        return favoriteIconPackList;
-    }
-
-    IconAdapter adapter = new IconAdapter(ctx, favoriteIconPackList);
-    List<IPObj> FavoriteIconPackList = adapter.getFavoriteIconPackList();
 
     private class LoadIcon extends AsyncTask<Object, Void, View> {
         @Override
