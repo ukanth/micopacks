@@ -21,7 +21,7 @@ jobs:
       with:
         java-version: 11
         
-  #  Default gardle settings are sufficient. Can be used for custom gradle settings in future      
+  #  Default gardle settings are sufficient. Can be used for custom gradle settings
   #  - name: Copy CI gradle.properties
   #   run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       
