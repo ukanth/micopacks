@@ -5,9 +5,9 @@ on:
    schedule :
     - cron: '0 0 * * *'
    push:
-      branches: [ beta ]
+      branches: [ main ]
    pull_request:
-    branches: [ beta ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -20,6 +20,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+        
+  #  Default gardle settings are sufficient. Can be used for custom gradle settings in future      
   #  - name: Copy CI gradle.properties
   #   run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       
