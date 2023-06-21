@@ -1,10 +1,13 @@
 name: Android CI
 
 on:
-  push:
-    branches: [ beta ]
-  pull_request:
-    branches: [ beta ]
+   workflow_dispatch :
+   schedule :
+    - cron: '0 0 * * *'
+   push:
+      branches: [ main ]
+   pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -17,8 +20,17 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Copy CI gradle.properties
-      run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
+        
+  #  Default gardle settings are sufficient. Can be used for custom gradle setting
+  #  - name: Copy CI gradle.properties
+  #   run: mkdir -p ~/.gradle ; cp .github/ci-gradle.properties ~/.gradle/gradle.properties
       
     - name: Build with Gradle
       run: ./gradlew build
+      
+#     - name: Upload apk
+#       uses:  actions/upload-artifact@v2
+#       with:
+#        name: debug-apk
+#        path: app/build/outputs/apk/debug/app-debug.apk
+#  Used for uploading generated apk for future use
