@@ -49,7 +49,8 @@ import dev.ukanth.iconmgr.util.LauncherHelper;
 public class IconPreviewActivity extends AppCompatActivity {
 
 
-    private static final int WRITE_EXTERNAL_STORAGE = 12;
+    private static final int READ_MEDIA= 13;
+
     private MaterialDialog plsWait;
     private TextView emptyView;
 
@@ -159,13 +160,31 @@ public class IconPreviewActivity extends AppCompatActivity {
     }
 
     private void saveImage(Icon icon, String packageName) {
-        String root = Environment.getExternalStorageDirectory().toString();
-        File myDir = new File(root + "/micopacks/" + packageName);
-        myDir.mkdirs();
+        File mediaDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (mediaDir == null) {
+            Log.e("MICO", "External storage not available");
+            return;
+        }
+
+        File myDir = new File(mediaDir, "micopacks/" + packageName);
+        if (!myDir.exists() && !myDir.mkdirs()) {
+            Log.e("MICO", "Failed to create directory: " + myDir.getAbsolutePath());
+            return;
+        }
+
         String fname = icon.getTitle() + ".png";
         File file = new File(myDir, fname);
-        if (file.exists())
-            file.delete();
+
+        if (file.exists()) {
+            boolean deleted = file.delete();
+            if (deleted) {
+                Toast.makeText(getApplicationContext(), "Image deleted successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "Failed to delete image", Toast.LENGTH_SHORT).show();
+            }
+            return;
+        }
+
         try {
             FileOutputStream out = new FileOutputStream(file);
             icon.getIconBitmap().compress(Bitmap.CompressFormat.PNG, 85, out);
@@ -178,18 +197,32 @@ public class IconPreviewActivity extends AppCompatActivity {
     }
 
     private boolean isStoragePermissionGranted() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (Build.VERSION.SDK_INT >= 33) { // Since Android 13 granular permissions are used
+            if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES)
+                    == PackageManager.PERMISSION_GRANTED  ) {
+                Log.v("MICO", "Permission is granted");
+                return true;
+            } else {
+
+                Log.v("MICO", "Permission is revoked");
+                ActivityCompat.requestPermissions(IconPreviewActivity.this, new String[]{Manifest.permission.READ_MEDIA_IMAGES }, READ_MEDIA);
+
+                return false;
+            }
+        } else if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 32) {  // Versions prior to Android 13: Request READ_EXTERNAL_STORAGE permission
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v("MICO", "Permission is granted");
                 return true;
             } else {
 
                 Log.v("MICO", "Permission is revoked");
-                ActivityCompat.requestPermissions(IconPreviewActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE);
+                ActivityCompat.requestPermissions(IconPreviewActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_MEDIA);
+
                 return false;
             }
-        } else { //permission is automatically granted on sdk<23 upon installation
+        }
+        else { //permission is automatically granted on sdk<23 upon installation
             Log.v("MICO", "Permission is granted");
             return true;
         }
@@ -200,7 +233,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                                            String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case WRITE_EXTERNAL_STORAGE: {
+            case READ_MEDIA: {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -208,7 +241,6 @@ public class IconPreviewActivity extends AppCompatActivity {
                     // contacts-related task you need to do.
                     Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
                 } else {
-
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
