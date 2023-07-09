@@ -7,6 +7,9 @@ import com.google.gson.GsonBuilder;
  */
 
 public class IconAttr {
+
+    public String authorName;
+
     public long getSize() {
         return size;
     }
@@ -14,6 +17,10 @@ public class IconAttr {
     public void setSize(long size) {
         this.size = size;
     }
+
+//    public String getauthorName(){ return authorName; }
+//
+//    public void setauthorName(String authorName ){this.authorName = authorName ;}
 
     public int getMissed() {
         return missed;
@@ -61,6 +68,8 @@ public class IconAttr {
     private boolean deleted = false;
     private boolean purchased = false;
     private boolean favorite = false;
+
+
 
     @Override
     public String toString() {

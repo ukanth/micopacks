@@ -17,7 +17,6 @@ public class Detail {
     private final String mSubtitle;
     private final Detail.Type mType;
 
-
     private List<Icon> listIcons;
 
     public Detail(@DrawableRes int icon, String title, String subtitle, @NonNull Detail.Type type) {
@@ -47,8 +46,6 @@ public class Detail {
     public void setTitle(String title) {
         mTitle = title;
     }
-
-
     public List<Icon> getListIcons() {
         return listIcons;
     }

@@ -19,6 +19,11 @@
 
         <SwitchPreference
             android:defaultValue="false"
+            android:key="show_authorname"
+            android:title="Show Author Name " />
+
+        <SwitchPreference
+            android:defaultValue="false"
             android:key="total_icons"
             android:title="@string/total_icons" />
 

@@ -180,6 +180,7 @@ public class IconPackManager {
                 attr.setDeleted(false);
                 obj.setMissed(ip.getMissingApps(obj.getIconPkg(), Util.getInstalledApps()).size());
                 attr.setSize(Util.getApkSize(obj.getIconPkg()));
+
                 obj.setAdditional(attr.toString());
                 ipObjDao.insert(obj);
                 sendIntent(pkgName);

@@ -103,7 +103,6 @@ public class DetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 ContentViewHolder contentViewHolder = (ContentViewHolder) holder;
                 int finalPosition = position - 1;
                 contentViewHolder.autoFitTitle.setText(mHomes.get(finalPosition).getTitle());
-
                /* if (!BuildConfig.FULLFEATURE) {
                     float radius = contentViewHolder.autoFitTitle.getTextSize() / 3;
                     BlurMaskFilter filter = new BlurMaskFilter(radius, BlurMaskFilter.Blur.NORMAL);

@@ -147,8 +147,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             ctx.startActivity(intent);
         }
     }
-
-
     private void openApp(Context ctx, IPObj currentItem) {
         try {
             if (currentItem != null && currentItem.getIconPkg() != null && !currentItem.getIconPkg().isEmpty()
@@ -252,6 +250,16 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             }
             builder.append(" " + Util.prettyFormat(new Date(System.currentTimeMillis() - obj.getInstallTime())));
         }
+
+        if (Prefs.showAuthorName()){
+            if (Prefs.isTotalIcons() || Prefs.showSize() || Prefs.showPercentage() || Prefs.sortBy().equals("s1")){
+                builder.append(" - ");
+            }
+            isshown = true;
+            String authorName = Util.getAuthorName(ctx, obj.getIconPkg());
+           builder.append(" Author: " + " " + authorName);
+        }
+
 
         personViewHolder.ipackCount.setText(builder.toString());
 

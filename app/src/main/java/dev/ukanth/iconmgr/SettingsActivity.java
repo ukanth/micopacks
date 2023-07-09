@@ -19,6 +19,7 @@ import androidx.appcompat.app.ActionBar;
 import java.util.List;
 
 import static dev.ukanth.iconmgr.Prefs.SHOW_PERCENT;
+import static dev.ukanth.iconmgr.Prefs.SHOW_AUTHOR_NAME;
 import static dev.ukanth.iconmgr.Prefs.SHOW_SIZE;
 import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
 import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
@@ -181,7 +182,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         }
 
-
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             //seems like theme changed
@@ -189,7 +189,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 getActivity().recreate();
                 //MainActivity.setReloadTheme(true);
             }
-            if (key.equals(TOTAL_ICONS) || key.equals(SHOW_PERCENT) || key.equals(SHOW_SIZE)) {
+            if (key.equals(TOTAL_ICONS) || key.equals(SHOW_PERCENT) || key.equals(SHOW_SIZE) || key.equals(SHOW_AUTHOR_NAME)) {
                 MainActivity.setReloadApp(true);
             }
         }
