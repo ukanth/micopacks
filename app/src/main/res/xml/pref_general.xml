@@ -19,8 +19,8 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:key="show_authorname"
-            android:title="Show Author Name " />
+            android:key="show_authorName"
+            android:title="@string/authorname" />
 
         <SwitchPreference
             android:defaultValue="false"

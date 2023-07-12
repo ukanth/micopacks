@@ -16,7 +16,7 @@ public class Prefs {
     public static final String PREVIEW = "preview_nonthemed";
     public static final String ROOT_TASKER = "use_root_tasker";
     public static final String SHOW_SIZE = "showpack_size";
-    public static final String SHOW_AUTHOR_NAME = "show_authorname";
+    public static final String SHOW_AUTHOR_NAME = "show_authorName";
     public static final String SHOW_PERCENT = "showpack_percent";
     public static final String LIST_COL = "preview_col";
     public static final String IS_FIRST_TIME = "isFirstTime";

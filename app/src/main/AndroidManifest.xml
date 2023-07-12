@@ -12,9 +12,6 @@
         android:xlargeScreens="true" />
 
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
-    <uses-permission android:name="android.permission.GET_PACKAGE_SIZE" />
-    <uses-permission android:name="android.permission.GET_PACKAGE_INFO" />
-    <uses-permission android:name="android.permission.GET_SIGNING_CERTIFICATES" />
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>

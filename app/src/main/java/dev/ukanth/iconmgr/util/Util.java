@@ -491,13 +491,13 @@ public class Util {
                     }
                 }
                 catch (CertificateException e) {
-                     e.printStackTrace();
+                    Log.e("getAuthorName","CertificateException"+Log.getStackTraceString(e));
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Log.e("getAuthorName","NameNotFoundException"+Log.getStackTraceString(e));
         }
-        return "No author name found";
+        return null;
     }
 
 

@@ -257,7 +257,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             }
             isshown = true;
             String authorName = Util.getAuthorName(ctx, obj.getIconPkg());
-           builder.append(" Author: " + " " + authorName);
+               builder.append( authorName);
         }
 
 
