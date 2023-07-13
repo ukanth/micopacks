@@ -41,6 +41,11 @@
                     app:showAsAction="always"></item>
 
                 <item
+                    android:id="@+id/author_name"
+                    android:title="@string/authorname"
+                    app:showAsAction="always"></item>
+
+                <item
                     android:id="@+id/sort_percent"
                     android:title="@string/iconpercent"
                     app:showAsAction="always"></item>

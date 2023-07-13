@@ -349,6 +349,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 case "s2":
                     mainMenu.findItem(R.id.sort_count).setChecked(true);
                     break;
+                case "s5" :
+                    mainMenu.findItem(R.id.author_name).setChecked(true);
             }
         });
 
@@ -445,6 +447,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 item.setChecked(true);
                 reload();
                 return true;
+            case R.id.author_name:
+                Prefs.sortBy("s5");
+                item.setChecked(true);
+                reload();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -456,7 +463,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void reload() {
-        Collections.sort(iconPacksList, new PackageComparator());
+        PackageComparator packageComparator = new PackageComparator(MainActivity.this); // Pass the activity context here
+        Collections.sort(iconPacksList, packageComparator);
         adapter = new IconAdapter(iconPacksList, installed);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -509,7 +517,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(String query) {
         List<IPObj> filteredModelList = filter(query);
 
-        Collections.sort(new ArrayList(filteredModelList), new PackageComparator());
+        PackageComparator packageComparator = new PackageComparator(MainActivity.this); // Pass the activity context here
+        Collections.sort(new ArrayList<>(filteredModelList), packageComparator);
+
 
         adapter = new IconAdapter(filteredModelList, installed);
         recyclerView.setAdapter(adapter);
@@ -647,7 +657,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
-                    Collections.sort(iconPacksList, new PackageComparator());
+                    Collections.sort(iconPacksList, new PackageComparator(MainActivity.this));
                     if (Prefs.useFavorite()) {
                         Collections.sort(iconPacksList, new Comparator<IPObj>() {
                             @Override

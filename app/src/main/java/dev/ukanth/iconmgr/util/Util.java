@@ -9,10 +9,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.pm.Signature;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.os.AsyncTask;
 import android.os.Build;
 import androidx.annotation.NonNull;
@@ -32,9 +34,14 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.ocpsoft.prettytime.TimeUnit;
 import org.ocpsoft.prettytime.units.JustNow;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -68,6 +75,10 @@ public class Util {
     public static final String CMD_CP = "cp \"%s\" \"%s\"";
     public static final String TMP_FILE = ".temp";
     private static final String TAG = "MICOPACK";
+
+    private static String authorName;
+
+
 
     public static void updateFile(final String fileName, final String packageName, final String key, final String value, final Context ctx) {
         Log.i(TAG, String.format("Read Preference - (%s)", fileName));
@@ -450,6 +461,46 @@ public class Util {
         }
         return true;
     }
+
+
+    public static String getAuthorName(Context context, String targetPackage) {
+        PackageManager pm = context.getPackageManager();
+        try {
+            Signature[] sigs = context.getPackageManager().getPackageInfo(targetPackage, PackageManager.GET_SIGNATURES).signatures;
+            for (Signature sig : sigs)
+            {
+                /*
+                 * Get the X.509 certificate.
+                 */
+                final byte[] rawCert = sig.toByteArray();
+                InputStream certStream = new ByteArrayInputStream(rawCert);
+
+                try {
+                    CertificateFactory certFactory = CertificateFactory.getInstance("X509");
+                    X509Certificate x509Cert = (X509Certificate) certFactory.generateCertificate(certStream);
+                    String issuerDN = x509Cert.getIssuerDN().getName();
+                    Log.i("DN", issuerDN);
+
+                    String[] nameComponents = issuerDN.split(",");
+                    for (String nameComponent : nameComponents) {
+                        String[] keyValue = nameComponent.trim().split("=");
+                        if (keyValue.length == 2 && keyValue[0].trim().equalsIgnoreCase("CN")) {
+                            authorName = keyValue[1].trim();
+                            return authorName;
+                        }
+                    }
+                }
+                catch (CertificateException e) {
+                    Log.e("getAuthorName","CertificateException"+Log.getStackTraceString(e));
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("getAuthorName","NameNotFoundException"+Log.getStackTraceString(e));
+        }
+        return null;
+    }
+
+
 
     public static IPObj getRandomInstalledIconPack(IPObjDao ipObjDao) {
 
