@@ -463,7 +463,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void reload() {
-        Collections.sort(iconPacksList, new PackageComparator(this));
+        PackageComparator packageComparator = new PackageComparator(MainActivity.this); // Pass the activity context here
+        Collections.sort(iconPacksList, packageComparator);
         adapter = new IconAdapter(iconPacksList, installed);
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -516,7 +517,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     public boolean onQueryTextChange(String query) {
         List<IPObj> filteredModelList = filter(query);
 
-        Collections.sort(new ArrayList(filteredModelList), new PackageComparator(this));
+        PackageComparator packageComparator = new PackageComparator(MainActivity.this); // Pass the activity context here
+        Collections.sort(new ArrayList<>(filteredModelList), packageComparator);
+
 
         adapter = new IconAdapter(filteredModelList, installed);
         recyclerView.setAdapter(adapter);
@@ -654,7 +657,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
-                    Collections.sort(iconPacksList, new PackageComparator(getApplicationContext()));
+                    Collections.sort(iconPacksList, new PackageComparator(MainActivity.this));
                     if (Prefs.useFavorite()) {
                         Collections.sort(iconPacksList, new Comparator<IPObj>() {
                             @Override

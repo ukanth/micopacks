@@ -58,6 +58,7 @@
     <string name="lastupdated">By last update</string>
     <string name="iconcount">By icon count</string>
     <string name="iconsize">By package size</string>
+    <string name="authorname">By Author Name</string>
     <string name="iconpercent">By match percent</string>
     <string name="total_icons">Show icon count</string>
     <string name="show_notification">Notify on new icon pack install</string>
@@ -88,7 +89,7 @@
     <string name="license_check_retry">Unable to check license, please try again in a few moments</string>
     <string name="showsize">Show application size</string>
     <string name="show_percent">Show Percentage</string>
-    <string name="authorname">By Author Name</string>
+    <string name="show_authorname">Show Author Name</string>
     <string name="forcereload">Rebuild list</string>
     <string name="onlysupportedroot">Supported through root mode only</string>
     <string name="action_random">Random</string>
