@@ -366,6 +366,7 @@ public class LauncherHelper {
                     nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_TYPE", "GO");
                     nova.putExtra("com.teslacoilsw.launcher.extra.ICON_THEME_PACKAGE", launcherPackage);
                     nova.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                     context.startActivity(nova);
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
@@ -426,20 +427,24 @@ public class LauncherHelper {
                 }
                 break;
             case LAWNCHAIR:
-                try {
-                    final Intent lawnchair = context.getPackageManager().getLaunchIntentForPackage(
-                            "ch.deletescape.lawnchair.plah");
-                    final Intent lawnchairAction = new Intent("ch.deletescape.lawnchair.APPLY_ICONS");
-                    lawnchairAction.putExtra("packageName", context.getPackageName());
-                    lawnchairAction.addCategory(Intent.CATEGORY_DEFAULT);
-                    lawnchair.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.sendBroadcast(lawnchairAction);
-                    context.startActivity(lawnchair);
-                    ((AppCompatActivity) context).finish();
-                } catch (ActivityNotFoundException | NullPointerException e) {
-                    e.printStackTrace();
-                    //openGooglePlay(context, "ch.deletescape.lawnchair.plah", launcherName);
+
+                if(!launcherPackage.startsWith("app")) {
+                    try {
+                        final Intent lawnchair = context.getPackageManager().getLaunchIntentForPackage(
+                                "ch.deletescape.lawnchair.plah");
+                        final Intent lawnchairAction = new Intent("ch.deletescape.lawnchair.APPLY_ICONS");
+                        lawnchairAction.putExtra("packageName", context.getPackageName());
+                        lawnchairAction.addCategory(Intent.CATEGORY_DEFAULT);
+                        lawnchair.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.sendBroadcast(lawnchairAction);
+                        context.startActivity(lawnchair);
+                        ((AppCompatActivity) context).finish();
+                    } catch (ActivityNotFoundException | NullPointerException e) {
+                        e.printStackTrace();
+                        //openGooglePlay(context, "ch.deletescape.lawnchair.plah", launcherName);
+                    }
                 }
+
                 break;
             case TOTAL:
                 try {
