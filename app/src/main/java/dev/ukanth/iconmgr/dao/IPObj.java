@@ -1,35 +1,43 @@
 package dev.ukanth.iconmgr.dao;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Index;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Unique;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 /**
  * Created by ukanth on 13/8/17.
  */
-@Entity(indexes = {
-        @Index(value = "iconPkg, iconType, iconName ASC", unique = true)
+
+@Entity(tableName = "IPObj", indices = {
+        @Index(value = {"iconPkg", "iconType", "iconName"}, unique = true)
 })
 
 public class IPObj {
 
-    @Id
+    @PrimaryKey
+    @NonNull
     private String iconPkg;
 
-    @Unique
-    @NotNull
+    @ColumnInfo(name = "iconName")
     private String iconName;
+
+    @ColumnInfo(name = "iconType")
     private String iconType;
+
+    @ColumnInfo(name = "installTime")
     private long installTime;
+    @ColumnInfo(name = "total")
     private int total;
+    @ColumnInfo(name = "missed")
     private int missed;
+
+    @ColumnInfo(name = "additional")
     private String additional;
 
-    @Generated(hash = 86537239)
-    public IPObj(String iconPkg, @NotNull String iconName, String iconType, long installTime, int total, int missed, String additional) {
+
+    public IPObj(String iconPkg, @NonNull String iconName, String iconType, long installTime, int total, int missed, String additional) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
         this.iconType = iconType;
@@ -39,7 +47,6 @@ public class IPObj {
         this.additional = additional;
     }
 
-    @Generated(hash = 66213617)
     public IPObj() {
     }
 
@@ -51,10 +58,12 @@ public class IPObj {
         this.additional = additional;
     }
 
+    @NonNull
     public String getIconPkg() {
         return iconPkg;
     }
 
+    @NonNull
     public void setIconPkg(String iconPkg) {
         this.iconPkg = iconPkg;
     }

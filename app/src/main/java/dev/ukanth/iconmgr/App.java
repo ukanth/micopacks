@@ -10,6 +10,8 @@ import org.greenrobot.greendao.database.Database;
 
 import dev.ukanth.iconmgr.dao.DaoMaster;
 import dev.ukanth.iconmgr.dao.DaoSession;
+import dev.ukanth.iconmgr.dao.Historydatabase;
+import dev.ukanth.iconmgr.dao.IPObjdatabase;
 
 /**
  * Created by ukanth on 13/8/17.
@@ -38,13 +40,13 @@ public class App extends Application {
         instance = this;
         super.onCreate();
 
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
-        Database db = helper.getWritableDb();
-        daoSession = new DaoMaster(db).newSession();
-
-        DaoMaster.DevOpenHelper helper2 = new DaoMaster.DevOpenHelper(this, "history-db");
-        Database db2 = helper2.getWritableDb();
-        daoSessionHistory = new DaoMaster(db2).newSession();
+//        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
+//        Database db = helper.getWritableDb();
+//        daoSession = new DaoMaster(db).newSession();
+//
+//        DaoMaster.DevOpenHelper helper2 = new DaoMaster.DevOpenHelper(this, "history-db");
+//        Database db2 = helper2.getWritableDb();
+//        daoSessionHistory = new DaoMaster(db2).newSession();
 
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
         intentFilter.addDataScheme("package");
@@ -56,9 +58,12 @@ public class App extends Application {
         if (daoSession != null) {
             return daoSession;
         } else {
-            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
-            Database db = helper.getWritableDb();
-            daoSession = new DaoMaster(db).newSession();
+//            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "icons-db");
+//            Database db = helper.getWritableDb();
+//            daoSession = new DaoMaster(db).newSession();
+//            return daoSession;
+            IPObjdatabase appDatabase = IPObjdatabase.getInstance(this);
+            daoSession = appDatabase.IPObjdao();
             return daoSession;
         }
     }
@@ -67,9 +72,12 @@ public class App extends Application {
         if (daoSessionHistory != null) {
             return daoSessionHistory;
         } else {
-            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "history-db");
-            Database db = helper.getWritableDb();
-            daoSessionHistory = new DaoMaster(db).newSession();
+//            DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "history-db");
+//            Database db = helper.getWritableDb();
+//            daoSessionHistory = new DaoMaster(db).newSession();
+//            return daoSessionHistory;
+            Historydatabase historydatabase = Historydatabase.getInstance(this);
+            daoSessionHistory = historydatabase.Historydao();
             return daoSessionHistory;
         }
     }
