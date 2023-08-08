@@ -5,20 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
-
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.History;
-import dev.ukanth.iconmgr.dao.HistoryDao;
 import dev.ukanth.iconmgr.dao.IPObj;
-import dev.ukanth.iconmgr.dao.IPObjDao;
 
 import static dev.ukanth.iconmgr.tasker.FireReceiver.TAG;
 
 public class PackageBroadcast extends BroadcastReceiver {
-
-    private IPObjDao ipObjDao;
-    private HistoryDao historyDao;
-
 
     @Override
     public void onReceive(Context context, Intent intent) {

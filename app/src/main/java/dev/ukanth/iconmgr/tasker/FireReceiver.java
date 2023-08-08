@@ -24,12 +24,11 @@ import com.stericson.roottools.RootTools;
 
 import java.util.HashMap;
 
-import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -87,8 +86,9 @@ public final class FireReceiver extends BroadcastReceiver {
 
                 //random
                 if(iconName.equals("rand") && iconPackage.equals("rand")) {
-                    DaoSession daoSession = ((App) context.getApplicationContext()).getDaoSession();
-                    IPObjDao ipObjDao = daoSession.getIPObjDao();
+                    IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
+                    IPObjDao ipObjDao = db.ipObjDao();
+
                     IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
                     if(ipObj != null) {
                         iconName = ipObj.getIconName();

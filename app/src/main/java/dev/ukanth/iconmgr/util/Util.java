@@ -504,7 +504,7 @@ public class Util {
 
     public static IPObj getRandomInstalledIconPack(IPObjDao ipObjDao) {
 
-        List<IPObj> list = ipObjDao.loadAll();
+        List<IPObj> list = ipObjDao.getAll();
         try {
             if (list != null && !list.isEmpty()) {
                 Random rand = new Random();

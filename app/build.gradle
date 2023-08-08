@@ -18,10 +18,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    lintOptions {
+    namespace 'dev.ukanth.iconmgr'
+    lint {
         abortOnError false
     }
+
 }
 
 greendao {

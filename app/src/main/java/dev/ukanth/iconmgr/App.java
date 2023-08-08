@@ -6,12 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import org.greenrobot.greendao.database.Database;
-
 import dev.ukanth.iconmgr.dao.DaoMaster;
 import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.Historydatabase;
-import dev.ukanth.iconmgr.dao.IPObjdatabase;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 
 /**
  * Created by ukanth on 13/8/17.
@@ -62,7 +60,7 @@ public class App extends Application {
 //            Database db = helper.getWritableDb();
 //            daoSession = new DaoMaster(db).newSession();
 //            return daoSession;
-            IPObjdatabase appDatabase = IPObjdatabase.getInstance(this);
+            IPObjDatabase appDatabase = IPObjDatabase.getInstance(this);
             daoSession = appDatabase.IPObjdao();
             return daoSession;
         }
