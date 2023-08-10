@@ -1,13 +1,11 @@
 package dev.ukanth.iconmgr.dao;
 
 import android.content.Context;
-
-import androidx.lifecycle.LiveData;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import java.util.List;
+
 
 @Database(entities = {IPObj.class }, version = 1, exportSchema = false)
 

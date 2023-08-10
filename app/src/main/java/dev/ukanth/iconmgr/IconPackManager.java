@@ -95,7 +95,7 @@ public class IconPackManager {
                     attr.setDeleted(false);
                     attr.setSize(Util.getApkSize(packageName));
                     obj.setAdditional(attr.toString());
-                    ipObjDao.insert(obj);
+                    ipObjDao.insertAll(obj);
                     Util.showNotification(packageName, name);
                     IconDetails.process(packageName, AsyncTask.THREAD_POOL_EXECUTOR, null, "MISSED");
                     break;
@@ -122,7 +122,7 @@ public class IconPackManager {
             final String pkgName = ri.activityInfo.packageName;
             if (!unique.contains(pkgName) && !excludePackages.contains(pkgName)) {
                 unique.add(pkgName);
-                final IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                final IPObj obj2 = ipObjDao.getByIconPkg(pkgName);
                 if (obj2 == null) {
                     listCallables.add(new ProcessPack(pkgName, ipObjDao, false));
                 } else {
@@ -182,10 +182,10 @@ public class IconPackManager {
                 attr.setSize(Util.getApkSize(obj.getIconPkg()));
 
                 obj.setAdditional(attr.toString());
-                ipObjDao.insert(obj);
+                ipObjDao.insertAll(obj);
                 sendIntent(pkgName);
             } else {
-                IPObj obj2 = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                IPObj obj2 = ipObjDao.getByIconPkg(pkgName);
                 if (obj2.getMissed() == 0 || obj2.getAdditional() == null) {
                     attr.setDeleted(false);
                     obj2.setMissed(ip.getMissingApps(obj2.getIconPkg(), Util.getInstalledApps()).size());

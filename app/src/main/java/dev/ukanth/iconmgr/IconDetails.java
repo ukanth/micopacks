@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
+
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.Util;
 
 /**
@@ -97,14 +98,16 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
         if (packageName != null) {
             Log.i("MICO", "PackageName: " + packageName);
             if((type.equals("MISSED") || type.equals("ALL")) && listPkg != null) {
-                App app = ((App) mContext.getApplicationContext());
-                DaoSession daoSession = app.getDaoSession();
-                IPObjDao ipObjDao = daoSession.getIPObjDao();
+                IPObjDatabase db = IPObjDatabase.getInstance(mContext.getApplicationContext());
+                IPObjDao ipObjDao = db.ipObjDao();
+
+
                 IPObj ipObj = new IPObj();
                 ipObj.setIconPkg(packageName);
+
                 if (ipObjDao != null && ipObjDao.hasKey(ipObj)) {
                     Log.i("MICO", "Exist in DB: " + packageName);
-                    IPObj ipobj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).build().unique();
+                    IPObj ipobj = ipObjDao.getByIconPkg(packageName);
                     if(ipobj != null) {
                         List<String> missedPackage = listPkg.get("package");
                         ipobj.setMissed(missedPackage != null ? missedPackage.size() : 0);

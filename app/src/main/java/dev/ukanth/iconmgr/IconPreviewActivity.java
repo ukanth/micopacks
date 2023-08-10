@@ -37,9 +37,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 
 /**
@@ -85,13 +85,13 @@ public class IconPreviewActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         final String pkgName = bundle.getString("pkg");
 
-        App app = ((App) getApplicationContext());
-        DaoSession daoSession = app.getDaoSession();
-        IPObjDao ipObjDao = daoSession.getIPObjDao();
+        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
+        IPObjDao ipObjDao = db.ipObjDao();
+
         String iconName = "";
         IPObj pkgObj;
         if (ipObjDao != null) {
-            pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+             pkgObj = ipObjDao.getByIconPkg(pkgName);
             if (pkgObj != null) {
                 iconName = pkgObj.getIconName();
                 setTitle(iconName);

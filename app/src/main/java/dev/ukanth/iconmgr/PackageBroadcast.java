@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.util.Log;
 import dev.ukanth.iconmgr.dao.History;
 import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 
 import static dev.ukanth.iconmgr.tasker.FireReceiver.TAG;
 
@@ -26,12 +28,12 @@ public class PackageBroadcast extends BroadcastReceiver {
         if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
             if (packageName != null) {
                 try {
-                    App app = ((App) context.getApplicationContext());
-                    DaoSession daoSession = app.getDaoSession();
+                    IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
+                    IPObjDao ipObjDao = db.ipObjDao();
+
                     DaoSession historySession = app.getHistoryDaoSession();
-                    ipObjDao = daoSession.getIPObjDao();
                     historyDao = historySession.getHistoryDao();
-                    IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).unique();
+                    IPObj pkgObj = ipObjDao.getByIconPkg(packageName);
                     if (pkgObj != null) {
                         //delete from install db to history
                         ipObjDao.deleteByKey(packageName);
@@ -50,9 +52,8 @@ public class PackageBroadcast extends BroadcastReceiver {
         } else if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction()) || Intent.ACTION_PACKAGE_CHANGED.equals(intent.getAction())) {
             if (packageName != null) {
                 try {
-                    App app = ((App) context.getApplicationContext());
-                    DaoSession daoSession = app.getDaoSession();
-                    IPObjDao ipObjDao = daoSession.getIPObjDao();
+                    IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
+                    IPObjDao ipObjDao = db.ipObjDao();
                     new IconPackManager().insertIconPack(ipObjDao, packageName);
                 } catch (Exception e) {
                     Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());

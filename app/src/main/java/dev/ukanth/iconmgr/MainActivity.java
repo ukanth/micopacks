@@ -42,10 +42,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.PackageComparator;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -87,8 +86,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         LeakCanary.install(App.getInstance());*/
 
-        DaoSession daoSession = ((App) getApplication()).getDaoSession();
-        ipObjDao = daoSession.getIPObjDao();
+        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
+        IPObjDao ipObjDao = db.ipObjDao();
+
 
         if (Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             public void onReceive(Context context, Intent intent) {
                 String pkgName = intent.getStringExtra("pkgName");
                 if (pkgName != null) {
-                    IPObj obj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+                    IPObj obj = ipObjDao.getByIconPkg(pkgName);
                     if (obj != null) {
                         iconPacksList.add(obj);
                         adapter.notifyDataSetChanged();

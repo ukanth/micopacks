@@ -6,13 +6,12 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 @Database(entities = {History.class }, version = 1, exportSchema = false)
-public abstract class Historydatabase extends RoomDatabase {
-    private static Historydatabase instance;
-    public abstract DaoSession Historydao();
+public abstract class HistoryDatabase extends RoomDatabase {
+    private static HistoryDatabase instance;
 
-    public static Historydatabase getInstance(Context context) {
+    public static HistoryDatabase getInstance(Context context) {
         if (instance == null) {
-            instance = Room.databaseBuilder(context.getApplicationContext(), Historydatabase.class, "history-db")
+            instance = Room.databaseBuilder(context.getApplicationContext(), HistoryDatabase.class, "history-db")
                     .allowMainThreadQueries()
                     .build();
         }

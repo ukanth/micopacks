@@ -17,9 +17,9 @@ import java.util.List;
 import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.Util;
 
 public class LocaleEdit extends AppCompatActivity {
@@ -42,8 +42,9 @@ public class LocaleEdit extends AppCompatActivity {
 
         setContentView(R.layout.tasker_main);
 
-        DaoSession daoSession = ((App) getApplication()).getDaoSession();
-        ipObjDao = daoSession.getIPObjDao();
+        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
+        IPObjDao ipObjDao = db.ipObjDao();
+
 
         ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
 

@@ -5,9 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.History;
 import dev.ukanth.iconmgr.dao.HistoryDao;
+import dev.ukanth.iconmgr.dao.HistoryDatabase;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 
@@ -25,9 +25,11 @@ public class UninstallReceiver extends BroadcastReceiver {
         String packageName = intent.getData().getSchemeSpecificPart();
         if (packageName != null) {
             try {
-                App app = ((App) context.getApplicationContext());
+               App app = ((App) context.getApplicationContext());
                 DaoSession daoSession = app.getDaoSession();
                 DaoSession historySession = app.getHistoryDaoSession();
+                HistoryDatabase db = HistoryDatabase.getInstance(context.getApplicationContext());
+                HistoryDao ipObjDao = db.ipObjDao();
                 ipObjDao = daoSession.getIPObjDao();
                 historyDao = historySession.getHistoryDao();
                 IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).unique();

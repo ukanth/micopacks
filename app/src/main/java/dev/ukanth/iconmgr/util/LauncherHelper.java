@@ -22,9 +22,9 @@ import java.util.HashMap;
 import dev.ukanth.iconmgr.App;
 import dev.ukanth.iconmgr.Prefs;
 import dev.ukanth.iconmgr.R;
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 
 /*
  * CandyBar - Material Dashboard
@@ -672,10 +672,9 @@ public class LauncherHelper {
     }
 
     private static String getLabel(String launcherPackage, Context context) {
-        App app = ((App) context.getApplicationContext());
-        DaoSession daoSession = app.getDaoSession();
-        IPObjDao ipObjDao = daoSession.getIPObjDao();
-        IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(launcherPackage)).unique();
+        IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
+        IPObjDao ipObjDao = db.ipObjDao();
+        IPObj pkgObj = ipObjDao.getByIconPkg(launcherPackage);
         return pkgObj.getIconName();
     }
 

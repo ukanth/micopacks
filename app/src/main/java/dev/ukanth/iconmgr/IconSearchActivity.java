@@ -38,9 +38,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 
 /**
  * Created by ukanth on 3/9/17.
@@ -142,11 +142,12 @@ public class IconSearchActivity extends AppCompatActivity {
         //SearchView searchView = findViewById(R.id.search);
 
 
-        App app = ((App) getApplicationContext());
-        DaoSession daoSession = app.getDaoSession();
-        IPObjDao ipObjDao = daoSession.getIPObjDao();
+        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
+        IPObjDao ipObjDao = db.ipObjDao();
 
-        objList = ipObjDao.loadAll();
+
+
+        objList = ipObjDao.getAll();
 
         registerUIbroadcast();
     }

@@ -1,3 +1,4 @@
+
 package dev.ukanth.iconmgr.dao;
 
 
@@ -12,7 +13,7 @@ import androidx.room.PrimaryKey;
  */
 
 
-@Entity(indices = {
+@Entity(tableName = "History",indices = {
         @Index(value = {"iconPkg", "iconType", "iconName"}, unique = true)
 })
 
