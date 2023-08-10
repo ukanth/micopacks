@@ -43,10 +43,10 @@ public class LocaleEdit extends AppCompatActivity {
         setContentView(R.layout.tasker_main);
 
         IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
+        //IPObjDao ipObjDao = db.ipObjDao();
 
 
-        ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObjDao.Properties.IconName).build();
+        //ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObj.Properties.IconName).build();
 
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
         List<IPObj> iPacksList = ipObjQuery.list();

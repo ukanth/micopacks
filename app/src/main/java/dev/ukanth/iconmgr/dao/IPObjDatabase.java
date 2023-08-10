@@ -5,11 +5,9 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-
-
 @Database(entities = {IPObj.class }, version = 1, exportSchema = false)
 
-public abstract class IPObjDatabase extends RoomDatabase implements IPObjDao{
+public abstract class IPObjDatabase extends RoomDatabase {
     private static IPObjDatabase instance;
 
     public abstract IPObjDao ipObjDao();

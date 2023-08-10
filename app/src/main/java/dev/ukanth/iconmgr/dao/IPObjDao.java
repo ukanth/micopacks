@@ -31,13 +31,6 @@ public interface IPObjDao {
     @Delete
     void delete(IPObj user);
 
-    QueryBuilder queryBuilder();
-
-    boolean hasKey(IPObj ipObj);
-
-    @Update
-    IPObjDao update(IPObj ipObj);
-
     @Query("DELETE FROM IPObj")
     void deleteAll();
 }

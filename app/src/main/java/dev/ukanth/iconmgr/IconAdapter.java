@@ -65,7 +65,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                     attr.setFavorite(!attr.isFavorite());
                     currentItem.setAdditional(new Gson().toJson(attr).toString());
                     IPObjDatabase db = IPObjDatabase.getInstance(ctx.getApplicationContext());
-                    IPObjDao ipObjDao = db.ipObjDao().update(currentItem);
+                   // IPObjDao ipObjDao = db.ipObjDao().update(currentItem);
                     if (attr.isFavorite()) {
                         iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
                         //Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();

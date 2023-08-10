@@ -26,7 +26,7 @@ public class UninstallReceiver extends BroadcastReceiver {
         if (packageName != null) {
             try {
                App app = ((App) context.getApplicationContext());
-                DaoSession daoSession = app.getDaoSession();
+                /*DaoSession daoSession = app.getDaoSession();
                 DaoSession historySession = app.getHistoryDaoSession();
                 HistoryDatabase db = HistoryDatabase.getInstance(context.getApplicationContext());
                 HistoryDao ipObjDao = db.ipObjDao();
@@ -41,6 +41,8 @@ public class UninstallReceiver extends BroadcastReceiver {
                     intentNotify.putExtra("pkgName", packageName);
                     context.sendBroadcast(intentNotify);
                     historyDao.insertOrReplace(getHistory(pkgObj));
+                */
+
                     /*List<IPObj> listPackages = MainActivity.getIconPacksList();
                     if (listPackages != null) {
                         for (IPObj pack : listPackages) {
@@ -51,7 +53,7 @@ public class UninstallReceiver extends BroadcastReceiver {
                             }
                         }
                     }*/
-                }
+               // }
                 //ipObjDao.deleteByKey(packageName);
             } catch (Exception e) {
                 Log.e("MICO", "Exception in UninstallReceiver" + e.getMessage(), e);

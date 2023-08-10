@@ -9,6 +9,8 @@ import androidx.room.RoomDatabase;
 public abstract class HistoryDatabase extends RoomDatabase {
     private static HistoryDatabase instance;
 
+    public abstract HistoryDao historyDao();
+
     public static HistoryDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), HistoryDatabase.class, "history-db")

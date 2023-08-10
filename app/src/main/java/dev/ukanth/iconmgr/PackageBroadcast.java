@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import dev.ukanth.iconmgr.dao.History;
+import dev.ukanth.iconmgr.dao.HistoryDatabase;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.dao.IPObjDatabase;
@@ -31,18 +32,20 @@ public class PackageBroadcast extends BroadcastReceiver {
                     IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
                     IPObjDao ipObjDao = db.ipObjDao();
 
-                    DaoSession historySession = app.getHistoryDaoSession();
+                    HistoryDatabase history = HistoryDatabase.getInstance(context.getApplicationContext());
+
+                   /* DaoSession historySession = app.getHistoryDaoSession();
                     historyDao = historySession.getHistoryDao();
                     IPObj pkgObj = ipObjDao.getByIconPkg(packageName);
                     if (pkgObj != null) {
                         //delete from install db to history
-                        ipObjDao.deleteByKey(packageName);
+                        ipObjDao.delete(packageName);
                         Intent intentNotify = new Intent();
                         intentNotify.setAction("updatelist");
                         intentNotify.putExtra("pkgName", packageName);
                         context.sendBroadcast(intentNotify);
                         historyDao.insertOrReplace(getHistory(pkgObj));
-                    }
+                    }*/
                     //ipObjDao.deleteByKey(packageName);
                 } catch (Exception e) {
                     Log.e("MICO", "Exception in UninstallReceiver" + e.getMessage(), e);
