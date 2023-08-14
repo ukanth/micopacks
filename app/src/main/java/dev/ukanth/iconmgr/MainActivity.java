@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         LeakCanary.install(App.getInstance());*/
 
         IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
+        ipObjDao = db.ipObjDao();
 
 
         if (Prefs.isDarkTheme()) {
@@ -618,7 +618,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         @Override
         protected void onPreExecute() {
-            plsWait = new MaterialDialog.Builder(context).cancelable(false).title(context.getString(R.string.loading)).content(R.string.please_wait_normal).progress(true, 0).show();
+            //plsWait = new MaterialDialog.Builder(context).cancelable(false).title(context.getString(R.string.loading)).content(R.string.please_wait_normal).progress(true, 0).show();
             startTime = System.currentTimeMillis();
         }
 
