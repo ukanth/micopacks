@@ -7,7 +7,6 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
-import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.List;
 
@@ -33,4 +32,9 @@ public interface IPObjDao {
 
     @Query("DELETE FROM IPObj")
     void deleteAll();
+
+    @Update
+    void  update(IPObj ipObj);
+
+
 }
