@@ -18,6 +18,10 @@ public interface IPObjDao {
     @Query(QUERY_BY_ICON_PKG)
     IPObj getByIconPkg(String pkgName);
 
+    @Query("SELECT * FROM IPObj ORDER BY iconName ASC")
+    List<IPObj> getAllOrderedByIconName();
+
+
     @Query("SELECT * FROM IPObj")
     List<IPObj> getAll();
 

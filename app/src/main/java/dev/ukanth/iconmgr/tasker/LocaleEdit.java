@@ -10,8 +10,6 @@ import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.greenrobot.greendao.query.Query;
-
 import java.util.List;
 
 import dev.ukanth.iconmgr.App;
@@ -25,7 +23,7 @@ import dev.ukanth.iconmgr.util.Util;
 public class LocaleEdit extends AppCompatActivity {
     private boolean mIsCancelled = false;
     private IPObjDao ipObjDao;
-    private Query<IPObj> ipObjQuery;
+    private List<IPObj> ipObjQuery;
 
 
     protected void onCreate(Bundle paramBundle) {
@@ -43,13 +41,13 @@ public class LocaleEdit extends AppCompatActivity {
         setContentView(R.layout.tasker_main);
 
         IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
+         ipObjDao = db.ipObjDao();
 
 
-        //ipObjQuery = ipObjDao.queryBuilder().orderAsc(IPObj.Properties.IconName).build();
+        ipObjQuery = ipObjDao.getAllOrderedByIconName();
+        List<IPObj> iPacksList = ipObjQuery;
 
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
-        List<IPObj> iPacksList = ipObjQuery.list();
 
         if(iPacksList != null && !iPacksList.isEmpty()) {
             RadioButton button = new RadioButton(this);
