@@ -14,8 +14,8 @@ public class RandomActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
+
+        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
         IPObj ipObj = null;
         String pkgName = getIntent().getStringExtra("pack");
         if(pkgName.isEmpty()) {

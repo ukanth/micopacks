@@ -21,8 +21,8 @@ public class InstallReceiver extends BroadcastReceiver {
             return;
         if (packageName != null) {
             try {
-                IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
-                IPObjDao ipObjDao = db.ipObjDao();
+
+                IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
                 new IconPackManager().insertIconPack(ipObjDao, packageName);
             } catch (Exception e) {
                 Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());

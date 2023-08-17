@@ -98,8 +98,8 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
         if (packageName != null) {
             Log.i("MICO", "PackageName: " + packageName);
             if((type.equals("MISSED") || type.equals("ALL")) && listPkg != null) {
-                IPObjDatabase db = IPObjDatabase.getInstance(mContext.getApplicationContext());
-                IPObjDao ipObjDao = db.ipObjDao();
+
+                IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
 
 
                 IPObj ipObj = new IPObj();

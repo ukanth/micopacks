@@ -142,8 +142,8 @@ public class IconSearchActivity extends AppCompatActivity {
         //SearchView searchView = findViewById(R.id.search);
 
 
-        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
+
+        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
 
 
 

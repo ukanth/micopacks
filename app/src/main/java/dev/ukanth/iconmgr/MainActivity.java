@@ -86,8 +86,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         LeakCanary.install(App.getInstance());*/
 
-        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        ipObjDao = db.ipObjDao();
+
+        ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
 
 
         if (Prefs.isDarkTheme()) {

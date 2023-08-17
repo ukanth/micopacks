@@ -85,8 +85,8 @@ public class IconPreviewActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         final String pkgName = bundle.getString("pkg");
 
-        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
+
+        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
 
         String iconName = "";
         IPObj pkgObj;

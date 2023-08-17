@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
+
 /**
  * Created by ukanth on 13/8/17.
  */
@@ -35,6 +37,11 @@ public class App extends Application {
         intentFilter.addDataScheme("package");
         receiver = new InstallReceiver();
         registerReceiver(receiver, intentFilter);
+    }
+
+    public IPObjDatabase getIPObjDatabase() {
+        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
+        return db;
     }
 
 }

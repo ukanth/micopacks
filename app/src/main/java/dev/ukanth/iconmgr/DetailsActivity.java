@@ -75,8 +75,8 @@ public class DetailsActivity extends AppCompatActivity {
 
         List<Detail> homes = new ArrayList<>();
 
-        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
+
+        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
 
         IPObj pkgObj = null;
         if (ipObjDao != null) {

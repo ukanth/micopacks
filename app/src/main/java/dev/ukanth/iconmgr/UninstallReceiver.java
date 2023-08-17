@@ -24,8 +24,8 @@ public class UninstallReceiver extends BroadcastReceiver {
         if (packageName != null) {
             try {
 
-                IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
-                IPObjDao ipObjDao = db.ipObjDao();
+
+                IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
 
                 HistoryDatabase db2 = HistoryDatabase.getInstance(context.getApplicationContext());
                 HistoryDao historyDao = db2.historyDao();
