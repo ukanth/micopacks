@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.Util;
 
 public class RandomActivity extends AppCompatActivity {
@@ -15,7 +14,7 @@ public class RandomActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
+        IPObjDao ipObjDao = App.getInstance().getIPObjDao();
         IPObj ipObj = null;
         String pkgName = getIntent().getStringExtra("pack");
         if(pkgName.isEmpty()) {

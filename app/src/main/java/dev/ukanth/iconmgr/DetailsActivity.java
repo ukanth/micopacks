@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -25,6 +24,8 @@ public class DetailsActivity extends AppCompatActivity {
     private GridLayoutManager gridLayoutManager;
 
     private FloatingActionButton fab;
+
+    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
 
     @Override
@@ -76,7 +77,7 @@ public class DetailsActivity extends AppCompatActivity {
         List<Detail> homes = new ArrayList<>();
 
 
-        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
+
 
         IPObj pkgObj = null;
         if (ipObjDao != null) {

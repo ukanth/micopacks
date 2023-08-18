@@ -39,7 +39,6 @@ import java.util.Set;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 
 /**
@@ -65,6 +64,8 @@ public class IconPreviewActivity extends AppCompatActivity {
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
 
+    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -84,10 +85,6 @@ public class IconPreviewActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         final String pkgName = bundle.getString("pkg");
-
-
-        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
-
         String iconName = "";
         IPObj pkgObj;
         if (ipObjDao != null) {

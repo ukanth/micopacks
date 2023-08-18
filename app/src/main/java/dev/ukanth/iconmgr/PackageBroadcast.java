@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.util.Log;
 import dev.ukanth.iconmgr.dao.History;
 import dev.ukanth.iconmgr.dao.HistoryDao;
-import dev.ukanth.iconmgr.dao.HistoryDatabase;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.dao.IPObjDatabase;
@@ -31,11 +30,8 @@ public class PackageBroadcast extends BroadcastReceiver {
             if (packageName != null) {
                 try {
 
-
-                    IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
-
-                    HistoryDatabase db2 = HistoryDatabase.getInstance(context.getApplicationContext());
-                    HistoryDao historyDao = db2.historyDao();
+                    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+                    HistoryDao historyDao = App.getInstance().getHistoryDao();
 
                     IPObj pkgObj = ipObjDao.getByIconPkg(packageName);
 

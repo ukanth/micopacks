@@ -44,7 +44,6 @@ import java.util.Comparator;
 import java.util.List;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.PackageComparator;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -52,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private RecyclerView recyclerView;
     private TextView emptyView;
     private IconAdapter adapter;
-    private IPObjDao ipObjDao;
+    private IPObjDao ipObjDao = App.getInstance().getIPObjDao();;
     private List<IPObj> iconPacksList;
     private SwipeRefreshLayout mSwipeLayout;
     private MaterialDialog plsWait;
@@ -68,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private BroadcastReceiver packageReceiver;
     private IntentFilter packageFilter;
+
 
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         LeakCanary.install(App.getInstance());*/
 
 
-        ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
+
 
 
         if (Prefs.isDarkTheme()) {

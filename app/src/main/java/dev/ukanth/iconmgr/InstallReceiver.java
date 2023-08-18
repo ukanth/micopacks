@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.dao.IPObjDatabase;
 
 /**
  * Created by ukanth on 28/7/17.
@@ -21,8 +20,7 @@ public class InstallReceiver extends BroadcastReceiver {
             return;
         if (packageName != null) {
             try {
-
-                IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
+                IPObjDao ipObjDao = App.getInstance().getIPObjDao();
                 new IconPackManager().insertIconPack(ipObjDao, packageName);
             } catch (Exception e) {
                 Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());

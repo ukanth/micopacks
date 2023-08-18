@@ -15,7 +15,6 @@ import java.util.concurrent.Executor;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.Util;
 
 /**
@@ -99,9 +98,7 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
             Log.i("MICO", "PackageName: " + packageName);
             if((type.equals("MISSED") || type.equals("ALL")) && listPkg != null) {
 
-                IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
-
-
+                IPObjDao ipObjDao = App.getInstance().getIPObjDao();
                 IPObj ipObj = new IPObj();
                 ipObj.setIconPkg(packageName);
 

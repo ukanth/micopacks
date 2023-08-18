@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import dev.ukanth.iconmgr.dao.HistoryDao;
+import dev.ukanth.iconmgr.dao.HistoryDatabase;
+import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.dao.IPObjDatabase;
 
 /**
@@ -39,9 +42,16 @@ public class App extends Application {
         registerReceiver(receiver, intentFilter);
     }
 
-    public IPObjDatabase getIPObjDatabase() {
+    public IPObjDao getIPObjDao() {
         IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        return db;
+        IPObjDao ipObjDao = db.ipObjDao();
+        return ipObjDao;
+    }
+
+    public HistoryDao getHistoryDao() {
+        HistoryDatabase db2 = HistoryDatabase.getInstance(getApplicationContext());
+        HistoryDao historyDao = db2.historyDao();
+        return historyDao;
     }
 
 }

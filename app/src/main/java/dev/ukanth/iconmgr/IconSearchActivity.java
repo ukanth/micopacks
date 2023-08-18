@@ -40,7 +40,6 @@ import java.util.List;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.dao.IPObjDatabase;
 
 /**
  * Created by ukanth on 3/9/17.
@@ -62,6 +61,8 @@ public class IconSearchActivity extends AppCompatActivity {
 
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
+
+    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -143,7 +144,7 @@ public class IconSearchActivity extends AppCompatActivity {
 
 
 
-        IPObjDao ipObjDao = App.getInstance().getIPObjDatabase().ipObjDao();
+
 
 
 
