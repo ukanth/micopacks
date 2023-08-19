@@ -19,6 +19,10 @@ public class App extends Application {
 
     private static App instance;
 
+    private IPObjDao ipObjDao;
+
+    private HistoryDao historyDao;
+
     private BroadcastReceiver receiver;
 
 
@@ -40,17 +44,20 @@ public class App extends Application {
         intentFilter.addDataScheme("package");
         receiver = new InstallReceiver();
         registerReceiver(receiver, intentFilter);
+
+        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
+        ipObjDao = db.ipObjDao();
+
+        HistoryDatabase db2 = HistoryDatabase.getInstance(getApplicationContext());
+         historyDao = db2.historyDao();
+
     }
 
     public IPObjDao getIPObjDao() {
-        IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
         return ipObjDao;
     }
 
     public HistoryDao getHistoryDao() {
-        HistoryDatabase db2 = HistoryDatabase.getInstance(getApplicationContext());
-        HistoryDao historyDao = db2.historyDao();
         return historyDao;
     }
 

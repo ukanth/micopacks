@@ -64,7 +64,7 @@ public class IconPreviewActivity extends AppCompatActivity {
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
 
-    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+   IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
