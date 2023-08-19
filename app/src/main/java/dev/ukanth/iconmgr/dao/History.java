@@ -1,36 +1,49 @@
+
 package dev.ukanth.iconmgr.dao;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Index;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Unique;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
 
 /**
  * Created by ukanth on 13/8/17.
  */
-@Entity(indexes = {
-        @Index(value = "iconPkg, iconType, iconName ASC", unique = true)
+
+
+@Entity(tableName = "History",indices = {
+        @Index(value = {"iconPkg", "iconType", "iconName"}, unique = true)
 })
 
 public class History {
 
-    @Id @Unique
+    @PrimaryKey
+    @NonNull
     private String iconPkg;
 
-    @NotNull
+    @ColumnInfo(name = "iconName")
     private String iconName;
+
+    @ColumnInfo(name = "iconType")
     private String iconType;
+
+    @ColumnInfo(name = "installTime")
     private long installTime;
 
+    @ColumnInfo(name = "uninstallTime")
     private long uninstallTime;
+    @ColumnInfo(name = "total")
     private int total;
+    @ColumnInfo(name = "missed")
     private int missed;
+
+    @ColumnInfo(name = "additional")
     private String additional;
 
-    @Generated(hash = 380539576)
-    public History(String iconPkg, @NotNull String iconName, String iconType, long installTime, long uninstallTime, int total, int missed, String additional) {
+
+    public History(String iconPkg, @NonNull String iconName, String iconType, long installTime, long uninstallTime, int total, int missed, String additional) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
         this.iconType = iconType;

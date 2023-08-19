@@ -18,10 +18,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    lintOptions {
+    namespace 'dev.ukanth.iconmgr'
+    lint {
         abortOnError false
     }
+
 }
 
 greendao {
@@ -71,6 +72,12 @@ dependencies {
 
     //prettytime
     implementation 'org.ocpsoft.prettytime:prettytime:5.0.4.Final'
+
+    //room
+    def room_version = "2.5.2"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 
 
 }

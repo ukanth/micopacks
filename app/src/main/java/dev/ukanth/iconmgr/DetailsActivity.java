@@ -13,8 +13,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;
@@ -26,6 +24,8 @@ public class DetailsActivity extends AppCompatActivity {
     private GridLayoutManager gridLayoutManager;
 
     private FloatingActionButton fab;
+
+    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
 
     @Override
@@ -76,12 +76,12 @@ public class DetailsActivity extends AppCompatActivity {
 
         List<Detail> homes = new ArrayList<>();
 
-        App app = ((App) getApplicationContext());
-        DaoSession daoSession = app.getDaoSession();
-        IPObjDao ipObjDao = daoSession.getIPObjDao();
+
+
+
         IPObj pkgObj = null;
         if (ipObjDao != null) {
-            pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(pkgName)).unique();
+            pkgObj = ipObjDao.getByIconPkg(pkgName);
             if(pkgObj != null) {
                 homes.add(new Detail(-1, String.valueOf(pkgObj.getTotal()),
                         getResources().getString(R.string.iconCount),

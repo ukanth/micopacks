@@ -31,6 +31,8 @@ import java.util.Date;
 import java.util.List;
 
 import dev.ukanth.iconmgr.dao.IPObj;
+import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.dao.IPObjDatabase;
 import dev.ukanth.iconmgr.util.Util;
 
 import static dev.ukanth.iconmgr.tasker.FireReceiver.TAG;
@@ -62,8 +64,9 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                     IconAttr attr = new Gson().fromJson(currentItem.getAdditional(), IconAttr.class);
                     attr.setFavorite(!attr.isFavorite());
                     currentItem.setAdditional(new Gson().toJson(attr).toString());
-                    App app = ((App) ctx.getApplicationContext());
-                    app.getDaoSession().getIPObjDao().update(currentItem);
+//                    Update the currentItem object in the database
+                    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+                    ipObjDao.update(currentItem);
                     if (attr.isFavorite()) {
                         iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
                         //Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();

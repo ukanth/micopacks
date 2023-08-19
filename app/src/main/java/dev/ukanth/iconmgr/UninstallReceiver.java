@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import dev.ukanth.iconmgr.dao.DaoSession;
 import dev.ukanth.iconmgr.dao.History;
 import dev.ukanth.iconmgr.dao.HistoryDao;
 import dev.ukanth.iconmgr.dao.IPObj;
@@ -17,23 +16,19 @@ import dev.ukanth.iconmgr.dao.IPObjDao;
 
 public class UninstallReceiver extends BroadcastReceiver {
 
-    private IPObjDao ipObjDao;
-    private HistoryDao historyDao;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         String packageName = intent.getData().getSchemeSpecificPart();
         if (packageName != null) {
             try {
-                App app = ((App) context.getApplicationContext());
-                DaoSession daoSession = app.getDaoSession();
-                DaoSession historySession = app.getHistoryDaoSession();
-                ipObjDao = daoSession.getIPObjDao();
-                historyDao = historySession.getHistoryDao();
-                IPObj pkgObj = ipObjDao.queryBuilder().where(IPObjDao.Properties.IconPkg.eq(packageName)).unique();
-                if (pkgObj != null) {
-                    //delete from install db to history
-                    ipObjDao.deleteByKey(packageName);
+
+
+                IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+               HistoryDao historyDao = App.getInstance().getHistoryDao();
+
+                IPObj pkgObj = ipObjDao.getByIconPkg(packageName);
+                if(pkgObj!=null){
+                    ipObjDao.delete(pkgObj);
                     Intent intentNotify = new Intent();
                     intentNotify.setAction("updatelist");
                     intentNotify.putExtra("pkgName", packageName);
