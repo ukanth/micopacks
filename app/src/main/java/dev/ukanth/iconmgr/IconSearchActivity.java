@@ -65,6 +65,9 @@ public class IconSearchActivity extends AppCompatActivity {
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
 
+    boolean isFavorite = false; // Initial state
+
+
     IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
     @Override
@@ -308,22 +311,18 @@ public class IconSearchActivity extends AppCompatActivity {
                                 // Dismiss the dialog when the close_button is clicked
                                 dialog.dismiss();
                             });
-
                             fav.setOnClickListener(v -> {
 
-//                                if (isFavorite) {
-//                                    // Icon is already marked as favorite, so unmark it
-//                                    fav.setImageResource(R.drawable.fav_border);
-//                                    // Remove the icon from the database
-//
-//                                } else {
-//                                    // Icon is not marked as favorite, so mark it
-//                                    fav.setImageResource(R.drawable.fav_filled);
-//                                    // Insert the icon and its icon pack name to the database
-//
-//                                }
-//                                // Toggle the favorite state
-//                                isFavorite = !isFavorite;
+                                isFavorite = !isFavorite;
+                                if (isFavorite == true) {
+                                    fav.setImageResource(R.drawable.fav_filled);
+
+
+                                } else {
+                                    fav.setImageResource(R.drawable.fav_border);
+
+
+                                }
 
                             });
 

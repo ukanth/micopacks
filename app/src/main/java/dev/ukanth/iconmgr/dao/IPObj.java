@@ -36,7 +36,6 @@ public class IPObj {
     @ColumnInfo(name = "additional")
     private String additional;
 
-
     public IPObj(String iconPkg, @NonNull String iconName, String iconType, long installTime, int total, int missed, String additional) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
@@ -107,7 +106,6 @@ public class IPObj {
     public void setMissed(int missed) {
         this.missed = missed;
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

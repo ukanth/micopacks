@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import dev.ukanth.iconmgr.dao.FavDao;
+import dev.ukanth.iconmgr.dao.Favorite;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;
@@ -65,7 +67,11 @@ public class IconPreviewActivity extends AppCompatActivity {
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
 
+    private boolean isFavorite ; // Initial state
+
    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+
+   FavDao favDao = App.getInstance().getFavDao();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -360,21 +366,20 @@ public class IconPreviewActivity extends AppCompatActivity {
                                 dialog.dismiss();
                             });
                             fav.setOnClickListener(v -> {
+                                isFavorite = !isFavorite;
+                                if (isFavorite == true) {
+                                    fav.setImageResource(R.drawable.fav_filled);
 
-//                                if (isFavorite) {
-//                                    // Icon is already marked as favorite, so unmark it
-//                                    fav.setImageResource(R.drawable.fav_border);
-//                                    // Remove the icon from the database
-//
-//                                } else {
-//                                    // Icon is not marked as favorite, so mark it
-//                                    fav.setImageResource(R.drawable.fav_filled);
-//                                    // Insert the icon and its icon pack name to the database
-//
-//                                }
-//                                // Toggle the favorite state
-//                                isFavorite = !isFavorite;
+                                } else {
+                                    fav.setImageResource(R.drawable.fav_border);
 
+                                }
+                                        String Icontitle = icon.getTitle();
+
+                                Favorite favorite = new Favorite(packageName, iconName, isFavorite, Icontitle);
+
+
+                                favDao.insertFavorite(favorite);
                             });
                             image.setOnLongClickListener(view -> {
                                 if (isStoragePermissionGranted()) {
