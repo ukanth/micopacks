@@ -31,6 +31,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.glidebitmappool.GlideBitmapPool;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -376,9 +377,18 @@ public class IconPreviewActivity extends AppCompatActivity {
                                 }
                                         String Icontitle = icon.getTitle();
 
-                                Favorite favorite = new Favorite(packageName, iconName, isFavorite, Icontitle);
 
 
+
+                                // Convert Drawable to Bitmap
+                                Bitmap iconBitmap = ((BitmapDrawable) dialogIconimage.getDrawable()).getBitmap();
+
+                                // Convert Bitmap to byte array
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                byte[] iconImageData = stream.toByteArray();
+
+                                Favorite favorite = new Favorite(packageName, iconName, isFavorite, Icontitle,iconImageData);
                                 favDao.insertFavorite(favorite);
                             });
                             image.setOnLongClickListener(view -> {

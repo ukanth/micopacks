@@ -23,8 +23,16 @@ public class Favorite {
     @ColumnInfo(name = "fav")
     private boolean fav;
 
-//    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
-//    private byte[] iconImage;
+    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    private byte[] iconImageData;
+
+    public byte[] getIconImageData() {
+        return iconImageData;
+    }
+
+    public void setIconImageData(byte[] iconImageData) {
+        this.iconImageData = iconImageData;
+    }
 
     @ColumnInfo(name = "Icontitle")
     private String Icontitle;
@@ -37,11 +45,12 @@ public class Favorite {
         this.fav = fav;
     }
 
-    public Favorite(String iconPkg, @NonNull String iconName, boolean fav,  String Icontitle ) {
+    public Favorite(String iconPkg, @NonNull String iconName, boolean fav,  String Icontitle , byte[] iconImageData) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
         this.fav = fav;
         this.Icontitle = Icontitle;
+        this.iconImageData = iconImageData;
     }
 
     public Favorite() {
@@ -74,13 +83,7 @@ public class Favorite {
         this.iconName = iconName;
     }
 
-//    public byte[] getIconImage() {
-//        return iconImage;
-//    }
-//
-//    public void setIconImage(byte[] iconImage) {
-//        this.iconImage = iconImage;
-//    }
+
 
     public String getIcontitle() {
         return Icontitle;
