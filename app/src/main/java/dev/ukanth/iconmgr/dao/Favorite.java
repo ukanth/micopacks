@@ -6,7 +6,9 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "Favorite")
+@Entity(tableName = "Favorite", indices = {
+        @Index(value = {"iconPkg","iconName","fav","Icontitle"}, unique = true)
+})
 
 
 public class Favorite {

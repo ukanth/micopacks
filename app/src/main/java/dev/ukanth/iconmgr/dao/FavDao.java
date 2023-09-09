@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.util.List;
+
 
 @Dao
 public interface FavDao {
@@ -17,9 +19,10 @@ public interface FavDao {
     @Update
     void updateFavorite(Favorite favorite);
 
-    @Query("SELECT COUNT(*) FROM Favorite WHERE iconName = :iconName AND fav = 1")
-    int isFavorite(String iconName);
+    @Query("SELECT iconImageData FROM Favorite WHERE fav = 1 ")
+    List<byte[]> getIconImageData();
 
-
+    @Query("SELECT fav FROM Favorite WHERE iconPkg = :packageName AND Icontitle = :iconTitle AND iconName = :iconName")
+    boolean isFavorite(String packageName, String iconTitle, String iconName);
 }
 

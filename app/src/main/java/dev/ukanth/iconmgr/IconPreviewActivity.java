@@ -352,6 +352,14 @@ public class IconPreviewActivity extends AppCompatActivity {
                             MaterialDialog dialog = new MaterialDialog.Builder(mContext)  // set dailog view to custom_dailog
                                     .customView(dialogView, true)
                                     .build();
+                     // Set the favorite status initially when the dialog is built
+                            boolean Favorite = favDao.isFavorite(packageName, icon.getTitle(), iconName);
+                            if (Favorite) {
+                                fav.setImageResource(R.drawable.fav_filled);
+                            } else {
+                                fav.setImageResource(R.drawable.fav_border);
+
+                            }
 
                             image.setOnClickListener(v -> dialog.show());
 
@@ -367,6 +375,7 @@ public class IconPreviewActivity extends AppCompatActivity {
                                 dialog.dismiss();
                             });
                             fav.setOnClickListener(v -> {
+                                boolean isFavorite = favDao.isFavorite(packageName, icon.getTitle(), iconName);
                                 isFavorite = !isFavorite;
                                 if (isFavorite == true) {
                                     fav.setImageResource(R.drawable.fav_filled);
