@@ -7,7 +7,7 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "Favorite", indices = {
-        @Index(value = {"iconPkg","iconName","fav","Icontitle"}, unique = true)
+        @Index(value = {"iconPkg","iconName","Icontitle"}, unique = true)
 })
 
 
@@ -21,9 +21,6 @@ public class Favorite {
 
     @ColumnInfo(name = "iconName")
     private String iconName;
-
-    @ColumnInfo(name = "fav")
-    private boolean fav;
 
     @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
     private byte[] iconImageData;
@@ -39,18 +36,9 @@ public class Favorite {
     @ColumnInfo(name = "Icontitle")
     private String Icontitle;
 
-    public boolean isFav() {
-        return fav;
-    }
-
-    public void setFav(boolean fav) {
-        this.fav = fav;
-    }
-
-    public Favorite(String iconPkg, @NonNull String iconName, boolean fav,  String Icontitle , byte[] iconImageData) {
+    public Favorite(String iconPkg, @NonNull String iconName,  String Icontitle , byte[] iconImageData) {
         this.iconPkg = iconPkg;
         this.iconName = iconName;
-        this.fav = fav;
         this.Icontitle = Icontitle;
         this.iconImageData = iconImageData;
     }

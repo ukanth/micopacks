@@ -379,26 +379,22 @@ public class IconPreviewActivity extends AppCompatActivity {
                                 isFavorite = !isFavorite;
                                 if (isFavorite == true) {
                                     fav.setImageResource(R.drawable.fav_filled);
+                                    String Icontitle = icon.getTitle();
+                                    // Convert Drawable to Bitmap
+                                    Bitmap iconBitmap = ((BitmapDrawable) dialogIconimage.getDrawable()).getBitmap();
+                                    // Convert Bitmap to byte array
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                    byte[] iconImageData = stream.toByteArray();
+
+                                    Favorite favorite = new Favorite(packageName, iconName, Icontitle,iconImageData);
+                                    favDao.insertFavorite(favorite);
 
                                 } else {
                                     fav.setImageResource(R.drawable.fav_border);
-
+                                    favDao.deleteFavorite(packageName, icon.getTitle(), iconName);
                                 }
-                                        String Icontitle = icon.getTitle();
 
-
-
-
-                                // Convert Drawable to Bitmap
-                                Bitmap iconBitmap = ((BitmapDrawable) dialogIconimage.getDrawable()).getBitmap();
-
-                                // Convert Bitmap to byte array
-                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                byte[] iconImageData = stream.toByteArray();
-
-                                Favorite favorite = new Favorite(packageName, iconName, isFavorite, Icontitle,iconImageData);
-                                favDao.insertFavorite(favorite);
                             });
                             image.setOnLongClickListener(view -> {
                                 if (isStoragePermissionGranted()) {
