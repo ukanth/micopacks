@@ -4,6 +4,7 @@
     <string name="loading_preview">Generate preview</string>
     <string name="loading_stats">Calculating stats</string>
     <string name="title">Action for </string>
+    <string name = "icon_pack_name">Icon Pack Name</string>
     <string name="preferences">Settings</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
