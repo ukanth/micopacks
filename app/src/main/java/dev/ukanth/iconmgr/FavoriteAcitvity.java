@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -33,7 +34,6 @@ public class FavoriteAcitvity extends Activity {
         setContentView(R.layout.favorite);
         LinearLayout iconPackContainer = findViewById(R.id.icon_pack_container);
         List<String> iconName = favDao.geticonName();
-        gridLayout = (GridLayout) findViewById(R.id.favorite);
 
 
         if (Prefs.isDarkTheme()) {
@@ -64,6 +64,9 @@ public class FavoriteAcitvity extends Activity {
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
             ));
+            // Set the number of columns for the GridLayout
+            int numColumns = Prefs.getCol();    // same no of column as settings
+            iconGridLayout.setColumnCount(numColumns);
             // Get the list of icon images for the current iconName
             List<byte[]> iconImages = groupedIconImages.get(icon);
             // Display the icon images under the TextView
