@@ -4,6 +4,7 @@
     <string name="loading_preview">Generate preview</string>
     <string name="loading_stats">Calculating stats</string>
     <string name="title">Action for </string>
+    <string name = "icon_pack_name">Icon Pack Name</string>
     <string name="preferences">Settings</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
@@ -24,6 +25,7 @@
     <string name="no_preview">All installed icons are masked by this pack. Kindly check details view.</string>
     <string name="title_activity_settings">Settings</string>
     <string name="help">Help</string>
+    <string name="Favorites">Favorites</string>
     <string name="about">About</string>
     <string name="saverules">Save</string>
     <string name="about_content">

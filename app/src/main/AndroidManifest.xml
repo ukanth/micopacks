@@ -109,7 +109,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
-
+        <activity android:name=".FavoriteAcitvity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="dev.ukanth.iconmgr.MainActivity" />
+        </activity>
         <activity
             android:name=".IconSearchActivity"
             android:exported="false"

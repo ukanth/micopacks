@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.glidebitmappool.GlideBitmapPool;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import dev.ukanth.iconmgr.dao.FavDao;
+import dev.ukanth.iconmgr.dao.Favorite;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.LauncherHelper;
@@ -65,6 +69,8 @@ public class IconPreviewActivity extends AppCompatActivity {
     private IntentFilter uiFilter;
 
    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+
+   FavDao favDao = App.getInstance().getFavDao();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -320,23 +326,74 @@ public class IconPreviewActivity extends AppCompatActivity {
                             relativeLayout.setLayoutParams(params);
                             TextView textView = new TextView(mContext);
                             textView.setText(icon.getPackageName());*/
+
+                             LayoutInflater inflater = LayoutInflater.from(mContext);
+                             View dialogView = inflater.inflate(R.layout.custom_dailog,null);
+
+                             ImageView dialogIconimage = dialogView.findViewById(R.id.icon_image);
+                            dialogIconimage.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
+
+
                             ImageView image = new ImageView(mContext);
                             image.setLayoutParams(params);
                             image.setPadding(15, 15, 15, 15);
                             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
-                            image.setOnClickListener(v -> new MaterialDialog.Builder(mContext)
-                                     .title(icon.getTitle())
-                                    .positiveText(R.string.save)
-                                    .onPositive((dialog, which) -> {
-                                        if (isStoragePermissionGranted()) {
-                                            saveImage(icon, icon.getPackageName());
-                                            dialog.dismiss();
-                                        }
-                                    })
-                                    .negativeText(R.string.close)
-                                    .icon(new BitmapDrawable(getResources(), icon.getIconBitmap()))
-                                    .show());
+
+                            TextView titleTextView = dialogView.findViewById(R.id.title_text_view);
+                            titleTextView.setText(icon.getTitle());
+
+                            ImageView download = dialogView.findViewById(R.id.download);
+                            ImageView close = dialogView.findViewById(R.id.close);
+                            ImageView fav = dialogView.findViewById(R.id.favorite);
+
+                            MaterialDialog dialog = new MaterialDialog.Builder(mContext)  // set dailog view to custom_dailog
+                                    .customView(dialogView, true)
+                                    .build();
+                     // Set the favorite status initially when the dialog is built
+                            boolean Favorite = favDao.isFavorite(packageName, icon.getTitle(), iconName);
+                            if (Favorite) {
+                                fav.setImageResource(R.drawable.fav_filled);
+                            } else {
+                                fav.setImageResource(R.drawable.fav_border);
+
+                            }
+
+                            image.setOnClickListener(v -> dialog.show());
+
+
+                            download.setOnClickListener(v -> {
+                                if (isStoragePermissionGranted()) {
+                                    saveImage(icon, icon.getPackageName());
+                                }
+                            });
+
+                            close.setOnClickListener(v -> {
+                                // Dismiss the dialog when the close_button is clicked
+                                dialog.dismiss();
+                            });
+                            fav.setOnClickListener(v -> {
+                                boolean isFavorite = favDao.isFavorite(packageName, icon.getTitle(), iconName);
+                                isFavorite = !isFavorite;
+                                if (isFavorite == true) {
+                                    fav.setImageResource(R.drawable.fav_filled);
+                                    String Icontitle = icon.getTitle();
+                                    // Convert Drawable to Bitmap
+                                    Bitmap iconBitmap = ((BitmapDrawable) dialogIconimage.getDrawable()).getBitmap();
+                                    // Convert Bitmap to byte array
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                    byte[] iconImageData = stream.toByteArray();
+
+                                    Favorite favorite = new Favorite(packageName, iconName, Icontitle,iconImageData);
+                                    favDao.insertFavorite(favorite);
+
+                                } else {
+                                    fav.setImageResource(R.drawable.fav_border);
+                                    favDao.deleteFavorite(packageName, icon.getTitle(), iconName);
+                                }
+
+                            });
                             image.setOnLongClickListener(view -> {
                                 if (isStoragePermissionGranted()) {
                                     saveImage(icon, packageName);

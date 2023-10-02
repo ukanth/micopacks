@@ -392,6 +392,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 toast.show();
                 new Thread(() -> shareBitmap(getScreenshotFromRecyclerView(recyclerView), System.currentTimeMillis() + "")).start();
                 return true;
+            case R.id.favorite:
+                showFav();
+                return true;
             case R.id.changelog:
                 showChangelog();
                 return true;
@@ -455,6 +458,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showFav() {
+        Intent myIntent = new Intent(MainActivity.this, FavoriteAcitvity.class);
+        startActivity(myIntent);
     }
 
     private void showIconSearch() {
