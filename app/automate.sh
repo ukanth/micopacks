@@ -19,10 +19,10 @@ cd "$PROJECT_DIR"
 ./gradlew clean
 
 # Build the release APK
-./gradlew assembleDebug
+./gradlew assembleRelease
 
 # Copy the APK to the output directory
-cp "$PROJECT_DIR/app/build/outputs/apk/debug/app-debug.apk" "$OUTPUT_DIR"
+cp "$PROJECT_DIR/app/build/outputs/apk/release/app-release-unsigned.apk" "$OUTPUT_DIR"
 
 # Notify completion
 echo "APK build completed and copied to $OUTPUT_DIR"
