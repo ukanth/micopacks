@@ -18,11 +18,22 @@ cd "$PROJECT_DIR"
 # Clean the project
 ./gradlew clean
 
+# Define the path to your keystore.properties file (update as needed)
+KEYSTORE_PROPERTIES_FILE="$PROJECT_DIR/keystore.properties"
+
+# Check if the keystore.properties file exists
+if [ -f "$KEYSTORE_PROPERTIES_FILE" ]; then
+  echo "Using keystore.properties file for signing."
+else
+  echo "Error: keystore.properties file not found. Please create one with the keystore information."
+  exit 1
+fi
+
 # Build the release APK
-./gradlew assembleRelease
+./gradlew assembleRelease -Pkeystore.properties="$KEYSTORE_PROPERTIES_FILE"
 
 # Copy the APK to the output directory
-cp "$PROJECT_DIR/app/build/outputs/apk/release/app-release-unsigned.apk" "$OUTPUT_DIR"
+cp "$PROJECT_DIR/app/build/outputs/apk/release/app-release.apk" "$OUTPUT_DIR"
 
 # Notify completion
 echo "APK build completed and copied to $OUTPUT_DIR"
