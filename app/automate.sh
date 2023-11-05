@@ -36,4 +36,4 @@ fi
 cp "$PROJECT_DIR/app/build/outputs/apk/release/app-release.apk" "$OUTPUT_DIR"
 
 # Notify completion
-echo "APK build completed and copied to $OUTPUT_DIR"
+echo "APK build complete and copied to $OUTPUT_DIR"
