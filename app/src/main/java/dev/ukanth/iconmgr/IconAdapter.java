@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
@@ -30,6 +31,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import dev.ukanth.iconmgr.dao.Freeze;
+import dev.ukanth.iconmgr.dao.FreezeDao;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.dao.IPObjDatabase;
@@ -133,6 +136,8 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             case 5:
                 uninstall(ctx, currentItem);
                 break;
+            case 6:
+                freeze(ctx, currentItem);
 
         }
     }
@@ -172,6 +177,27 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         if (intent.resolveActivity(ctx.getPackageManager()) != null) {
             ctx.startActivity(intent);
         }
+    }
+
+    private void freeze(Context ctx, IPObj currentItem){
+//        Toast.makeText(ctx,"freeze icon pack" + currentItem ,Toast.LENGTH_SHORT).show();
+        FreezeDao freezeDao = App.getInstance().getFreezeDao();
+        IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+        ipObjDao.deletecurrent(currentItem);
+
+        // Remove the item from the list used by the adapter
+        iconPacks.remove(currentItem);
+
+        // Notify the adapter that the item has been removed
+        notifyItemRemoved(iconPacks.indexOf(currentItem));
+        notifyItemRangeChanged(iconPacks.indexOf(currentItem), iconPacks.size());
+        // Create a new Freeze object from the current IPObj item
+        Freeze freezeItem = new Freeze(currentItem.getIconPkg(), currentItem.getIconName());
+
+        // Insert the item into the Freeze table
+        freezeDao.insertIntoFreezeTable(freezeItem);
+
+
     }
 
     private void openPlay(Context ctx, IPObj currentItem) {

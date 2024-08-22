@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 
 import dev.ukanth.iconmgr.dao.FavDao;
 import dev.ukanth.iconmgr.dao.FavDatabase;
+import dev.ukanth.iconmgr.dao.FreezeDao;
+import dev.ukanth.iconmgr.dao.FreezeDatabase;
 import dev.ukanth.iconmgr.dao.HistoryDao;
 import dev.ukanth.iconmgr.dao.HistoryDatabase;
 import dev.ukanth.iconmgr.dao.IPObjDao;
@@ -26,6 +28,8 @@ public class App extends Application {
     private HistoryDao historyDao;
 
     private FavDao favDao;
+
+    private FreezeDao freezeDao;
     private BroadcastReceiver receiver;
 
 
@@ -56,6 +60,9 @@ public class App extends Application {
 
         FavDatabase db3 = FavDatabase.getInstance(getApplicationContext());
         favDao = db3.favDao();
+
+        FreezeDatabase db4 = FreezeDatabase.getInstance(getApplicationContext());
+        freezeDao = db4.freezeDao();
     }
 
     public IPObjDao getIPObjDao() {
@@ -67,5 +74,7 @@ public class App extends Application {
     }
 
     public FavDao getFavDao(){return  favDao; }
+
+    public FreezeDao getFreezeDao(){return freezeDao; }
 
 }
