@@ -67,8 +67,6 @@ public class IconPreviewActivity extends AppCompatActivity {
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
 
-    private boolean isFavorite ; // Initial state
-
    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
    FavDao favDao = App.getInstance().getFavDao();

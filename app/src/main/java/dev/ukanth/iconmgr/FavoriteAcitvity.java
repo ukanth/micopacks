@@ -1,11 +1,13 @@
 package dev.ukanth.iconmgr;
-import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
@@ -13,6 +15,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import com.afollestad.materialdialogs.MaterialDialog;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,16 +28,21 @@ import java.util.Map;
 import dev.ukanth.iconmgr.dao.FavDao;
 
 
-public class FavoriteAcitvity extends Activity {
-
-    private GridLayout gridLayout;
-
-    private LinearLayout.LayoutParams params;
-
+public class FavoriteAcitvity  extends AppCompatActivity {
     FavDao favDao = App.getInstance().getFavDao();
+    private Context mContext;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.favorite);
+        mContext = FavoriteAcitvity.this;
+        setupActionBar();
+        LinearLayout iconPackContainer = findViewById(R.id.icon_pack_container);
+        List<String> iconName = favDao.geticonName();
+
 
         if (Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
@@ -90,4 +103,10 @@ public class FavoriteAcitvity extends Activity {
             });
         }).start();
     }
-}
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+    }
