@@ -42,6 +42,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import dev.ukanth.iconmgr.util.BitmapCache;
 import dev.ukanth.iconmgr.util.Util;
 
 /**
@@ -219,6 +220,11 @@ public class IconPackUtil {
 
     private Bitmap loadBitmap(String drawableName, String packageName) {
         try {
+            // Check cache first
+            Bitmap cached = BitmapCache.getInstance().get(packageName, drawableName);
+            if (cached != null) {
+                return cached;
+            }
 
             int id = iconPackres.getIdentifier(drawableName, "drawable", packageName);
             if (id > 0) {
@@ -234,6 +240,10 @@ public class IconPackUtil {
                 } catch (Exception e) {
                     bitmap = drawableToBitmap(iconPackres.getDrawable(id));
                 }
+                
+                // Cache the bitmap
+                BitmapCache.getInstance().put(packageName, drawableName, bitmap);
+                
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] byteArray = stream.toByteArray();

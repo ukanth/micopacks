@@ -10,6 +10,9 @@ import dev.ukanth.iconmgr.dao.HistoryDao;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.dao.IPObjDatabase;
+import dev.ukanth.iconmgr.util.AppCache;
+import dev.ukanth.iconmgr.util.AuthorCache;
+import dev.ukanth.iconmgr.util.BitmapCache;
 
 import static dev.ukanth.iconmgr.tasker.FireReceiver.TAG;
 
@@ -26,9 +29,14 @@ public class PackageBroadcast extends BroadcastReceiver {
         }
         String packageName = intent.getData().getSchemeSpecificPart();
         if (Intent.ACTION_PACKAGE_REMOVED.equals(intent.getAction())) {
+            // Invalidate caches when package is removed
+            AppCache.getInstance().invalidate();
+            AuthorCache.getInstance().remove(packageName);
+            BitmapCache.getInstance().evictPackage(packageName);
+            
             if (packageName != null) {
                 // Run database operations on background thread
-                new Thread(() -> {
+                App.getInstance().getDbExecutor().execute(() -> {
                     try {
                         IPObjDao ipObjDao = App.getInstance().getIPObjDao();
                         HistoryDao historyDao = App.getInstance().getHistoryDao();
@@ -46,13 +54,16 @@ public class PackageBroadcast extends BroadcastReceiver {
                     } catch (Exception e) {
                         Log.e("MICO", "Exception in UninstallReceiver" + e.getMessage(), e);
                     }
-                }).start();
+                });
             }
 
         } else if (Intent.ACTION_PACKAGE_ADDED.equals(intent.getAction()) || Intent.ACTION_PACKAGE_CHANGED.equals(intent.getAction())) {
+            // Invalidate caches when package is added or changed
+            AppCache.getInstance().invalidate();
+            
             if (packageName != null) {
                 // Run database operations on background thread
-                new Thread(() -> {
+                App.getInstance().getDbExecutor().execute(() -> {
                     try {
                         IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
                         IPObjDao ipObjDao = db.ipObjDao();
@@ -60,7 +71,7 @@ public class PackageBroadcast extends BroadcastReceiver {
                     } catch (Exception e) {
                         Log.e("MICO", "Exception in InstallReceiver" + e.getMessage());
                     }
-                }).start();
+                });
             }
         }
     }

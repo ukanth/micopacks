@@ -28,13 +28,14 @@ import com.google.gson.Gson;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.dao.IPObjDatabase;
+import dev.ukanth.iconmgr.util.AuthorCache;
 import dev.ukanth.iconmgr.util.Util;
 
 import static dev.ukanth.iconmgr.tasker.FireReceiver.TAG;
@@ -47,7 +48,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
     // Cached instances to avoid repeated allocations
     private static final Gson gson = new Gson();
-    private final Map<String, String> authorNameCache = new HashMap<>();
+    private final ExecutorService dbExecutor = Executors.newSingleThreadExecutor();
 
     // Cached preference values
     private boolean prefUseFavorite;
@@ -80,10 +81,10 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                     currentItem.setAdditional(gson.toJson(attr));
                     // Update the database on background thread
                     final IPObj itemToUpdate = currentItem;
-                    new Thread(() -> {
+                    dbExecutor.execute(() -> {
                         IPObjDao ipObjDao = App.getInstance().getIPObjDao();
                         ipObjDao.update(itemToUpdate);
-                    }).start();
+                    });
                     if (attr.isFavorite()) {
                         iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
                         //Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
@@ -283,14 +284,12 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
                 builder.append(" - ");
             }
             isshown = true;
-            // Use cached author name to avoid expensive certificate parsing per item
+            // Use global author cache
             String pkgName = obj.getIconPkg();
-            String authorName = authorNameCache.get(pkgName);
-            if (authorName == null) {
-                authorName = Util.getAuthorName(ctx, pkgName);
-                authorNameCache.put(pkgName, authorName != null ? authorName : "");
+            String authorName = AuthorCache.getInstance().getAuthorName(ctx, pkgName);
+            if (authorName != null) {
+                builder.append(authorName);
             }
-            builder.append(authorName);
         }
 
 

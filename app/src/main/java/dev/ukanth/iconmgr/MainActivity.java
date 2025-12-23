@@ -48,6 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.AppCache;
 import dev.ukanth.iconmgr.util.PackageComparator;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -246,6 +247,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void loadApp(boolean forceLoad) {
+        if (forceLoad) {
+            // Invalidate caches on force reload
+            AppCache.getInstance().invalidate();
+        }
         iconPacksList = new ArrayList<>();
         LoadAppList getAppList = new LoadAppList();
         if (plsWait == null && (getAppList.getStatus() == AsyncTask.Status.PENDING ||
