@@ -28,7 +28,9 @@ import com.google.gson.Gson;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
@@ -42,6 +44,18 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     private Context ctx;
     protected List<IPObj> iconPacks;
     private int installed;
+
+    // Cached instances to avoid repeated allocations
+    private static final Gson gson = new Gson();
+    private final Map<String, String> authorNameCache = new HashMap<>();
+
+    // Cached preference values
+    private boolean prefUseFavorite;
+    private boolean prefShowTotalIcons;
+    private boolean prefShowSize;
+    private boolean prefShowPercentage;
+    private boolean prefShowAuthorName;
+    private String prefSortBy;
 
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
@@ -61,12 +75,15 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             iconImp = (ImageView) view.findViewById(R.id.icon_star);
             iconImp.setOnClickListener(view13 -> {
                 if (currentItem != null && currentItem.getIconPkg() != null) {
-                    IconAttr attr = new Gson().fromJson(currentItem.getAdditional(), IconAttr.class);
+                    IconAttr attr = gson.fromJson(currentItem.getAdditional(), IconAttr.class);
                     attr.setFavorite(!attr.isFavorite());
-                    currentItem.setAdditional(new Gson().toJson(attr).toString());
-//                    Update the currentItem object in the database
-                    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
-                    ipObjDao.update(currentItem);
+                    currentItem.setAdditional(gson.toJson(attr));
+                    // Update the database on background thread
+                    final IPObj itemToUpdate = currentItem;
+                    new Thread(() -> {
+                        IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+                        ipObjDao.update(itemToUpdate);
+                    }).start();
                     if (attr.isFavorite()) {
                         iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
                         //Toast.makeText(ctx, "Added to Favorites", Toast.LENGTH_SHORT).show();
@@ -188,6 +205,13 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     IconAdapter(List<IPObj> ipacks, int installed) {
         this.installed = installed;
         this.iconPacks = ipacks;
+        // Cache preference values once to avoid repeated SharedPreferences reads
+        this.prefUseFavorite = Prefs.useFavorite();
+        this.prefShowTotalIcons = Prefs.isTotalIcons();
+        this.prefShowSize = Prefs.showSize();
+        this.prefShowPercentage = Prefs.showPercentage();
+        this.prefShowAuthorName = Prefs.showAuthorName();
+        this.prefSortBy = Prefs.sortBy();
     }
 
     @Override
@@ -207,13 +231,13 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         View currentView = personViewHolder.itemView;
         currentView.setTag(personViewHolder);
         IPObj obj = iconPacks.get(i);
-        if (Prefs.useFavorite()) {
+        if (prefUseFavorite) {
             personViewHolder.iconImp.setVisibility(View.VISIBLE);
         } else {
             personViewHolder.iconImp.setVisibility(View.GONE);
         }
         personViewHolder.iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_border_black_24dp));
-        IconAttr attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
+        IconAttr attr = gson.fromJson(obj.getAdditional(), IconAttr.class);
         if (attr.isFavorite()) {
             personViewHolder.iconImp.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
         }
@@ -224,19 +248,19 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         StringBuilder builder = new StringBuilder();
         boolean isshown = false;
 
-        if (Prefs.isTotalIcons()) {
+        if (prefShowTotalIcons) {
             builder.append(ctx.getString(R.string.noicons) + " " + obj.getTotal());
             isshown = true;
         }
-        if (Prefs.showSize()) {
-            if (Prefs.isTotalIcons()) {
+        if (prefShowSize) {
+            if (prefShowTotalIcons) {
                 builder.append(" - ");
             }
             isshown = true;
             builder.append(attr.getSize() + " MB");
         }
-        if (Prefs.showPercentage()) {
-            if (Prefs.isTotalIcons() || Prefs.showSize()) {
+        if (prefShowPercentage) {
+            if (prefShowTotalIcons || prefShowSize) {
                 builder.append(" - ");
             }
             isshown = true;
@@ -247,20 +271,26 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             builder.append(" " + result);
         }
 
-        if (Prefs.sortBy().equals("s1")) {
-            if (Prefs.isTotalIcons() || Prefs.showSize() || Prefs.showPercentage()) {
+        if (prefSortBy.equals("s1")) {
+            if (prefShowTotalIcons || prefShowSize || prefShowPercentage) {
                 builder.append(" - ");
             }
             builder.append(" " + Util.prettyFormat(new Date(System.currentTimeMillis() - obj.getInstallTime())));
         }
 
-        if (Prefs.showAuthorName()){
-            if (Prefs.isTotalIcons() || Prefs.showSize() || Prefs.showPercentage() || Prefs.sortBy().equals("s1")){
+        if (prefShowAuthorName) {
+            if (prefShowTotalIcons || prefShowSize || prefShowPercentage || prefSortBy.equals("s1")) {
                 builder.append(" - ");
             }
             isshown = true;
-            String authorName = Util.getAuthorName(ctx, obj.getIconPkg());
-               builder.append( authorName);
+            // Use cached author name to avoid expensive certificate parsing per item
+            String pkgName = obj.getIconPkg();
+            String authorName = authorNameCache.get(pkgName);
+            if (authorName == null) {
+                authorName = Util.getAuthorName(ctx, pkgName);
+                authorNameCache.put(pkgName, authorName != null ? authorName : "");
+            }
+            builder.append(authorName);
         }
 
 
@@ -268,6 +298,8 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
         if (!isshown) {
             personViewHolder.ipackCount.setVisibility(View.GONE);
+        } else {
+            personViewHolder.ipackCount.setVisibility(View.VISIBLE);
         }
 
         try {

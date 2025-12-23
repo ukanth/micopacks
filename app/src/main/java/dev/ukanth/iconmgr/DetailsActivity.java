@@ -74,36 +74,36 @@ public class DetailsActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(gridLayoutManager);
 
-        List<Detail> homes = new ArrayList<>();
-
-
-
-
-        IPObj pkgObj = null;
-        if (ipObjDao != null) {
-            pkgObj = ipObjDao.getByIconPkg(pkgName);
-            if(pkgObj != null) {
-                homes.add(new Detail(-1, String.valueOf(pkgObj.getTotal()),
-                        getResources().getString(R.string.iconCount),
-                        Detail.Type.TOTAL));
-                setTitle(pkgObj.getIconName());
-            }
-        }
-
         fab = (FloatingActionButton) findViewById(R.id.fabdetail);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
-                LauncherHelper.apply(DetailsActivity.this, pkgName, launcherPack);
-            }
+        fab.setOnClickListener(view -> {
+            String launcherPack = LauncherHelper.getLauncherPackage(getApplicationContext());
+            LauncherHelper.apply(DetailsActivity.this, pkgName, launcherPack);
         });
         if (!Prefs.isFabShow()) {
             fab.setVisibility(View.GONE);
         }
 
-        DetailViewAdapter rcAdapter = new DetailViewAdapter(DetailsActivity.this, homes, 1, pkgObj);
-        recyclerView.setAdapter(rcAdapter);
+        // Load data on background thread
+        new Thread(() -> {
+            List<Detail> homes = new ArrayList<>();
+            IPObj pkgObj = null;
+            if (ipObjDao != null) {
+                pkgObj = ipObjDao.getByIconPkg(pkgName);
+                if (pkgObj != null) {
+                    homes.add(new Detail(-1, String.valueOf(pkgObj.getTotal()),
+                            getResources().getString(R.string.iconCount),
+                            Detail.Type.TOTAL));
+                }
+            }
+            final IPObj finalPkgObj = pkgObj;
+            runOnUiThread(() -> {
+                if (finalPkgObj != null) {
+                    setTitle(finalPkgObj.getIconName());
+                }
+                DetailViewAdapter rcAdapter = new DetailViewAdapter(DetailsActivity.this, homes, 1, finalPkgObj);
+                recyclerView.setAdapter(rcAdapter);
+            });
+        }).start();
     }
 
     private void setupActionBar() {

@@ -22,7 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.palette.graphics.Palette;
 
-import com.glidebitmappool.GlideBitmapFactory;
+import android.graphics.BitmapFactory;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -224,7 +224,13 @@ public class IconPackUtil {
             if (id > 0) {
                 Bitmap bitmap;
                 try {
-                    bitmap = GlideBitmapFactory.decodeResource(iconPackres, id, 256, 256);
+                    // Decode with inSampleSize to load efficiently at ~256x256
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inJustDecodeBounds = true;
+                    BitmapFactory.decodeResource(iconPackres, id, options);
+                    options.inSampleSize = calculateInSampleSize(options, 256, 256);
+                    options.inJustDecodeBounds = false;
+                    bitmap = BitmapFactory.decodeResource(iconPackres, id, options);
                 } catch (Exception e) {
                     bitmap = drawableToBitmap(iconPackres.getDrawable(id));
                 }
@@ -243,6 +249,20 @@ public class IconPackUtil {
             return null;
         }
         return null;
+    }
+
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
 
     public Bitmap getResizedBitmap(Bitmap image, int bitmapWidth, int bitmapHeight, boolean filter) {

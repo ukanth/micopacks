@@ -96,19 +96,17 @@ public class IconDetails extends AsyncTask<Object, Object, HashMap<String, List>
         super.onPostExecute(listPkg);
         if (packageName != null) {
             Log.i("MICO", "PackageName: " + packageName);
-            if((type.equals("MISSED") || type.equals("ALL")) && listPkg != null) {
-
-                IPObjDao ipObjDao = App.getInstance().getIPObjDao();
-                IPObj ipObj = new IPObj();
-                ipObj.setIconPkg(packageName);
-
+            if ((type.equals("MISSED") || type.equals("ALL")) && listPkg != null) {
+                // Run database operations on background thread
+                new Thread(() -> {
+                    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
                     IPObj ipobj = ipObjDao.getByIconPkg(packageName);
-                    if(ipobj != null) {
+                    if (ipobj != null) {
                         List<String> missedPackage = listPkg.get("package");
                         ipobj.setMissed(missedPackage != null ? missedPackage.size() : 0);
                         ipObjDao.update(ipobj);
                     }
-
+                }).start();
             }
             if (delegate != null) {
                 delegate.processFinish(listPkg);

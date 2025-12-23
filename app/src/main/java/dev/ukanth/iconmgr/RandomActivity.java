@@ -14,15 +14,22 @@ public class RandomActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IPObjDao ipObjDao = App.getInstance().getIPObjDao();
-        IPObj ipObj = null;
         String pkgName = getIntent().getStringExtra("pack");
-        if(pkgName.isEmpty()) {
-            ipObj = Util.getRandomInstalledIconPack(ipObjDao);
-        } else {
-            ipObj = ipObjDao.getByIconPkg(pkgName);
-        }
-        Util.determineApply(RandomActivity.this, ipObj);
-        finish();
+
+        // Run database operations on background thread
+        new Thread(() -> {
+            IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+            IPObj ipObj;
+            if (pkgName == null || pkgName.isEmpty()) {
+                ipObj = Util.getRandomInstalledIconPack(ipObjDao);
+            } else {
+                ipObj = ipObjDao.getByIconPkg(pkgName);
+            }
+            final IPObj finalIpObj = ipObj;
+            runOnUiThread(() -> {
+                Util.determineApply(RandomActivity.this, finalIpObj);
+                finish();
+            });
+        }).start();
     }
 }
