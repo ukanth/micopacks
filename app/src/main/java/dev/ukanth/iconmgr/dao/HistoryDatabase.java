@@ -14,7 +14,6 @@ public abstract class HistoryDatabase extends RoomDatabase {
     public static HistoryDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), HistoryDatabase.class, "history-db")
-                    .allowMainThreadQueries()
                     .build();
         }
         return instance;

@@ -16,6 +16,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,11 +120,21 @@ public class IconPackManager {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
         Collection<Future<IPObj>> futures = new LinkedList<Future<IPObj>>();
         ArrayList<Callable<IPObj>> listCallables = new ArrayList<Callable<IPObj>>();
+        
+        // Batch query all existing icon packs once
+        List<IPObj> existingPacks = ipObjDao.getAll();
+        HashMap<String, IPObj> existingPacksMap = new HashMap<>();
+        for (IPObj pack : existingPacks) {
+            if (pack != null && pack.getIconPkg() != null) {
+                existingPacksMap.put(pack.getIconPkg(), pack);
+            }
+        }
+        
         for (ResolveInfo ri : rinfo) {
             final String pkgName = ri.activityInfo.packageName;
             if (!unique.contains(pkgName) && !excludePackages.contains(pkgName)) {
                 unique.add(pkgName);
-                final IPObj obj2 = ipObjDao.getByIconPkg(pkgName);
+                final IPObj obj2 = existingPacksMap.get(pkgName);
                 if (obj2 == null) {
                     listCallables.add(new ProcessPack(pkgName, ipObjDao, false));
                 } else {

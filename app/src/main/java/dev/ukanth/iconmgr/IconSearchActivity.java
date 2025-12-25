@@ -33,7 +33,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.glidebitmappool.GlideBitmapPool;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -131,9 +130,6 @@ public class IconSearchActivity extends AppCompatActivity {
             setTheme(R.style.AppTheme_Light);
         }
 
-        GlideBitmapPool.initialize(10 * 1024 * 1024);
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.iconsearch);
 
@@ -154,7 +150,10 @@ public class IconSearchActivity extends AppCompatActivity {
 
 
 
-        objList = ipObjDao.getAll();
+        // Load data on background thread
+        new Thread(() -> {
+            objList = ipObjDao.getAll();
+        }).start();
 
         registerUIbroadcast();
     }
@@ -338,7 +337,6 @@ public class IconSearchActivity extends AppCompatActivity {
                             gridLayout.addView(image);
                         }
                     }
-                    GlideBitmapPool.clearMemory();
                     //processInputs(list, res, params, gridLayout);
                 } else {
                 }

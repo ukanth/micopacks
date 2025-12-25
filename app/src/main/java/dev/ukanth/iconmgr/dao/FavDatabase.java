@@ -5,7 +5,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Favorite.class }, version = 1, exportSchema = false)
+@Database(entities = {Favorite.class }, version = 2, exportSchema = false)
 public abstract class FavDatabase extends RoomDatabase {
     private static FavDatabase instance;
 
@@ -14,7 +14,7 @@ public abstract class FavDatabase extends RoomDatabase {
     public static FavDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), FavDatabase.class, "fav-db")
-                    .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
                     .build();
         }
         return instance;
