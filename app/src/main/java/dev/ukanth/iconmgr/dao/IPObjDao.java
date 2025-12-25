@@ -34,6 +34,9 @@ public interface IPObjDao {
     @Delete
     void delete(IPObj user);
 
+    @Delete
+    void deletecurrent(IPObj ipObj);
+
     @Query("DELETE FROM IPObj")
     void deleteAll();
 

@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private RecyclerView recyclerView;
     private TextView emptyView;
     private IconAdapter adapter;
-    private IPObjDao ipObjDao = App.getInstance().getIPObjDao();;
+    private IPObjDao ipObjDao = App.getInstance().getIPObjDao();
     private List<IPObj> iconPacksList;
     private HashSet<String> iconPacksSet; // For O(1) duplicate checking
     private SwipeRefreshLayout mSwipeLayout;

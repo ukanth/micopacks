@@ -106,6 +106,8 @@
     <string name="searching">Searching</string>
     <string name="select_launcher">Select Launcher to apply iconpack</string>
     <string name="apply">Apply</string>
+    <string name="freeze">Freeze Icon Pack</string>
+    <string name="defreeze">Defreeze Icon Pack</string>
     <string name="open">Open</string>
     <string name="use_launcher_menu">Enable Launcher prompt</string>
 </resources>

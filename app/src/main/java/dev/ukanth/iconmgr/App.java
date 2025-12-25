@@ -29,6 +29,8 @@ public class App extends Application {
     private HistoryDao historyDao;
 
     private FavDao favDao;
+
+
     private BroadcastReceiver receiver;
     private ExecutorService dbExecutor;
 
@@ -63,6 +65,8 @@ public class App extends Application {
 
         FavDatabase db3 = FavDatabase.getInstance(getApplicationContext());
         favDao = db3.favDao();
+
+
     }
 
     public IPObjDao getIPObjDao() {
