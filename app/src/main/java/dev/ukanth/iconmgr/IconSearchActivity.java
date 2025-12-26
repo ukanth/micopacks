@@ -16,12 +16,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,7 +33,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.glidebitmappool.GlideBitmapPool;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,6 +63,9 @@ public class IconSearchActivity extends AppCompatActivity {
 
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
+
+    boolean isFavorite = false; // Initial state
+
 
     IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
@@ -125,9 +130,6 @@ public class IconSearchActivity extends AppCompatActivity {
             setTheme(R.style.AppTheme_Light);
         }
 
-        GlideBitmapPool.initialize(10 * 1024 * 1024);
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.iconsearch);
 
@@ -148,7 +150,10 @@ public class IconSearchActivity extends AppCompatActivity {
 
 
 
-        objList = ipObjDao.getAll();
+        // Load data on background thread
+        new Thread(() -> {
+            objList = ipObjDao.getAll();
+        }).start();
 
         registerUIbroadcast();
     }
@@ -269,23 +274,57 @@ public class IconSearchActivity extends AppCompatActivity {
                             relativeLayout.setLayoutParams(params);
                             TextView textView = new TextView(mContext);
                             textView.setText(icon.getPackageName());*/
+
+                            LayoutInflater inflater = LayoutInflater.from(mContext);
+                            View dialogView = inflater.inflate(R.layout.custom_dailog,null);
+
+                            ImageView dialogIconimage = dialogView.findViewById(R.id.icon_image);
+                            dialogIconimage.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
+
                             ImageView image = new ImageView(mContext);
                             image.setLayoutParams(params);
                             image.setPadding(15, 15, 15, 15);
                             image.setScaleType(ImageView.ScaleType.FIT_CENTER);
                             image.setImageDrawable(new BitmapDrawable(getResources(), icon.getIconBitmap()));
-                            image.setOnClickListener(v -> new MaterialDialog.Builder(mContext)
-                                    .title(icon.getTitle() + "\n" +" " + getAppNameByPackage(icon.getPackageName()) + " ")
-                                    .positiveText(R.string.save)
-                                    .onPositive((dialog, which) -> {
-                                        if (isStoragePermissionGranted()) {
-                                            saveImage(icon, icon.getPackageName());
-                                            dialog.dismiss();
-                                        }
-                                    })
-                                    .negativeText(R.string.close)
-                                    .icon(new BitmapDrawable(getResources(), icon.getIconBitmap()))
-                                    .show());
+
+                            TextView titleTextView = dialogView.findViewById(R.id.title_text_view);
+                            titleTextView.setText(icon.getTitle());
+
+                            ImageView download = dialogView.findViewById(R.id.download);
+                            ImageView close = dialogView.findViewById(R.id.close);
+                            ImageView fav = dialogView.findViewById(R.id.favorite);
+
+                            MaterialDialog dialog = new MaterialDialog.Builder(mContext)  // set dailog view to custom_dailog
+                                    .customView(dialogView, true)
+                                    .build();
+
+                            image.setOnClickListener(v -> dialog.show());
+
+                            download.setOnClickListener(v -> {
+                                if (isStoragePermissionGranted()) {
+                                    saveImage(icon, icon.getPackageName());
+                                }
+                            });
+
+                            close.setOnClickListener(v -> {
+                                // Dismiss the dialog when the close_button is clicked
+                                dialog.dismiss();
+                            });
+                            fav.setOnClickListener(v -> {
+
+                                isFavorite = !isFavorite;
+                                if (isFavorite == true) {
+                                    fav.setImageResource(R.drawable.fav_filled);
+
+
+                                } else {
+                                    fav.setImageResource(R.drawable.fav_border);
+
+
+                                }
+
+                            });
+
                             image.setOnLongClickListener(view -> {
 
                                 if (isStoragePermissionGranted()) {
@@ -298,7 +337,6 @@ public class IconSearchActivity extends AppCompatActivity {
                             gridLayout.addView(image);
                         }
                     }
-                    GlideBitmapPool.clearMemory();
                     //processInputs(list, res, params, gridLayout);
                 } else {
                 }

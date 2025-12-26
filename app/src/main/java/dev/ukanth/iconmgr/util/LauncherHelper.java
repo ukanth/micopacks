@@ -672,10 +672,22 @@ public class LauncherHelper {
     }
 
     private static String getLabel(String launcherPackage, Context context) {
-        IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
-        IPObjDao ipObjDao = db.ipObjDao();
-        IPObj pkgObj = ipObjDao.getByIconPkg(launcherPackage);
-        return pkgObj.getIconName();
+        final String[] result = {null};
+        try {
+            Thread dbThread = new Thread(() -> {
+                IPObjDatabase db = IPObjDatabase.getInstance(context.getApplicationContext());
+                IPObjDao ipObjDao = db.ipObjDao();
+                IPObj pkgObj = ipObjDao.getByIconPkg(launcherPackage);
+                if (pkgObj != null) {
+                    result[0] = pkgObj.getIconName();
+                }
+            });
+            dbThread.start();
+            dbThread.join(); // Wait for result
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        return result[0] != null ? result[0] : launcherPackage;
     }
 
     private static void applyManual(final Context context, final String launcherPackage, final String launcherName, final String activity) {

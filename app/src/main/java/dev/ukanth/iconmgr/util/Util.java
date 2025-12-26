@@ -446,10 +446,28 @@ public class Util {
         return ((ri.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
     }
 
-    public static List<ResolveInfo> getInstalledApps() {
+    /**
+     * Query PackageManager directly for installed apps (uncached)
+     * Internal use only - prefer getInstalledApps() for cached access
+     */
+    public static List<ResolveInfo> queryInstalledApps() {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         return App.getContext().getPackageManager().queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER);
+    }
+
+    /**
+     * Get installed apps with caching for performance
+     */
+    public static List<ResolveInfo> getInstalledApps() {
+        return AppCache.getInstance().getInstalledApps(false);
+    }
+
+    /**
+     * Get installed apps, forcing cache refresh
+     */
+    public static List<ResolveInfo> getInstalledApps(boolean forceRefresh) {
+        return AppCache.getInstance().getInstalledApps(forceRefresh);
     }
 
     public static boolean isPackageExisted(Context context, String targetPackage) {
@@ -463,7 +481,11 @@ public class Util {
     }
 
 
-    public static String getAuthorName(Context context, String targetPackage) {
+    /**
+     * Parse author name from certificate (expensive operation)
+     * Internal use only - prefer getAuthorName() for cached access
+     */
+    public static String parseAuthorName(Context context, String targetPackage) {
         PackageManager pm = context.getPackageManager();
         try {
             Signature[] sigs = context.getPackageManager().getPackageInfo(targetPackage, PackageManager.GET_SIGNATURES).signatures;
@@ -498,6 +520,13 @@ public class Util {
             Log.e("getAuthorName","NameNotFoundException"+Log.getStackTraceString(e));
         }
         return null;
+    }
+
+    /**
+     * Get author name with caching for performance
+     */
+    public static String getAuthorName(Context context, String targetPackage) {
+        return AuthorCache.getInstance().getAuthorName(context, targetPackage);
     }
 
 

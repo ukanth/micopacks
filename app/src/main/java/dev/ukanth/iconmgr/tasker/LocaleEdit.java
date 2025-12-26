@@ -41,46 +41,53 @@ public class LocaleEdit extends AppCompatActivity {
         setContentView(R.layout.tasker_main);
 
         IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
-         ipObjDao = db.ipObjDao();
-
-
-        ipObjQuery = ipObjDao.getAllOrderedByIconName();
-        List<IPObj> iPacksList = ipObjQuery;
+        ipObjDao = db.ipObjDao();
 
         RadioGroup groupPacks = (RadioGroup) findViewById(R.id.radioPacks);
 
-        if(iPacksList != null && !iPacksList.isEmpty()) {
-            RadioButton button = new RadioButton(this);
-            button.setId(-1);
-            button.setText("rand" + ":" + "rand");
-            button.setTextSize(24);
-            groupPacks.addView(button);
+        // Load data on background thread
+        final Bundle finalParamBundle = paramBundle;
+        new Thread(() -> {
+            ipObjQuery = ipObjDao.getAllOrderedByIconName();
+            List<IPObj> iPacksList = ipObjQuery;
 
-            for (IPObj pack : iPacksList) {
-                button = new RadioButton(this);
-                int uid = Util.getUid(getApplicationContext(),pack.getIconPkg());
-                button.setId(uid);
-                button.setText(pack.getIconName()+ ":" + pack.getIconPkg());
-                button.setTextSize(24);
-                groupPacks.addView(button);
-            }
-        }
-        setupTitleApi11();
+            runOnUiThread(() -> {
+                if (iPacksList != null && !iPacksList.isEmpty()) {
+                    RadioButton button = new RadioButton(this);
+                    button.setId(-1);
+                    button.setText("rand" + ":" + "rand");
+                    button.setTextSize(24);
+                    groupPacks.addView(button);
 
-        if (null == paramBundle) {
-            final Bundle forwardedBundle = getIntent().getBundleExtra(
-                    com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
-            if (PluginBundleManager.isBundleValid(forwardedBundle)) {
-                String index = forwardedBundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
-                String[] split = index.split(":");
-                if (split.length > 2) {
-                    RadioButton btn = (RadioButton) findViewById(Integer.parseInt(split[2]));
-                    if (btn != null) {
-                        btn.setChecked(true);
+                    for (IPObj pack : iPacksList) {
+                        button = new RadioButton(this);
+                        int uid = Util.getUid(getApplicationContext(), pack.getIconPkg());
+                        button.setId(uid);
+                        button.setText(pack.getIconName() + ":" + pack.getIconPkg());
+                        button.setTextSize(24);
+                        groupPacks.addView(button);
                     }
                 }
-            }
-        }
+
+                // Handle bundle selection after list is populated
+                if (null == finalParamBundle) {
+                    final Bundle forwardedBundle = getIntent().getBundleExtra(
+                            com.twofortyfouram.locale.Intent.EXTRA_BUNDLE);
+                    if (PluginBundleManager.isBundleValid(forwardedBundle)) {
+                        String index = forwardedBundle.getString(PluginBundleManager.BUNDLE_EXTRA_STRING_MESSAGE);
+                        String[] split = index.split(":");
+                        if (split.length > 2) {
+                            RadioButton btn = (RadioButton) findViewById(Integer.parseInt(split[2]));
+                            if (btn != null) {
+                                btn.setChecked(true);
+                            }
+                        }
+                    }
+                }
+            });
+        }).start();
+
+        setupTitleApi11();
     }
 
     private void setupTitleApi11() {

@@ -34,9 +34,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.AuthorCache;
 import dev.ukanth.iconmgr.util.Util;
 
 import static dev.ukanth.iconmgr.tasker.FireReceiver.TAG;
@@ -47,6 +50,18 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     protected List<IPObj> iconPacks;
     private int installed;
     private Set<String> expandedItems = new HashSet<>();
+
+    // Cached instances to avoid repeated allocations
+    private static final Gson gson = new Gson();
+    private final ExecutorService dbExecutor = Executors.newSingleThreadExecutor();
+
+    // Cached preference values
+    private boolean prefUseFavorite;
+    private boolean prefShowTotalIcons;
+    private boolean prefShowSize;
+    private boolean prefShowPercentage;
+    private boolean prefShowAuthorName;
+    private String prefSortBy;
 
     public class IconPackViewHolder extends RecyclerView.ViewHolder {
         MaterialCardView cardView;
@@ -145,12 +160,16 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
 
         private void toggleFavorite() {
             if (currentItem != null && currentItem.getIconPkg() != null) {
-                IconAttr attr = new Gson().fromJson(currentItem.getAdditional(), IconAttr.class);
+                IconAttr attr = gson.fromJson(currentItem.getAdditional(), IconAttr.class);
                 attr.setFavorite(!attr.isFavorite());
-                currentItem.setAdditional(new Gson().toJson(attr));
+                currentItem.setAdditional(gson.toJson(attr));
 
-                IPObjDao ipObjDao = App.getInstance().getIPObjDao();
-                ipObjDao.update(currentItem);
+                // Update database on background thread
+                final IPObj itemToUpdate = currentItem;
+                dbExecutor.execute(() -> {
+                    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
+                    ipObjDao.update(itemToUpdate);
+                });
 
                 if (attr.isFavorite()) {
                     iconStar.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.ic_star_black_24dp));
@@ -297,6 +316,13 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
     IconAdapter(List<IPObj> ipacks, int installed) {
         this.installed = installed;
         this.iconPacks = ipacks;
+        // Cache preference values once to avoid repeated SharedPreferences reads
+        this.prefUseFavorite = Prefs.useFavorite();
+        this.prefShowTotalIcons = Prefs.isTotalIcons();
+        this.prefShowSize = Prefs.showSize();
+        this.prefShowPercentage = Prefs.showPercentage();
+        this.prefShowAuthorName = Prefs.showAuthorName();
+        this.prefSortBy = Prefs.sortBy();
     }
 
     @Override
@@ -325,7 +351,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         holder.ipackName.setText(obj.getIconName());
 
         // Set author name
-        String authorName = Util.getAuthorName(ctx, obj.getIconPkg());
+        String authorName = AuthorCache.getInstance().getAuthorName(ctx, obj.getIconPkg());
         if (authorName != null && !authorName.isEmpty()) {
             holder.ipackAuthor.setVisibility(View.VISIBLE);
             holder.ipackAuthor.setText(authorName);
@@ -340,7 +366,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             holder.iconStar.setVisibility(View.GONE);
         }
 
-        IconAttr attr = new Gson().fromJson(obj.getAdditional(), IconAttr.class);
+        IconAttr attr = gson.fromJson(obj.getAdditional(), IconAttr.class);
         holder.iconStar.setImageDrawable(ContextCompat.getDrawable(ctx,
                 attr.isFavorite() ? R.drawable.ic_star_black_24dp : R.drawable.ic_star_border_black_24dp));
 
@@ -363,7 +389,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         boolean anyStatVisible = false;
 
         // Icon count
-        if (Prefs.isTotalIcons()) {
+        if (prefShowTotalIcons) {
             holder.statIconsContainer.setVisibility(View.VISIBLE);
             holder.statIconsValue.setText(String.valueOf(obj.getTotal()));
             anyStatVisible = true;
@@ -372,7 +398,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         }
 
         // Size
-        if (Prefs.showSize()) {
+        if (prefShowSize) {
             holder.statSizeContainer.setVisibility(View.VISIBLE);
             holder.statSizeValue.setText(attr.getSize() + " MB");
             anyStatVisible = true;
@@ -381,7 +407,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         }
 
         // Themed percentage
-        if (Prefs.showPercentage()) {
+        if (prefShowPercentage) {
             holder.statThemedContainer.setVisibility(View.VISIBLE);
             int missed = obj.getMissed();
             int themed = installed - missed;

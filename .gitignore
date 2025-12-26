@@ -8,3 +8,5 @@
 /build
 /captures
 .externalNativeBuild
+/app/output
+/app/build/outputs/apk/release

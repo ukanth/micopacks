@@ -55,7 +55,7 @@
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/text_secondary"
+            android:textColor="?attr/textColorSecondary"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@id/icon_star"
             app:layout_constraintStart_toStartOf="@id/ipack_name"
@@ -120,6 +120,7 @@
                 android:layout_marginEnd="@dimen/stat_chip_margin"
                 android:layout_weight="1"
                 android:background="@drawable/bg_stat_chip"
+                android:backgroundTint="?attr/statChipBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -136,7 +137,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/stat_icons"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="?attr/textColorSecondary"
                     android:textSize="11sp" />
             </LinearLayout>
 
@@ -148,6 +149,7 @@
                 android:layout_marginEnd="@dimen/stat_chip_margin"
                 android:layout_weight="1"
                 android:background="@drawable/bg_stat_chip"
+                android:backgroundTint="?attr/statChipBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -164,7 +166,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/stat_size"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="?attr/textColorSecondary"
                     android:textSize="11sp" />
             </LinearLayout>
 
@@ -175,6 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/bg_stat_chip"
+                android:backgroundTint="?attr/statChipBackground"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -191,7 +194,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/stat_themed"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="?attr/textColorSecondary"
                     android:textSize="11sp" />
             </LinearLayout>
 
@@ -202,7 +205,7 @@
             android:id="@+id/divider"
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:background="@color/stat_chip_background"
+            android:background="?attr/statChipBackground"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -213,10 +216,11 @@
         <LinearLayout
             android:id="@+id/action_row"
             android:layout_width="0dp"
-            android:layout_height="@dimen/action_row_height"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="8dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="8dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -231,12 +235,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minWidth="@dimen/action_button_min_width"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="4dp"
                 android:text="@string/action_apply"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 app:icon="@drawable/ic_apply"
                 app:iconGravity="top"
-                app:iconSize="18dp" />
+                app:iconPadding="2dp"
+                app:iconSize="20dp" />
 
             <!-- Preview Button -->
             <com.google.android.material.button.MaterialButton
@@ -245,12 +254,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minWidth="@dimen/action_button_min_width"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="4dp"
                 android:text="@string/action_preview"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 app:icon="@drawable/ic_preview"
                 app:iconGravity="top"
-                app:iconSize="18dp" />
+                app:iconPadding="2dp"
+                app:iconSize="20dp" />
 
             <!-- Stats Button -->
             <com.google.android.material.button.MaterialButton
@@ -259,12 +273,17 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minWidth="@dimen/action_button_min_width"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="4dp"
                 android:text="@string/action_stats"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 app:icon="@drawable/ic_stats"
                 app:iconGravity="top"
-                app:iconSize="18dp" />
+                app:iconPadding="2dp"
+                app:iconSize="20dp" />
 
             <!-- Launch Button -->
             <com.google.android.material.button.MaterialButton
@@ -273,18 +292,23 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:minWidth="@dimen/action_button_min_width"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingHorizontal="4dp"
                 android:text="@string/action_launch"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 app:icon="@drawable/ic_launch"
                 app:iconGravity="top"
-                app:iconSize="18dp" />
+                app:iconPadding="2dp"
+                app:iconSize="20dp" />
 
             <!-- Overflow Menu Button -->
             <ImageButton
                 android:id="@+id/btn_overflow"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/action_playstore"
                 android:src="@drawable/ic_more_vert" />

@@ -41,9 +41,14 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.AppCache;
 import dev.ukanth.iconmgr.util.PackageComparator;
 import dev.ukanth.iconmgr.util.Util;
 
@@ -53,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private IconAdapter adapter;
     private IPObjDao ipObjDao = App.getInstance().getIPObjDao();;
     private List<IPObj> iconPacksList;
+    private HashSet<String> iconPacksSet; // For O(1) duplicate checking
     private SwipeRefreshLayout mSwipeLayout;
     private MaterialDialog plsWait;
     private Menu mainMenu;
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private BroadcastReceiver packageReceiver;
     private IntentFilter packageFilter;
+    private ExecutorService receiverExecutor; // Shared thread pool for receivers
 
 
     public static void setReloadTheme(boolean reloadTheme) {
@@ -79,29 +86,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-       /* if (LeakCanary.isInAnalyzerProcess(this)) {
-            return;
-        }
-        LeakCanary.install(App.getInstance());*/
-
-
-
-
-
+        // Theme must be set BEFORE super.onCreate()
         if (Prefs.isDarkTheme()) {
             setTheme(R.style.AppTheme_Dark);
         } else {
             setTheme(R.style.AppTheme_Light);
         }
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         emptyView = (TextView) findViewById(R.id.empty_view);
 
         iconPacksList = new ArrayList<>();
+        iconPacksSet = new HashSet<>();
+        receiverExecutor = Executors.newSingleThreadExecutor();
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
@@ -121,12 +121,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onReceive(Context context, Intent intent) {
                 String pkgName = intent.getStringExtra("pkgName");
-                if (pkgName != null) {
-                    for (IPObj pack : iconPacksList) {
+                if (pkgName != null && iconPacksSet.contains(pkgName)) {
+                    // Use iterator to safely remove during iteration
+                    Iterator<IPObj> iterator = iconPacksList.iterator();
+                    while (iterator.hasNext()) {
+                        IPObj pack = iterator.next();
                         if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(pkgName)) {
-                            iconPacksList.remove(pack);
-                            adapter.notifyDataSetChanged();
-                            setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                            iterator.remove();
+                            iconPacksSet.remove(pkgName);
+                            runOnUiThread(() -> {
+                                adapter.notifyDataSetChanged();
+                                setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                            });
                             return;
                         }
                     }
@@ -139,13 +145,22 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             @Override
             public void onReceive(Context context, Intent intent) {
                 String pkgName = intent.getStringExtra("pkgName");
-                if (pkgName != null) {
-                    IPObj obj = ipObjDao.getByIconPkg(pkgName);
-                    if (obj != null) {
-                        iconPacksList.add(obj);
-                        adapter.notifyDataSetChanged();
-                        setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
-                    }
+                if (pkgName != null && !iconPacksSet.contains(pkgName)) {
+                    // Run database query on shared thread pool
+                    receiverExecutor.execute(() -> {
+                        IPObj obj = ipObjDao.getByIconPkg(pkgName);
+                        if (obj != null) {
+                            runOnUiThread(() -> {
+                                // Double-check to prevent race conditions
+                                if (!iconPacksSet.contains(pkgName)) {
+                                    iconPacksList.add(obj);
+                                    iconPacksSet.add(pkgName);
+                                    adapter.notifyDataSetChanged();
+                                    setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                                }
+                            });
+                        }
+                    });
                 }
             }
         };
@@ -153,11 +168,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         packageReceiver = new PackageBroadcast();
 
-        packageFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
-        packageFilter.addDataScheme("package");
-        registerReceiver(packageReceiver, packageFilter);
-
-        packageFilter = new IntentFilter(Intent.ACTION_PACKAGE_REMOVED);
+        packageFilter = new IntentFilter();
+        packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         packageFilter.addDataScheme("package");
         registerReceiver(packageReceiver, packageFilter);
 
@@ -184,8 +197,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void callRandom() {
-        IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
-        Util.determineApply(MainActivity.this,ipObj);
+        new Thread(() -> {
+            IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
+            runOnUiThread(() -> Util.determineApply(MainActivity.this, ipObj));
+        }).start();
     }
 
     @Override
@@ -199,6 +214,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
         if(packageReceiver !=null) {
             unregisterReceiver(packageReceiver);
+        }
+        if (receiverExecutor != null) {
+            receiverExecutor.shutdown();
         }
     }
 
@@ -216,12 +234,14 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void restartActivity() {
-        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+        recreate();
     }
 
     private void loadApp(boolean forceLoad) {
+        if (forceLoad) {
+            // Invalidate caches on force reload
+            AppCache.getInstance().invalidate();
+        }
         iconPacksList = new ArrayList<>();
         LoadAppList getAppList = new LoadAppList();
         if (plsWait == null && (getAppList.getStatus() == AsyncTask.Status.PENDING ||
@@ -392,6 +412,9 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 toast.show();
                 new Thread(() -> shareBitmap(getScreenshotFromRecyclerView(recyclerView), System.currentTimeMillis() + "")).start();
                 return true;
+            case R.id.favorite:
+                showFav();
+                return true;
             case R.id.changelog:
                 showChangelog();
                 return true;
@@ -455,6 +478,11 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showFav() {
+        Intent myIntent = new Intent(MainActivity.this, FavoriteAcitvity.class);
+        startActivity(myIntent);
     }
 
     private void showIconSearch() {
@@ -603,7 +631,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         mItemTouchHelper.attachToRecyclerView(recyclerView);
     }*/
 
-    public class LoadAppList extends AsyncTask<Void, Integer, Void> {
+    public class LoadAppList extends AsyncTask<Void, Integer, List<IPObj>> {
 
         Context context = null;
         long startTime;
@@ -623,13 +651,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected List<IPObj> doInBackground(Void... params) {
             try {
-                new IconPackManager().updateIconPacks(ipObjDao, forceLoad, plsWait);
+                List<IPObj> loadedPacks = new IconPackManager().updateIconPacks(ipObjDao, forceLoad, plsWait);
                 installed = Util.getInstalledApps().size();
                 if (isCancelled())
                     return null;
-                return null;
+                return loadedPacks;
             } catch (SQLiteException sqe) {
                 sqe.printStackTrace();
                 return null;
@@ -638,7 +666,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(List<IPObj> result) {
             try {
                 try {
                     if (plsWait != null && plsWait.isShowing()) {
@@ -649,23 +677,32 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 } catch (final Exception e) {
                     // Handle or log or ignore
                 } finally {
-                    plsWait.dismiss();
                     plsWait = null;
                 }
                 mSwipeLayout.setRefreshing(false);
+                // Populate iconPacksList from the result
+                if (result != null && !result.isEmpty()) {
+                    iconPacksList.clear();
+                    iconPacksSet.clear();
+                    iconPacksList.addAll(result);
+                    // Populate the HashSet for fast lookups
+                    for (IPObj pack : result) {
+                        if (pack != null && pack.getIconPkg() != null) {
+                            iconPacksSet.add(pack.getIconPkg());
+                        }
+                    }
+                }
                 if (iconPacksList != null && !iconPacksList.isEmpty()) {
                     setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator(MainActivity.this));
+                    final Gson gson = new Gson();
                     if (Prefs.useFavorite()) {
-                        Collections.sort(iconPacksList, new Comparator<IPObj>() {
-                            @Override
-                            public int compare(IPObj o1, IPObj o2) {
-                                IconAttr attr1 = new Gson().fromJson(o1.getAdditional(), IconAttr.class);
-                                IconAttr attr2 = new Gson().fromJson(o2.getAdditional(), IconAttr.class);
-                                return Boolean.compare(attr2.isFavorite(), attr1.isFavorite());
-                            }
+                        Collections.sort(iconPacksList, (o1, o2) -> {
+                            IconAttr attr1 = gson.fromJson(o1.getAdditional(), IconAttr.class);
+                            IconAttr attr2 = gson.fromJson(o2.getAdditional(), IconAttr.class);
+                            return Boolean.compare(attr2.isFavorite(), attr1.isFavorite());
                         });
                     }
                     adapter = new IconAdapter(iconPacksList, installed);
@@ -716,7 +753,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                         list.add(shortcut);
 
                         for (IPObj pack : iconPacksList) {
-                            if (pack != null && pack.getIconPkg() != null && new Gson().fromJson(pack.getAdditional(), IconAttr.class).isFavorite()) {
+                            if (pack != null && pack.getIconPkg() != null && gson.fromJson(pack.getAdditional(), IconAttr.class).isFavorite()) {
                                 intent = new Intent(getApplicationContext(), RandomActivity.class);
                                 intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

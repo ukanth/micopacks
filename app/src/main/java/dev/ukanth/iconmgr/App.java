@@ -6,6 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import dev.ukanth.iconmgr.dao.FavDao;
+import dev.ukanth.iconmgr.dao.FavDatabase;
 import dev.ukanth.iconmgr.dao.HistoryDao;
 import dev.ukanth.iconmgr.dao.HistoryDatabase;
 import dev.ukanth.iconmgr.dao.IPObjDao;
@@ -23,7 +28,9 @@ public class App extends Application {
 
     private HistoryDao historyDao;
 
+    private FavDao favDao;
     private BroadcastReceiver receiver;
+    private ExecutorService dbExecutor;
 
 
     public static App getInstance() {
@@ -40,6 +47,9 @@ public class App extends Application {
         instance = this;
         super.onCreate();
 
+        // Initialize shared executor for database operations
+        dbExecutor = Executors.newSingleThreadExecutor();
+
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
         intentFilter.addDataScheme("package");
         receiver = new InstallReceiver();
@@ -51,6 +61,8 @@ public class App extends Application {
         HistoryDatabase db2 = HistoryDatabase.getInstance(getApplicationContext());
          historyDao = db2.historyDao();
 
+        FavDatabase db3 = FavDatabase.getInstance(getApplicationContext());
+        favDao = db3.favDao();
     }
 
     public IPObjDao getIPObjDao() {
@@ -59,6 +71,12 @@ public class App extends Application {
 
     public HistoryDao getHistoryDao() {
         return historyDao;
+    }
+
+    public FavDao getFavDao(){return  favDao; }
+
+    public ExecutorService getDbExecutor() {
+        return dbExecutor;
     }
 
 }

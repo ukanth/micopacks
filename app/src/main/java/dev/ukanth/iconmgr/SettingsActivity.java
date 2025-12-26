@@ -187,7 +187,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             //seems like theme changed
             if (key.equals(THEME_RES_ID)) {
                 getActivity().recreate();
-                //MainActivity.setReloadTheme(true);
+                MainActivity.setReloadTheme(true);
             }
             if (key.equals(TOTAL_ICONS) || key.equals(SHOW_PERCENT) || key.equals(SHOW_SIZE) || key.equals(SHOW_AUTHOR_NAME)) {
                 MainActivity.setReloadApp(true);

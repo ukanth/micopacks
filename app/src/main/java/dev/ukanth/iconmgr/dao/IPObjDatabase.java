@@ -15,7 +15,6 @@ public abstract class IPObjDatabase extends RoomDatabase {
     public static IPObjDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), IPObjDatabase.class, "icons-db")
-                    .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()
                     .build();
         }
