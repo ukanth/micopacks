@@ -10,4 +10,8 @@
 
     <color name="icon_tint_normal">#ffe100</color>
 
+    <!-- Stat chip backgrounds -->
+    <color name="stat_chip_background">#14000000</color>
+    <color name="text_secondary">#99000000</color>
+
 </resources>

@@ -43,4 +43,11 @@
     <dimen name="text_content_title">16sp</dimen>
     <dimen name="text_content">14sp</dimen>
 
+    <!-- Icon Pack Card -->
+    <dimen name="icon_pack_size">56dp</dimen>
+    <dimen name="card_corner_radius_new">12dp</dimen>
+    <dimen name="stat_chip_margin">4dp</dimen>
+    <dimen name="action_row_height">48dp</dimen>
+    <dimen name="action_button_min_width">64dp</dimen>
+
 </resources>

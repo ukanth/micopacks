@@ -106,4 +106,17 @@
     <string name="apply">Apply</string>
     <string name="open">Open</string>
     <string name="use_launcher_menu">Enable Launcher prompt</string>
+
+    <!-- Card action buttons -->
+    <string name="action_apply">Apply</string>
+    <string name="action_preview">Preview</string>
+    <string name="action_stats">Stats</string>
+    <string name="action_launch">Launch</string>
+    <string name="action_playstore">Play Store</string>
+    <string name="action_uninstall">Uninstall</string>
+
+    <!-- Stat chip labels -->
+    <string name="stat_icons">icons</string>
+    <string name="stat_size">size</string>
+    <string name="stat_themed">themed</string>
 </resources>

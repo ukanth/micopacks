@@ -1,68 +1,296 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="1dp">
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginTop="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="@dimen/card_corner_radius_new"
+    app:cardElevation="2dp">
 
-    <androidx.cardview.widget.CardView xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/cv"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:cardPreventCornerOverlap="false"
-        app:cardUseCompatPadding="true"
-        card_view:cardCornerRadius="2dp"
-        card_view:cardElevation="2dp">
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
+        <!-- Icon -->
+        <ImageView
+            android:id="@+id/ipack_icon"
+            android:layout_width="@dimen/icon_pack_size"
+            android:layout_height="@dimen/icon_pack_size"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@mipmap/ic_launcher" />
+
+        <!-- Pack Name -->
+        <TextView
+            android:id="@+id/ipack_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="14dp">
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/icon_star"
+            app:layout_constraintStart_toEndOf="@id/ipack_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Nova Icon Pack" />
 
-            <ImageView
-                android:id="@+id/ipack_icon"
-                android:layout_width="wrap_content"
+        <!-- Author Name -->
+        <TextView
+            android:id="@+id/ipack_author"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toStartOf="@id/icon_star"
+            app:layout_constraintStart_toStartOf="@id/ipack_name"
+            app:layout_constraintTop_toBottomOf="@id/ipack_name"
+            tools:text="by John Doe" />
+
+        <!-- Favorite Star -->
+        <ImageView
+            android:id="@+id/icon_star"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/show_favs"
+            android:focusable="true"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_star_border_black_24dp"
+            app:layout_constraintEnd_toStartOf="@id/icon_expand"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/icon_tint_normal" />
+
+        <!-- Expand Indicator -->
+        <ImageView
+            android:id="@+id/icon_expand"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/app_name"
+            android:focusable="true"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_expand_more"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Stats Row -->
+        <LinearLayout
+            android:id="@+id/stats_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ipack_icon"
+            app:layout_constraintTop_toBottomOf="@id/ipack_author">
+
+            <!-- Stat: Icon Count -->
+            <LinearLayout
+                android:id="@+id/stat_icons_container"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_gravity="top"
-                android:layout_marginRight="10dp"
-                android:scaleType="fitXY" />
+                android:layout_marginEnd="@dimen/stat_chip_margin"
+                android:layout_weight="1"
+                android:background="@drawable/bg_stat_chip"
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/ipack_name"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/stat_icons_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="1250" />
+
+                <TextView
+                    android:id="@+id/stat_icons_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stat_icons"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Stat: Size -->
+            <LinearLayout
+                android:id="@+id/stat_size_container"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/ipack_icon"
-                android:paddingBottom="8dp"
-                android:textSize="26sp" />
+                android:layout_marginEnd="@dimen/stat_chip_margin"
+                android:layout_weight="1"
+                android:background="@drawable/bg_stat_chip"
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/ipack_icon_count"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/stat_size_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="12.5 MB" />
+
+                <TextView
+                    android:id="@+id/stat_size_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stat_size"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Stat: Themed Percentage -->
+            <LinearLayout
+                android:id="@+id/stat_themed_container"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/ipack_name"
-                android:layout_toRightOf="@+id/ipack_icon"
-                android:textAlignment="center"
-                android:textSize="14sp" />
+                android:layout_weight="1"
+                android:background="@drawable/bg_stat_chip"
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/icon_star"
-                android:layout_width="@dimen/icon_star"
-                android:layout_height="@dimen/icon_star"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:layout_centerInParent="true"
-                android:scaleType="fitStart"
-                card_view:tint="@color/icon_tint_normal" />
+                <TextView
+                    android:id="@+id/stat_themed_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="85%" />
 
+                <TextView
+                    android:id="@+id/stat_themed_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stat_themed"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp" />
+            </LinearLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+        <!-- Divider -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/stat_chip_background"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stats_row"
+            tools:visibility="visible" />
 
-</LinearLayout>
+        <!-- Action Row (Initially Hidden) -->
+        <LinearLayout
+            android:id="@+id/action_row"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/action_row_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            tools:visibility="visible">
+
+            <!-- Apply Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_apply"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="@dimen/action_button_min_width"
+                android:text="@string/action_apply"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_apply"
+                app:iconGravity="top"
+                app:iconSize="18dp" />
+
+            <!-- Preview Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_preview"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="@dimen/action_button_min_width"
+                android:text="@string/action_preview"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_preview"
+                app:iconGravity="top"
+                app:iconSize="18dp" />
+
+            <!-- Stats Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_stats"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="@dimen/action_button_min_width"
+                android:text="@string/action_stats"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_stats"
+                app:iconGravity="top"
+                app:iconSize="18dp" />
+
+            <!-- Launch Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_launch"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="@dimen/action_button_min_width"
+                android:text="@string/action_launch"
+                android:textSize="12sp"
+                app:icon="@drawable/ic_launch"
+                app:iconGravity="top"
+                app:iconSize="18dp" />
+
+            <!-- Overflow Menu Button -->
+            <ImageButton
+                android:id="@+id/btn_overflow"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/action_playstore"
+                android:src="@drawable/ic_more_vert" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
