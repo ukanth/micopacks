@@ -89,6 +89,23 @@ public class LauncherHelper {
     private static final int OMEGA = 36;
     private static final int OPEN = 37;
     private static final int NEO = 38;
+    private static final int BEFORE = 39;
+    private static final int COLOR_OS = 40;
+    private static final int HIOS = 41;
+    private static final int HOLO = 42;
+    private static final int HOLOHD = 43;
+    private static final int HYPERION = 44;
+    private static final int ION_LAUNCHER = 45;
+    private static final int KISS = 46;
+    private static final int KVAESITSO = 47;
+    private static final int LAWNCHAIR_NEW = 48;
+    private static final int LGHOME = 49;
+    private static final int MOTO = 50;
+    private static final int MLAUNCHER = 51;
+    private static final int NOTHING = 52;
+    private static final int ONEUI = 53;
+    private static final int OXYGEN_OS = 54;
+    private static final int PROJECTIVY = 55;
 
 
     public static int getLauncherId(String packageName) {
@@ -179,6 +196,42 @@ public class LauncherHelper {
                 return OMEGA;
             case "com.benny.openlauncher":
                 return OPEN;
+            case "com.beforesoft.launcher":
+                return BEFORE;
+            case "com.oppo.launcher":
+                return COLOR_OS;
+            case "com.transsion.hilauncher":
+                return HIOS;
+            case "com.mobint.hololauncher":
+                return HOLO;
+            case "com.mobint.hololauncher.hd":
+                return HOLOHD;
+            case "projekt.launcher":
+                return HYPERION;
+            case "one.zagura.IonLauncher":
+                return ION_LAUNCHER;
+            case "fr.neamar.kiss":
+                return KISS;
+            case "de.mm20.launcher2.release":
+                return KVAESITSO;
+            case "app.lawnchair":
+            case "app.lawnchair.play":
+                return LAWNCHAIR_NEW;
+            case "com.lge.launcher2":
+            case "com.lge.launcher3":
+                return LGHOME;
+            case "com.motorola.launcher3":
+                return MOTO;
+            case "app.mlauncher":
+                return MLAUNCHER;
+            case "com.nothing.launcher":
+                return NOTHING;
+            case "com.sec.android.app.launcher":
+                return ONEUI;
+            case "net.oneplus.launcher":
+                return OXYGEN_OS;
+            case "com.spocky.projengmenu":
+                return PROJECTIVY;
             default:
                 return UNKNOWN;
         }
@@ -638,9 +691,110 @@ public class LauncherHelper {
                     openGooglePlay(context, launcherPackage, launcherName);
                 }
                 break;
-            /*case BLACKBERRY:
+
+            case BEFORE:
+                try {
+                    final Intent before = new Intent("com.beforesoftware.launcher.APPLY_ICONS");
+                    before.putExtra("packageName", context.getPackageName());
+                    before.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(before);
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+
+            case COLOR_OS:
+            case OXYGEN_OS:
+                // Manual apply only - these launchers require users to apply manually via settings
+                applyManual(context, launcherPackage, launcherName, "com.android.launcher.settings.LauncherSettingsActivity");
+                break;
+
+            case HIOS:
+                // HiOS launcher - manual apply
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                break;
+
+            case HOLO:
+                applyManual(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
+                break;
+
+            case HOLOHD:
+                applyManual(context, launcherPackage, launcherName, "com.mobint.hololauncher.SettingsActivity");
+                break;
+
+            case HYPERION:
+                applyManual(context, launcherPackage, launcherName, "projekt.launcher.activities.SettingsActivity");
+                break;
+
+            case ION_LAUNCHER:
+                try {
+                    final Intent ion = new Intent("one.zagura.IonLauncher.ui.settings.iconPackPicker.IconPackPickerActivity");
+                    ion.putExtra("pkgname", context.getPackageName());
+                    ion.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(ion);
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+
+            case KISS:
+                // KISS launcher - manual apply only
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                break;
+
+            case KVAESITSO:
+                // Kvaesitso launcher - manual apply only
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                break;
+
+            case LAWNCHAIR_NEW:
+                applyManual(context, launcherPackage, launcherName, "app.lawnchair.ui.preferences.PreferenceActivity");
+                break;
+
+            case LGHOME:
+                // LG Home - not compatible with icon packs
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                break;
+
+            case MOTO:
+                applyManual(context, "com.motorola.personalize", launcherName, "com.motorola.personalize.app.IconPacksActivity");
+                break;
+
+            case MLAUNCHER:
+                try {
+                    final Intent mlauncher = new Intent("app.mlauncher.APPLY_ICONS");
+                    mlauncher.putExtra("packageName", context.getPackageName());
+                    context.startActivity(mlauncher);
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+
+            case NOTHING:
+                // Nothing launcher - manual apply only
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                break;
+
+            case ONEUI:
+                // Samsung OneUI - manual apply via Theme Park
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                break;
+
+            case PROJECTIVY:
+                try {
+                    final Intent projectivy = new Intent("com.spocky.projengmenu.APPLY_ICONPACK");
+                    projectivy.setPackage("com.spocky.projengmenu");
+                    projectivy.putExtra("com.spocky.projengmenu.extra.ICONPACK_PACKAGENAME", context.getPackageName());
+                    projectivy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(projectivy);
+                } catch (ActivityNotFoundException | NullPointerException e) {
+                    openGooglePlay(context, launcherPackage, launcherName);
+                }
+                break;
+
+            case BLACKBERRY:
                 applyManual(context, launcherPackage, launcherName, "com.blackberry.blackberrylauncher.MainActivity");
-                break; */
+                break;
 
             default:
                 Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
