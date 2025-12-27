@@ -106,6 +106,8 @@ public class LauncherHelper {
     private static final int ONEUI = 53;
     private static final int OXYGEN_OS = 54;
     private static final int PROJECTIVY = 55;
+    private static final int STOCK_LEGACY = 56;
+    private static final int TINYBIT = 57;
 
 
     public static int getLauncherId(String packageName) {
@@ -232,6 +234,10 @@ public class LauncherHelper {
                 return OXYGEN_OS;
             case "com.spocky.projengmenu":
                 return PROJECTIVY;
+            case "com.android.launcher":
+                return STOCK_LEGACY;
+            case "rocks.tbog.tblauncher":
+                return TINYBIT;
             default:
                 return UNKNOWN;
         }
@@ -633,14 +639,17 @@ public class LauncherHelper {
                 }
                 break;
             case FLICK:
-                //Todo: fix direct apply for flick launcher
                 try {
-                    final Intent flickAction = new Intent("com.universallauncher.universallauncher.FLICK_ICON_PACK_APPLIER");
-                    flickAction.putExtra("com.universallauncher.universallauncher.ICON_THEME_PACKAGE", context.getPackageName());
-                    flickAction.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(flickAction);
-                    context.sendBroadcast(flickAction);
-                    context.startActivity(flickAction);
+                    final Intent flickBroadcast = new Intent("com.universallauncher.universallauncher.FLICK_ICON_PACK_APPLIER");
+                    flickBroadcast.putExtra("com.universallauncher.universallauncher.ICON_THEME_PACKAGE", context.getPackageName());
+                    flickBroadcast.setComponent(ComponentName.unflattenFromString("com.universallauncher.universallauncher/com.android.launcher3.icon.ApplyIconPack"));
+                    context.sendBroadcast(flickBroadcast);
+
+                    final Intent flickActivity = context.getPackageManager().getLaunchIntentForPackage("com.universallauncher.universallauncher");
+                    if (flickActivity != null) {
+                        flickActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(flickActivity);
+                    }
                     ((AppCompatActivity) context).finish();
                 } catch (ActivityNotFoundException | NullPointerException e) {
                     openGooglePlay(context, launcherPackage, launcherName);
@@ -794,6 +803,15 @@ public class LauncherHelper {
 
             case BLACKBERRY:
                 applyManual(context, launcherPackage, launcherName, "com.blackberry.blackberrylauncher.MainActivity");
+                break;
+
+            case STOCK_LEGACY:
+                // Stock launcher on ColorOS/OxygenOS/realme UI - manual apply only
+                Toast.makeText(context, String.format(context.getString(R.string.notsupported), launcherName), Toast.LENGTH_LONG).show();
+                break;
+
+            case TINYBIT:
+                applyManual(context, launcherPackage, launcherName, "rocks.tbog.tblauncher.SettingsActivity");
                 break;
 
             default:
