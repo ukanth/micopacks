@@ -78,6 +78,10 @@
     <string name="iconPercent">Covered</string>
     <string name="iconinstalled"> Iconpack installed/updated</string>
     <string name="iconMask">Preview of Iconmask</string>
+    <string name="enable_auto_theming">Enable Auto-Theming</string>
+    <string name="enable_auto_theming_summary">Generate themed icons for unsupported apps when previewing icon packs</string>
+    <string name="auto_themed_section">Auto-Themed Icons (%d)</string>
+    <string name="auto_themed_description">These icons are generated automatically using the icon pack\'s theming system</string>
     <string name="enable_fab_button">Show Apply Button</string>
     <string name="preview_nontheme">Show non-themed icons in preview</string>
     <string name="use_root">Make use of ROOT along with tasker</string>

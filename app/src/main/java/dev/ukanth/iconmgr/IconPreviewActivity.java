@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -43,6 +44,9 @@ import dev.ukanth.iconmgr.dao.Favorite;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 import dev.ukanth.iconmgr.util.AppCache;
+import dev.ukanth.iconmgr.util.BitmapCache;
+import dev.ukanth.iconmgr.util.IconPackMaskingInfo;
+import dev.ukanth.iconmgr.util.IconTheming;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 
 /**
@@ -439,6 +443,12 @@ public class IconPreviewActivity extends AppCompatActivity {
                             gridLayout.addView(image);
                         }
                     }
+                    
+                    // Load auto-themed icons if enabled
+                    if (Prefs.isAutoThemingEnabled()) {
+                        loadAutoThemedIcons(packageName);
+                    }
+                    
                     //processInputs(list, res, params, gridLayout);
                 } else {
                     emptyView.setVisibility(View.VISIBLE);
@@ -446,6 +456,155 @@ public class IconPreviewActivity extends AppCompatActivity {
                 }
 
             }
+        }
+        
+        /**
+         * Load and display auto-themed icons for apps not officially themed
+         */
+        private void loadAutoThemedIcons(final String iconPackPkg) {
+            new Thread(() -> {
+                try {
+                    IconPackUtil packUtil = new IconPackUtil();
+                    
+                    // Get masking resources
+                    IconPackMaskingInfo maskInfo = packUtil.getMaskingInfo(iconPackPkg);
+                    if (maskInfo == null || !maskInfo.hasMaskingResources()) {
+                        // Icon pack doesn't have masking resources
+                        return;
+                    }
+                    
+                    // Get list of themed package names
+                    Set<String> themedPackages = new java.util.HashSet<>();
+                    if (themed_icons != null) {
+                        for (Icon icon : themed_icons) {
+                            themedPackages.add(icon.getPackageName());
+                        }
+                    }
+                    
+                    // Get unthemed apps
+                    List<ResolveInfo> installedApps = AppCache.getInstance().getInstalledApps(false);
+                    List<ResolveInfo> unthemedApps = new ArrayList<>();
+                    
+                    PackageManager pm = getPackageManager();
+                    for (ResolveInfo resolveInfo : installedApps) {
+                        String packageName = resolveInfo.activityInfo.packageName;
+                        if (!themedPackages.contains(packageName)) {
+                            unthemedApps.add(resolveInfo);
+                        }
+                    }
+                    
+                    if (unthemedApps.isEmpty()) {
+                        return;
+                    }
+                    
+                    // Add separator on UI thread
+                    final int unthemedCount = unthemedApps.size();
+                    runOnUiThread(() -> {
+                        // Add separator text
+                        TextView separator = new TextView(mContext);
+                        separator.setText(getString(R.string.auto_themed_section, unthemedCount));
+                        separator.setTextSize(18);
+                        separator.setTypeface(null, android.graphics.Typeface.BOLD);
+                        separator.setPadding(30, 40, 30, 20);
+                        GridLayout.LayoutParams sepParams = new GridLayout.LayoutParams();
+                        sepParams.width = GridLayout.LayoutParams.MATCH_PARENT;
+                        sepParams.columnSpec = GridLayout.spec(0, gridLayout.getColumnCount());
+                        separator.setLayoutParams(sepParams);
+                        gridLayout.addView(separator);
+                        
+                        // Add description
+                        TextView desc = new TextView(mContext);
+                        desc.setText(getString(R.string.auto_themed_description));
+                        desc.setTextSize(12);
+                        desc.setPadding(30, 0, 30, 20);
+                        desc.setAlpha(0.7f);
+                        GridLayout.LayoutParams descParams = new GridLayout.LayoutParams();
+                        descParams.width = GridLayout.LayoutParams.MATCH_PARENT;
+                        descParams.columnSpec = GridLayout.spec(0, gridLayout.getColumnCount());
+                        desc.setLayoutParams(descParams);
+                        gridLayout.addView(desc);
+                    });
+                    
+                    // Generate and display auto-themed icons
+                    for (final ResolveInfo resolveInfo : unthemedApps) {
+                        try {
+                            String packageName = resolveInfo.activityInfo.packageName;
+                            String appLabel = resolveInfo.loadLabel(pm).toString();
+                            
+                            // Check cache first
+                            Bitmap themedIcon = BitmapCache.getInstance().getThemedIcon(packageName, iconPackPkg);
+                            
+                            if (themedIcon == null) {
+                                // Generate themed icon
+                                android.graphics.drawable.Drawable originalDrawable = pm.getApplicationIcon(packageName);
+                                Bitmap originalBitmap = drawableToBitmap(originalDrawable);
+                                
+                                themedIcon = IconTheming.generateThemedIcon(originalBitmap, maskInfo);
+                                
+                                if (themedIcon != null) {
+                                    // Add transparency to indicate auto-generated
+                                    themedIcon = IconTheming.addAutoBadge(themedIcon);
+                                    
+                                    // Cache it
+                                    BitmapCache.getInstance().putThemedIcon(packageName, iconPackPkg, themedIcon);
+                                }
+                            }
+                            
+                            if (themedIcon != null) {
+                                final Bitmap finalThemedIcon = themedIcon;
+                                final String finalAppLabel = appLabel;
+                                
+                                runOnUiThread(() -> {
+                                    ImageView image = new ImageView(mContext);
+                                    image.setLayoutParams(params);
+                                    image.setPadding(15, 15, 15, 15);
+                                    image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                                    image.setImageDrawable(new BitmapDrawable(getResources(), finalThemedIcon));
+                                    
+                                    // Add click listener to show it's auto-generated
+                                    image.setOnClickListener(v -> {
+                                        Toast.makeText(mContext, 
+                                            "Auto-themed: " + finalAppLabel, 
+                                            Toast.LENGTH_SHORT).show();
+                                    });
+                                    
+                                    gridLayout.addView(image);
+                                });
+                            }
+                            
+                        } catch (Exception e) {
+                            // Skip this app if there's an error
+                            e.printStackTrace();
+                        }
+                    }
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+        
+        /**
+         * Convert drawable to bitmap
+         */
+        private Bitmap drawableToBitmap(android.graphics.drawable.Drawable drawable) {
+            if (drawable instanceof BitmapDrawable) {
+                return ((BitmapDrawable) drawable).getBitmap();
+            }
+            
+            int width = drawable.getIntrinsicWidth();
+            int height = drawable.getIntrinsicHeight();
+            
+            if (width <= 0 || height <= 0) {
+                width = height = 192; // Default size
+            }
+            
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            
+            return bitmap;
         }
 
 

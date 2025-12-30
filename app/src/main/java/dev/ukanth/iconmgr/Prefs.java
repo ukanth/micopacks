@@ -23,6 +23,7 @@ public class Prefs {
     public static final String PS = "PS";
     public static final String FAV = "show_favorites";
     public static final String ENABLE_PROMPT="use_launcher_menu";
+    public static final String AUTO_THEMING = "enable_auto_theming";
 
     public static boolean isDarkTheme() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
@@ -115,5 +116,10 @@ public class Prefs {
     public static boolean showPercentage() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(SHOW_PERCENT, false);
+    }
+    
+    public static boolean isAutoThemingEnabled() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        return prefs.getBoolean(AUTO_THEMING, false);
     }
 }

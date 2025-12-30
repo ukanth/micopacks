@@ -43,6 +43,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import dev.ukanth.iconmgr.util.BitmapCache;
+import dev.ukanth.iconmgr.util.IconPackMaskingInfo;
 import dev.ukanth.iconmgr.util.Util;
 
 /**
@@ -365,6 +366,73 @@ public class IconPackUtil {
         list.put("mask", mMaskImage);
         list.put("front", mFrontImage);
         return list;
+    }
+
+    /**
+     * Get masking information for auto-theming
+     * 
+     * @param packageName Icon pack package name
+     * @return IconPackMaskingInfo containing masking resources, or null if none found
+     */
+    public IconPackMaskingInfo getMaskingInfo(String packageName) {
+        // Check cache first
+        if (IconPackMaskingInfo.hasCache(packageName)) {
+            return IconPackMaskingInfo.getCache(packageName);
+        }
+        
+        IconPackMaskingInfo info = new IconPackMaskingInfo();
+        
+        try {
+            XmlPullParser xpp = getXmlParser(packageName, "appfilter");
+            while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (xpp.getEventType() == XmlPullParser.START_TAG) {
+                    String tagName = xpp.getName();
+                    
+                    if (tagName.equals("iconback")) {
+                        // Parse all iconback images
+                        for (int i = 0; i < xpp.getAttributeCount(); i++) {
+                            if (xpp.getAttributeName(i).startsWith("img")) {
+                                String drawableName = xpp.getAttributeValue(i);
+                                Bitmap background = loadBitmap(drawableName, packageName);
+                                info.addBackground(background);
+                            }
+                        }
+                    } else if (tagName.equals("iconmask")) {
+                        // Parse mask
+                        if (xpp.getAttributeCount() > 0 && xpp.getAttributeName(0).equals("img1")) {
+                            String drawableName = xpp.getAttributeValue(0);
+                            Bitmap mask = loadBitmap(drawableName, packageName);
+                            info.setMask(mask);
+                        }
+                    } else if (tagName.equals("iconupon")) {
+                        // Parse overlay
+                        if (xpp.getAttributeCount() > 0 && xpp.getAttributeName(0).equals("img1")) {
+                            String drawableName = xpp.getAttributeValue(0);
+                            Bitmap overlay = loadBitmap(drawableName, packageName);
+                            info.setOverlay(overlay);
+                        }
+                    } else if (tagName.equals("scale")) {
+                        // Parse scale factor
+                        if (xpp.getAttributeCount() > 0 && xpp.getAttributeName(0).equals("factor")) {
+                            try {
+                                float scale = Float.parseFloat(xpp.getAttributeValue(0));
+                                info.setScale(scale);
+                            } catch (NumberFormatException e) {
+                                // Use default scale
+                            }
+                        }
+                    }
+                }
+                xpp.next();
+            }
+        } catch (XmlPullParserException | IOException e) {
+            e.printStackTrace();
+        }
+        
+        // Cache the result
+        IconPackMaskingInfo.putCache(packageName, info);
+        
+        return info.hasMaskingResources() ? info : null;
     }
 
 
