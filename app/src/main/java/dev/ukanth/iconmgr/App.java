@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,7 +54,12 @@ public class App extends Application {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
         intentFilter.addDataScheme("package");
         receiver = new InstallReceiver();
-        registerReceiver(receiver, intentFilter);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(receiver, intentFilter);
+        }
 
         IPObjDatabase db = IPObjDatabase.getInstance(getApplicationContext());
         ipObjDao = db.ipObjDao();

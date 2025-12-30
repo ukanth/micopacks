@@ -176,7 +176,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
         packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         packageFilter.addDataScheme("package");
-        registerReceiver(packageReceiver, packageFilter);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(packageReceiver, packageFilter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(packageReceiver, packageFilter);
+        }
 
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -188,8 +193,13 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             }
         }
 
-        registerReceiver(mMessageReceiver, filter);
-        registerReceiver(updateReceiver, insertFilter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(mMessageReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(updateReceiver, insertFilter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(mMessageReceiver, filter);
+            registerReceiver(updateReceiver, insertFilter);
+        }
 
         registerService();;
         //setUpItemTouchHelper();
@@ -431,9 +441,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             case R.id.favorite:
                 showFav();
                 return true;
-            case R.id.changelog:
-                showChangelog();
-                return true;
             case R.id.help:
                 showHelp();
                 return true;
@@ -514,14 +521,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         adapter.notifyDataSetChanged();
     }
 
-    private void showChangelog() {
-        new MaterialDialog.Builder(this)
-                .title(R.string.app_name)
-                .customView(R.layout.activity_changelog, false)
-                .positiveText(R.string.ok)
-                .show();
-    }
-
     private void showPreference() {
         Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(myIntent);
@@ -536,20 +535,8 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void showAbout() {
-        String version = "";
-        PackageInfo pInfo = null;
-        try {
-            pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
-            version = pInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-
-        }
-
-        new MaterialDialog.Builder(this)
-                .title(getApplicationContext().getString(R.string.app_name) + " " + version)
-                .content(R.string.about_content)
-                .positiveText(R.string.ok)
-                .show();
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
     }
 
     @Override

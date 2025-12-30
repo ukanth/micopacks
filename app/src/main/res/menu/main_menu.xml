@@ -84,12 +84,6 @@
         android:title="@string/report"
         app:showAsAction="collapseActionView" />
 
-
-    <item
-        android:id="@+id/changelog"
-        android:title="@string/changelog"
-        app:showAsAction="collapseActionView" />
-
     <item
         android:id="@+id/help"
         android:title="@string/help"

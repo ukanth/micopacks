@@ -2,8 +2,10 @@ package dev.ukanth.iconmgr;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.IBinder;
 
 public class InstallNotificationService extends Service {
@@ -21,13 +23,20 @@ public class InstallNotificationService extends Service {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
         intentFilter.addDataScheme("package");
         receiver = new InstallReceiver();
-        registerReceiver(receiver, intentFilter);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(receiver, intentFilter);
+        }
     }
 
     //ensure that we unregister the receiver once it's done.
     @Override
     public void onDestroy() {
-        unregisterReceiver(receiver);
+        if (receiver != null) {
+            unregisterReceiver(receiver);
+        }
     }
 
     @Override

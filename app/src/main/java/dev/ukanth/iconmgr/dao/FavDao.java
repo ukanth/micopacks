@@ -37,5 +37,8 @@ public interface FavDao {
 
     @Query("SELECT DISTINCT iconName FROM Favorite")
     List<String> geticonName();
+    
+    @Query("SELECT * FROM Favorite")
+    List<Favorite> getAllFavorites();
 }
 
