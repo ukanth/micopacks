@@ -18,4 +18,10 @@
     <color name="stat_chip_background_dark">#14FFFFFF</color>
     <color name="text_secondary_dark">#B3FFFFFF</color>
 
+    <!-- Swipe gesture colors -->
+    <color name="swipe_pin_bg">#4CAF50</color>
+    <color name="swipe_unpin_bg">#FF9800</color>
+    <color name="swipe_uninstall_bg">#F44336</color>
+    <color name="swipe_playstore_bg">#2196F3</color>
+
 </resources>

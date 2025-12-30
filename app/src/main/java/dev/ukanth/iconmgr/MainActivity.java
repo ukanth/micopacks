@@ -28,13 +28,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
+
+import android.graphics.drawable.Drawable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -131,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                             iconPacksSet.remove(pkgName);
                             runOnUiThread(() -> {
                                 adapter.notifyDataSetChanged();
-                                setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                                updateTitleWithCount();
                             });
                             return;
                         }
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                                     iconPacksList.add(obj);
                                     iconPacksSet.add(pkgName);
                                     adapter.notifyDataSetChanged();
-                                    setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                                    updateTitleWithCount();
                                 }
                             });
                         }
@@ -235,6 +239,18 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     private void restartActivity() {
         recreate();
+    }
+
+    private void updateTitleWithCount() {
+        int count = iconPacksList != null ? iconPacksList.size() : 0;
+        setTitle(getString(R.string.app_name));
+        if (getSupportActionBar() != null) {
+            if (count > 0) {
+                getSupportActionBar().setSubtitle(count + " icon " + (count == 1 ? "pack" : "packs"));
+            } else {
+                getSupportActionBar().setSubtitle(null);
+            }
+        }
     }
 
     private void loadApp(boolean forceLoad) {
@@ -693,7 +709,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                     }
                 }
                 if (iconPacksList != null && !iconPacksList.isEmpty()) {
-                    setTitle(getString(R.string.app_name) + " - #" + iconPacksList.size());
+                    updateTitleWithCount();
                     recyclerView.setVisibility(View.VISIBLE);
                     emptyView.setVisibility(View.GONE);
                     Collections.sort(iconPacksList, new PackageComparator(MainActivity.this));

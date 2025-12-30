@@ -291,11 +291,11 @@ public class IconSearchActivity extends AppCompatActivity {
                             titleTextView.setText(icon.getTitle());
 
                             ImageView download = dialogView.findViewById(R.id.download);
-                            ImageView close = dialogView.findViewById(R.id.close);
                             ImageView fav = dialogView.findViewById(R.id.favorite);
 
-                            MaterialDialog dialog = new MaterialDialog.Builder(mContext)  // set dailog view to custom_dailog
-                                    .customView(dialogView, true)
+                            MaterialDialog dialog = new MaterialDialog.Builder(mContext)
+                                    .customView(dialogView, false)
+                                    .cancelable(true)
                                     .build();
 
                             image.setOnClickListener(v -> dialog.show());
@@ -303,24 +303,17 @@ public class IconSearchActivity extends AppCompatActivity {
                             download.setOnClickListener(v -> {
                                 if (isStoragePermissionGranted()) {
                                     saveImage(icon, icon.getPackageName());
+                                    dialog.dismiss();
                                 }
                             });
 
-                            close.setOnClickListener(v -> {
-                                // Dismiss the dialog when the close_button is clicked
-                                dialog.dismiss();
-                            });
                             fav.setOnClickListener(v -> {
 
                                 isFavorite = !isFavorite;
                                 if (isFavorite == true) {
                                     fav.setImageResource(R.drawable.fav_filled);
-
-
                                 } else {
                                     fav.setImageResource(R.drawable.fav_border);
-
-
                                 }
 
                             });

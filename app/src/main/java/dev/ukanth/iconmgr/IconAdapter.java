@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -119,6 +120,7 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             btnApply = view.findViewById(R.id.btn_apply);
             btnPreview = view.findViewById(R.id.btn_preview);
             btnStats = view.findViewById(R.id.btn_stats);
+            btnStats.setVisibility(View.GONE); // Hide stats button since we combined it with preview
             btnLaunch = view.findViewById(R.id.btn_launch);
             btnOverflow = view.findViewById(R.id.btn_overflow);
 
@@ -139,12 +141,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
             btnPreview.setOnClickListener(v -> {
                 if (currentItem != null) {
                     preview(ctx, currentItem);
-                }
-            });
-
-            btnStats.setOnClickListener(v -> {
-                if (currentItem != null) {
-                    stats(ctx, currentItem);
                 }
             });
 
@@ -272,14 +268,6 @@ public class IconAdapter extends RecyclerView.Adapter<IconAdapter.IconPackViewHo
         Intent intent = new Intent(ctx, IconPreviewActivity.class);
         intent.putExtra("pkg", currentItem.getIconPkg());
         ctx.startActivity(intent);
-    }
-
-    private void stats(Context ctx, IPObj currentItem) {
-        if (currentItem != null && currentItem.getIconPkg() != null) {
-            Intent intent = new Intent(ctx, DetailsActivity.class);
-            intent.putExtra("pkg", currentItem.getIconPkg());
-            ctx.startActivity(intent);
-        }
     }
 
     private void openApp(Context ctx, IPObj currentItem) {

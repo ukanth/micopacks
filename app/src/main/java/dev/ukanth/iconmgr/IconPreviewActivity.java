@@ -42,6 +42,7 @@ import dev.ukanth.iconmgr.dao.FavDao;
 import dev.ukanth.iconmgr.dao.Favorite;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
+import dev.ukanth.iconmgr.util.AppCache;
 import dev.ukanth.iconmgr.util.LauncherHelper;
 
 /**
@@ -67,6 +68,11 @@ public class IconPreviewActivity extends AppCompatActivity {
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
 
+    // Stats views
+    private TextView statTotalIcons;
+    private TextView statSize;
+    private TextView statThemedPercentage;
+
    IPObjDao ipObjDao = App.getInstance().getIPObjDao();
 
    FavDao favDao = App.getInstance().getFavDao();
@@ -86,20 +92,43 @@ public class IconPreviewActivity extends AppCompatActivity {
         emptyView = (TextView) findViewById(R.id.emptypreview);
         emptyView.setVisibility(View.GONE);
 
+        // Initialize stats views
+        statTotalIcons = findViewById(R.id.stat_total_icons);
+        statSize = findViewById(R.id.stat_size);
+        statThemedPercentage = findViewById(R.id.stat_themed_percentage);
+
         Bundle bundle = getIntent().getExtras();
         final String pkgName = bundle.getString("pkg");
         final String[] iconNameHolder = {""};
 
-        // Load icon name on background thread
-        new Thread(() -> {
+        // Load icon name and stats on background thread
+        App.getInstance().getDbExecutor().execute(() -> {
             if (ipObjDao != null) {
                 IPObj pkgObj = ipObjDao.getByIconPkg(pkgName);
                 if (pkgObj != null) {
                     iconNameHolder[0] = pkgObj.getIconName();
-                    runOnUiThread(() -> setTitle(iconNameHolder[0]));
+                    final int totalIcons = pkgObj.getTotal();
+                    final int missedIcons = pkgObj.getMissed();
+                    final String iconName = pkgObj.getIconName();
+                    
+                    IconAttr attr = new com.google.gson.Gson().fromJson(pkgObj.getAdditional(), IconAttr.class);
+                    final String size = attr != null ? attr.getSize() + " MB" : "N/A";
+                    
+                    // Calculate themed percentage
+                    int installedApps = AppCache.getInstance().getInstalledAppsCount(false);
+                    int themedApps = installedApps - missedIcons;
+                    final double percentage = installedApps > 0 ? ((double) themedApps / installedApps) * 100 : 0;
+                    
+                    runOnUiThread(() -> {
+                        setTitle(iconName);
+                        statTotalIcons.setText(String.valueOf(totalIcons));
+                        statSize.setText(size);
+                        statThemedPercentage.setText(String.format("%.1f%% (%d/%d)", 
+                            percentage, themedApps, installedApps));
+                    });
                 }
             }
-        }).start();
+        });
 
         registerUIbroadcast();
 
@@ -344,11 +373,11 @@ public class IconPreviewActivity extends AppCompatActivity {
                             titleTextView.setText(icon.getTitle());
 
                             ImageView download = dialogView.findViewById(R.id.download);
-                            ImageView close = dialogView.findViewById(R.id.close);
                             ImageView fav = dialogView.findViewById(R.id.favorite);
 
-                            MaterialDialog dialog = new MaterialDialog.Builder(mContext)  // set dailog view to custom_dailog
-                                    .customView(dialogView, true)
+                            MaterialDialog dialog = new MaterialDialog.Builder(mContext)
+                                    .customView(dialogView, false)
+                                    .cancelable(true)
                                     .build();
                      // Set the favorite status initially when the dialog is built (on background thread)
                             new Thread(() -> {
@@ -368,13 +397,10 @@ public class IconPreviewActivity extends AppCompatActivity {
                             download.setOnClickListener(v -> {
                                 if (isStoragePermissionGranted()) {
                                     saveImage(icon, icon.getPackageName());
+                                    dialog.dismiss();
                                 }
                             });
 
-                            close.setOnClickListener(v -> {
-                                // Dismiss the dialog when the close_button is clicked
-                                dialog.dismiss();
-                            });
                             fav.setOnClickListener(v -> {
                                 // Run database operations on background thread
                                 new Thread(() -> {
@@ -413,7 +439,6 @@ public class IconPreviewActivity extends AppCompatActivity {
                             gridLayout.addView(image);
                         }
                     }
-                    setTitle(iconName + "(" + (list.size() - 1) + "-icons)");
                     //processInputs(list, res, params, gridLayout);
                 } else {
                     emptyView.setVisibility(View.VISIBLE);

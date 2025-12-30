@@ -3,7 +3,6 @@
     <string-array name="items">
         <item>Apply</item>
         <item>Preview</item>
-        <item>Statistics</item>
         <item>Open in Playstore</item>
         <item>Launch</item>
         <item>Uninstall</item>

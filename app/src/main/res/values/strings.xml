@@ -121,4 +121,9 @@
     <string name="stat_icons">icons</string>
     <string name="stat_size">size</string>
     <string name="stat_themed">themed</string>
+    
+    <!-- Icon dialog -->
+    <string name="icon_preview">Icon preview</string>
+    <string name="save_icon">Save icon</string>
+    <string name="add_to_favorites">Add to favorites</string>
 </resources>
