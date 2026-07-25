@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import dev.ukanth.iconmgr.Icon;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
 
@@ -63,6 +65,8 @@ public class IconSearchActivity extends AppCompatActivity {
 
     private BroadcastReceiver uiProgressReceiver;
     private IntentFilter uiFilter;
+
+    private IconsPreviewLoader previewLoader;
 
     boolean isFavorite = false; // Initial state
 
@@ -107,13 +111,17 @@ public class IconSearchActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String s) {
                 gridLayout.removeAllViews();
                 searchIcons(s);
-                return false;
+                mSearchView.clearFocus();
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
                 if (s.length() == 0) {
                     gridLayout.removeAllViews();
+                    if (previewLoader != null) {
+                        previewLoader.cancel(true);
+                    }
                 }
                 return false;
             }
@@ -142,14 +150,6 @@ public class IconSearchActivity extends AppCompatActivity {
         int screenWidth = metrics.widthPixels;
         params = new LinearLayout.LayoutParams(screenWidth / colNumber, screenWidth / colNumber);
 
-        //SearchView searchView = findViewById(R.id.search);
-
-
-
-
-
-
-
         // Load data on background thread
         new Thread(() -> {
             objList = ipObjDao.getAll();
@@ -162,11 +162,12 @@ public class IconSearchActivity extends AppCompatActivity {
         if (!query.isEmpty()) {
             query = query.toLowerCase();
         }
-        IconsPreviewLoader previewLoader = new IconsPreviewLoader(IconSearchActivity.this, query);
-        if (plsWait == null && (previewLoader.getStatus() == AsyncTask.Status.PENDING ||
-                previewLoader.getStatus() == AsyncTask.Status.FINISHED)) {
-            previewLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        // Cancel any running search before starting a new one
+        if (previewLoader != null && previewLoader.getStatus() == AsyncTask.Status.RUNNING) {
+            previewLoader.cancel(true);
         }
+        previewLoader = new IconsPreviewLoader(IconSearchActivity.this, query);
+        previewLoader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     @Override
@@ -224,22 +225,34 @@ public class IconSearchActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            while (!isCancelled()) {
-                try {
-                    IconPackUtil packUtil = new IconPackUtil();
-                    for (int i = 0; i < objList.size(); i++) {
-                        final int pos = i;
-                        runOnUiThread(() -> {
+            try {
+                IconPackUtil packUtil = new IconPackUtil();
+                for (int i = 0; i < objList.size(); i++) {
+                    // Check if user kept typing and this task was cancelled
+                    if (isCancelled()) return false; 
+                    
+                    final int pos = i;
+                    runOnUiThread(() -> {
+                        if (plsWait != null && plsWait.isShowing()) {
                             plsWait.setTitle(mContext.getString(R.string.searching) + (" " + pos + "/" + objList.size()));
-                        });
-                        themed_icons.addAll(packUtil.getFilterIcons(objList.get(i).getIconPkg(), query));
-                    }
-                    return true;
-                } catch (Exception e) {
-                    return false;
+                        }
+                    });
+                    
+                    String pkg = objList.get(i).getIconPkg();
+                    themed_icons.addAll(packUtil.getFilterIcons(pkg, this.query));
                 }
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
             }
-            return false;
+        }
+
+        @Override
+        protected void onCancelled() {
+            if (plsWait != null && plsWait.isShowing()) {
+                plsWait.dismiss();
+            }
         }
 
 
@@ -256,8 +269,10 @@ public class IconSearchActivity extends AppCompatActivity {
             } catch (final Exception e) {
                 // Handle or log or ignore
             } finally {
-                plsWait.dismiss();
-                plsWait = null;
+                if (plsWait != null) {
+                    plsWait.dismiss();
+                    plsWait = null;
+                }
             }
 
             gridLayout.removeAllViews();
@@ -270,10 +285,6 @@ public class IconSearchActivity extends AppCompatActivity {
 
                     for (final Icon icon : list) {
                         if (icon.getIconBitmap() != null) {
-                           /* RelativeLayout relativeLayout=new RelativeLayout(mContext);
-                            relativeLayout.setLayoutParams(params);
-                            TextView textView = new TextView(mContext);
-                            textView.setText(icon.getPackageName());*/
 
                             LayoutInflater inflater = LayoutInflater.from(mContext);
                             View dialogView = inflater.inflate(R.layout.custom_dailog,null);
@@ -289,6 +300,28 @@ public class IconSearchActivity extends AppCompatActivity {
 
                             TextView titleTextView = dialogView.findViewById(R.id.title_text_view);
                             titleTextView.setText(icon.getTitle());
+
+                            // NEW: Pack Icon and Name implementation
+                            ImageView packIconView = dialogView.findViewById(R.id.pack_icon_image);
+                            TextView packNameView = dialogView.findViewById(R.id.pack_name_text_view);
+
+                            if (packIconView != null && packNameView != null) {
+                                String pkgName = icon.getPackageName();
+                                if (pkgName != null && !pkgName.isEmpty()) {
+                                    // Fetch the actual icon pack app name
+                                    packNameView.setText(getAppNameByPackage(pkgName));
+                                    try {
+                                        // Fetch the actual icon pack app logo
+                                        Drawable packDrawable = getPackageManager().getApplicationIcon(pkgName);
+                                        packIconView.setImageDrawable(packDrawable);
+                                    } catch (PackageManager.NameNotFoundException e) {
+                                        packIconView.setVisibility(View.GONE);
+                                    }
+                                } else {
+                                    packNameView.setVisibility(View.GONE);
+                                    packIconView.setVisibility(View.GONE);
+                                }
+                            }
 
                             ImageView download = dialogView.findViewById(R.id.download);
                             ImageView fav = dialogView.findViewById(R.id.favorite);
@@ -308,14 +341,12 @@ public class IconSearchActivity extends AppCompatActivity {
                             });
 
                             fav.setOnClickListener(v -> {
-
                                 isFavorite = !isFavorite;
-                                if (isFavorite == true) {
+                                if (isFavorite) {
                                     fav.setImageResource(R.drawable.fav_filled);
                                 } else {
                                     fav.setImageResource(R.drawable.fav_border);
                                 }
-
                             });
 
                             image.setOnLongClickListener(view -> {
@@ -325,13 +356,10 @@ public class IconSearchActivity extends AppCompatActivity {
                                 }
                                 return true;
                             });
-                            //relativeLayout.addView(image);
-                            //relativeLayout.addView(textView);
+                            
                             gridLayout.addView(image);
                         }
                     }
-                    //processInputs(list, res, params, gridLayout);
-                } else {
                 }
             }
         }
@@ -381,21 +409,17 @@ public class IconSearchActivity extends AppCompatActivity {
         }
         return (String) (ai != null ? pm.getApplicationLabel(ai) : packageName);
     }
+    
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case READ_MEDIA: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
                     Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_SHORT).show();
                 } else {
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
                     Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
                 }
                 return;

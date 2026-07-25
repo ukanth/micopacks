@@ -42,6 +42,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import dev.ukanth.iconmgr.Icon;
+
 import dev.ukanth.iconmgr.util.BitmapCache;
 import dev.ukanth.iconmgr.util.IconPackMaskingInfo;
 import dev.ukanth.iconmgr.util.Util;
@@ -438,7 +440,8 @@ public class IconPackUtil {
 
 
 
-    public Set<Icon> getListIcons(String packageName) {
+    // In IconPackUtil.java
+    public Set<Icon> getListIcons(String packageName) { // Reverted to just packageName
         Set<Icon> icons = new HashSet<>();
         Key key = Key.ACTIVITY;
         List<Attrb> items = new ArrayList<>();
@@ -452,6 +455,7 @@ public class IconPackUtil {
                             sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
                             if (sKey != null) {
                                 String name = xpp.getAttributeValue(null, "drawable");
+                                // Reverted the loose logic here since IconPreviewActivity needs ALL icons
                                 if (name != null) {
                                     items.add(new Attrb(sKey, name));
                                 }
@@ -472,6 +476,7 @@ public class IconPackUtil {
         Set<Icon> icons = new HashSet<>();
         Key key = Key.ACTIVITY;
         List<Attrb> items = new ArrayList<>();
+        String lowerQuery = query.toLowerCase();
         try {
             XmlPullParser xpp = getXmlParser(packageName, "appfilter");
             while (xpp.getEventType() != XmlPullParser.END_DOCUMENT) {
@@ -480,18 +485,23 @@ public class IconPackUtil {
                         String sKey = xpp.getAttributeValue(null, key.getKey());
                         if (sKey != null) {
                             sKey = sKey.replace("ComponentInfo{", "").replace("}", "");
-                            if (sKey != null) {
-                                String name = xpp.getAttributeValue(null, "drawable");
-                                if (name != null && name.contains(query)) {
-                                    items.add(new Attrb(sKey, name));
-                                }
+                            String name = xpp.getAttributeValue(null, "drawable");
+                            
+                            // Check if query is in drawable name OR component name
+                            boolean matches = false;
+                            if (name != null && name.toLowerCase().contains(lowerQuery)) matches = true;
+                            if (sKey != null && sKey.toLowerCase().contains(lowerQuery)) matches = true;
+                            
+                            if (matches) {
+                                items.add(new Attrb(sKey, name));
                             }
                         }
                     }
                 }
                 xpp.next();
             }
-            icons = processXpp(packageName, items);
+            // Use the new unfiltered search processor!
+            icons = processSearchXpp(packageName, items);
         } catch (Exception e) {
             Log.e("MICO", e.getMessage(), e);
         }
@@ -647,6 +657,34 @@ public class IconPackUtil {
                         if (iconBitmap != null) {
                             return new Icon(attr.value, packageName, iconBitmap);
                         }
+                    }
+                    return new Icon("");
+                };
+                futures.add(service.submit(callable));
+            }
+            service.shutdown();
+
+            Set<Icon> outputs = new HashSet<>();
+            for (Future<Icon> future : futures) {
+                outputs.add(future.get());
+            }
+            return outputs;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new HashSet<>();
+    }
+
+    public Set<Icon> processSearchXpp(final String packageName, List<Attrb> input) {
+        try {
+            ExecutorService service = Executors.newFixedThreadPool(5);
+            List<Future<Icon>> futures = new ArrayList<Future<Icon>>();
+            for (final Attrb attr : input) {
+                Callable<Icon> callable = () -> {
+                    // Bypass isSupported() check so we can search for icons of uninstalled apps!
+                    Bitmap iconBitmap = loadBitmap(attr.value, packageName);
+                    if (iconBitmap != null) {
+                        return new Icon(attr.value, packageName, iconBitmap);
                     }
                     return new Icon("");
                 };
