@@ -13,9 +13,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
 
@@ -27,7 +24,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.Light">
+        android:theme="@style/AppTheme">
 
         <meta-data
             android:name="com.google.android.backup.api_key"
@@ -35,8 +32,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/AppTheme.Dark">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -94,62 +90,22 @@
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>-->
-
         <activity
-            android:name=".DetailsActivity"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="dev.ukanth.iconmgr.MainActivity" />
-        </activity>
-        <activity
-            android:name=".IconPreviewActivity"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="dev.ukanth.iconmgr.MainActivity" />
-        </activity>
-        <activity android:name=".FavoriteAcitvity"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="dev.ukanth.iconmgr.MainActivity" />
-        </activity>
-        <activity
-            android:name=".IconSearchActivity"
+            android:name=".detail.PackDetailActivity"
             android:exported="false"
-
-            android:parentActivityName=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="dev.ukanth.iconmgr.MainActivity" />
-        </activity>
+            android:parentActivityName=".MainActivity" />
 
         <activity
             android:name=".AboutActivity"
             android:label="@string/about"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="dev.ukanth.iconmgr.MainActivity" />
         </activity>
 
-        <receiver android:name=".ApplyActionReceiver">
-        </receiver>
-
-        <receiver android:name=".PreviewActionReceiver">
-        </receiver>
-
-        <service
-            android:name=".InstallNotificationService"
-            android:stopWithTask="false"
-            android:enabled="true">
-        </service>
-
-        <activity android:name=".RandomActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+        <activity android:name=".RandomActivity" android:theme="@style/AppTheme.Translucent"></activity>
 
         <provider
             android:name=".GenericFileProvider"

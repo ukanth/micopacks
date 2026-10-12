@@ -1,6 +1,8 @@
 package dev.ukanth.iconmgr;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Created by ukanth on 12/9/17.
@@ -64,6 +66,24 @@ public class IconAttr {
     private boolean favorite = false;
 
 
+
+    /**
+     * Parses the JSON stored in IPObj.additional; never returns null so callers can
+     * update individual fields without dropping the rest (e.g. favorite).
+     */
+    public static IconAttr fromJson(String json) {
+        if (json != null) {
+            try {
+                IconAttr attr = new Gson().fromJson(json, IconAttr.class);
+                if (attr != null) {
+                    return attr;
+                }
+            } catch (JsonSyntaxException e) {
+                // fall through to defaults
+            }
+        }
+        return new IconAttr();
+    }
 
     @Override
     public String toString() {

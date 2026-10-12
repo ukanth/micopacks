@@ -3,4 +3,6 @@
 
     <bool name="card_use_compat_padding">true</bool>
 
+    <!-- dark status bar icons on light backgrounds -->
+    <bool name="light_system_bars">true</bool>
 </resources>

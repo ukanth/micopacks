@@ -35,10 +35,9 @@
         Libraries Used: \n
         ------------------ \n
         RootTools by Stericson \n
-        libsuperuser by Chainfire \n
-        material-dialogs by afollestad \n\n
-        greenDAO \n\n
-        changeloglib \n\n
+        libsu by topjohnwu \n
+        Material Components for Android \n
+        AndroidX Room \n\n
 
 
         Special - Credits: \n
@@ -56,13 +55,12 @@
     <string name="report">Report a problem</string>
     <string name="use_dark">Dark theme</string>
     <string name="access_sort">Sort</string>
-    <string name="alphabet">By alphabet</string>
-    <string name="lastupdated">By last update</string>
-    <string name="iconcount">By icon count</string>
-    <string name="iconsize">By package size</string>
-    <string name="authorname">By Author Name</string>
-    <string name="iconpercent">By match percent</string>
-    <string name="total_icons">Show icon count</string>
+    <string name="alphabet">Name</string>
+    <string name="lastupdated">Last updated</string>
+    <string name="iconcount">Icon count</string>
+    <string name="iconsize">Size</string>
+    <string name="authorname">Author</string>
+    <string name="iconpercent">Coverage</string>
     <string name="show_notification">Notify on new icon pack install</string>
     <string name="please_wait_normal">Please wait ... </string>
     <string name="action_search">Search</string>
@@ -93,16 +91,12 @@
     <string name="license_check_failed">License check failed, you didn\'t download this app from Play Store.
         You will not able to use the app.</string>
     <string name="license_check_retry">Unable to check license, please try again in a few moments</string>
-    <string name="showsize">Show application size</string>
-    <string name="show_percent">Show Percentage</string>
-    <string name="show_authorname">Show Author Name</string>
     <string name="forcereload">Rebuild list</string>
     <string name="onlysupportedroot">Supported through root mode only</string>
     <string name="action_random">Random</string>
     <string name="selected_pack">Selected Pack:</string>
-    <string name="sharelist">Share</string>
+    <string name="sharelist">Share list</string>
     <string name="generating">Generating image, please wait ...</string>
-    <string name="show_favs">Enable Favorites</string>
     <string name="unable_iconpack">No iconpack found</string>
     <string name="unable_screenshot">Sorry! Unable to create screenshot</string>
     <string name="save">Save</string>
@@ -130,4 +124,111 @@
     <string name="icon_preview">Icon preview</string>
     <string name="save_icon">Save icon</string>
     <string name="add_to_favorites">Add to favorites</string>
+    <string name="theme_mode">Theme</string>
+    <string name="theme_system">Follow system</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="dynamic_color">Wallpaper colours</string>
+    <string name="dynamic_color_summary">Use Material You colours from your wallpaper instead of the Micopacks colours</string>
+    <!-- pack detail -->
+    <string name="search_icons">Search icons</string>
+    <string name="open_pack_app">Open pack app</string>
+    <string name="apply_to">Apply to %1$s</string>
+    <string name="tab_your_apps_plain">Your apps</string>
+    <string name="tab_missing_plain">Missing</string>
+    <string name="tab_all_icons_plain">All icons</string>
+    <string name="tab_masks_plain">Masks</string>
+    <string name="tab_your_apps">Your apps (%1$d)</string>
+    <string name="tab_missing">Missing (%1$d)</string>
+    <string name="tab_all_icons">All icons (%1$d)</string>
+    <string name="tab_masks">Masks (%1$d)</string>
+    <string name="stat_coverage">of %1$d apps</string>
+    <string name="pack_author">by %1$s</string>
+    <string name="pack_updated">Updated %1$s</string>
+    <string name="empty_your_apps">This pack has no icons for the apps on your phone.</string>
+    <string name="empty_missing">This pack covers every app on your phone.</string>
+    <string name="empty_all_icons">No icons found in this pack.</string>
+    <string name="empty_search">No icons match \"%1$s\".</string>
+    <string name="missing_subtitle">Not themed by %1$s</string>
+    <string name="missing_subtitle_preview">Not in %1$s · preview using its masks</string>
+    <string name="icon_save">Save</string>
+    <string name="icon_saved">Saved to %1$s</string>
+    <string name="icon_save_failed">Could not save %1$s</string>
+    <string name="icon_favorite">Favourite</string>
+    <string name="icon_favorited">Favourited</string>
+    <!-- home -->
+    <string name="nav_packs">Packs</string>
+    <string name="nav_icons">Icons</string>
+    <string name="nav_saved">Saved</string>
+    <string name="nav_history">History</string>
+    <string name="filter_favorites">Favourites</string>
+    <string name="filter_recent">Updated recently</string>
+    <string name="last_applied_detail">to %1$s · %2$s</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="undo">Undo</string>
+    <string name="nothing_to_undo">No earlier pack to go back to</string>
+    <string name="meta_icons">%1$s icons</string>
+    <string name="no_packs_filtered">No packs match this filter.</string>
+    <string name="history_applied">Applied</string>
+    <string name="history_uninstalled">Uninstalled packs</string>
+    <string name="history_uninstalled_detail">Removed %1$s · tap to find it on Play Store</string>
+    <string name="history_empty">Packs you apply from Micopacks will be listed here.</string>
+    <string name="saved_empty">Icons you favourite in a pack or in icon search appear here.</string>
+    <string name="icons_hint">Search icons in all your packs</string>
+    <string name="icons_empty">Type an app or icon name to search %1$d packs.</string>
+    <string name="icons_no_results">No icons named \"%1$s\" in your packs.</string>
+    <string name="action_more">More actions</string>
+    <string name="just_now">Just now</string>
+
+    <!-- Packs list -->
+    <string name="in_use">In use</string>
+    <string name="row_meta">%1$d%% of your apps · %2$s icons</string>
+    <string name="packs_on_launcher">%1$s is on %2$s</string>
+    <plurals name="icon_pack_count">
+        <item quantity="one">%1$d icon pack</item>
+        <item quantity="other">%1$d icon packs</item>
+    </plurals>
+    <string name="packs_title">Icon packs</string>
+    <string name="menu_show">Show</string>
+    <string name="menu_sort_by">Sort by</string>
+    <string name="filter_all_packs">All packs</string>
+    <string name="more_actions">More actions</string>
+    <string name="add_favorite">Add to favourites</string>
+    <string name="remove_favorite">Remove from favourites</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="already_in_use">%1$s is already in use</string>
+    <string name="applied_pack">Applied %1$s</string>
+    <string name="favorite_added">Added %1$s to favourites</string>
+    <string name="favorite_removed">Removed %1$s from favourites</string>
+    <string name="hint_long_press">Long-press a pack for more</string>
+    <string name="hint_swipe">Swipe %1$s to %2$s</string>
+    <string name="hint_verb_apply">apply</string>
+    <string name="hint_verb_favorite">favourite</string>
+    <string name="hint_verb_open">open the pack app</string>
+    <string name="hint_verb_playstore">see it on Play Store</string>
+    <string name="hint_verb_uninstall">uninstall</string>
+    <string name="swipe_right_word">right</string>
+    <string name="swipe_left_word">left</string>
+    <string name="swipe_label_favorite">Favourite</string>
+    <string name="swipe_off">Off</string>
+    <string name="pref_packs_list">Packs list</string>
+    <string name="pref_swipe_right">Swipe right</string>
+    <string name="pref_swipe_left">Swipe left</string>
+    <string name="pref_favorites_first">Show favourites first</string>
+    <string-array name="swipe_action_entries">
+        <item>Off</item>
+        <item>Apply</item>
+        <item>Favourite / unfavourite</item>
+        <item>Open pack app</item>
+        <item>Play Store page</item>
+        <item>Uninstall</item>
+    </string-array>
+    <string-array name="swipe_action_values" translatable="false">
+        <item>off</item>
+        <item>apply</item>
+        <item>favorite</item>
+        <item>open</item>
+        <item>playstore</item>
+        <item>uninstall</item>
+    </string-array>
 </resources>

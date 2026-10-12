@@ -7,6 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.color.DynamicColorsOptions;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,6 +37,8 @@ public class App extends Application {
     private FavDao favDao;
     private BroadcastReceiver receiver;
     private ExecutorService dbExecutor;
+    // short background jobs that are not DB writes (details screen stats, etc.)
+    private final ExecutorService backgroundExecutor = Executors.newFixedThreadPool(2);
 
 
     public static App getInstance() {
@@ -48,12 +55,21 @@ public class App extends Application {
         instance = this;
         super.onCreate();
 
+        AppCompatDelegate.setDefaultNightMode(Prefs.nightMode());
+        // wallpaper colours only when the user opted in; the precondition is checked per activity,
+        // so toggling the setting takes effect on the next recreate
+        DynamicColors.applyToActivitiesIfAvailable(this, new DynamicColorsOptions.Builder()
+                .setPrecondition((activity, theme) -> Prefs.useDynamicColor())
+                .build());
+
         // Initialize shared executor for database operations
         dbExecutor = Executors.newSingleThreadExecutor();
 
+        // single app-wide receiver for icon pack install/update/uninstall
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         intentFilter.addDataScheme("package");
-        receiver = new InstallReceiver();
+        receiver = new PackageBroadcast();
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(receiver, intentFilter, Context.RECEIVER_EXPORTED);
@@ -83,6 +99,10 @@ public class App extends Application {
 
     public ExecutorService getDbExecutor() {
         return dbExecutor;
+    }
+
+    public ExecutorService getBackgroundExecutor() {
+        return backgroundExecutor;
     }
 
 }

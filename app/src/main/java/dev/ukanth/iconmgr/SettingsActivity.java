@@ -1,197 +1,105 @@
 package dev.ukanth.iconmgr;
 
-
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
+import android.Manifest;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 
-import java.util.List;
+import com.google.android.material.color.DynamicColors;
 
-import static dev.ukanth.iconmgr.Prefs.SHOW_PERCENT;
-import static dev.ukanth.iconmgr.Prefs.SHOW_AUTHOR_NAME;
-import static dev.ukanth.iconmgr.Prefs.SHOW_SIZE;
-import static dev.ukanth.iconmgr.Prefs.THEME_RES_ID;
-import static dev.ukanth.iconmgr.Prefs.TOTAL_ICONS;
+import dev.ukanth.iconmgr.util.WindowInsetsHelper;
+
+import static dev.ukanth.iconmgr.Prefs.DYNAMIC_COLOR;
+import static dev.ukanth.iconmgr.Prefs.NOTIFY;
+import static dev.ukanth.iconmgr.Prefs.THEME_MODE;
 
 /**
- * A {@link PreferenceActivity} that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- * <p>
- * See <a href="http://developer.android.com/design/patterns/settings.html">
- * Android Design: Settings</a> for design guidelines and the <a
- * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
- * API Guide</a> for more information on developing a Settings UI.
+ * App settings (AndroidX Preference). Keys are unchanged from the old PreferenceActivity, so
+ * existing settings carry over.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity {
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
-            return true;
-        }
-    };
-
-    /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
+public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Prefs.isDarkTheme()) {
-            setTheme(R.style.AppTheme_Dark);
-        } else {
-            setTheme(R.style.AppTheme_Light);
-        }
         super.onCreate(savedInstanceState);
-        setupActionBar();
-        getFragmentManager().beginTransaction().replace(android.R.id.content,
-                new GeneralPreferenceFragment()).commit();
-    }
-
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-    private void setupActionBar() {
+        setContentView(R.layout.activity_settings);
+        WindowInsetsHelper.applyToContent(this);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.settings_container, new GeneralPreferenceFragment())
+                    .commit();
+        }
     }
 
     @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            this.finish();
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
             return true;
         }
-        return super.onMenuItemSelected(featureId, item);
+        return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
-
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
-    protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
-    }
-
-
-    /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment implements
+    public static class GeneralPreferenceFragment extends PreferenceFragmentCompat implements
             SharedPreferences.OnSharedPreferenceChangeListener {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
-
-            /*if (!BuildConfig.PAID) {
-                getPreferenceScreen().findPreference("dark_theme").setEnabled(false);
-                getPreferenceScreen().findPreference("dark_theme").setTitle(getString(R.string.use_dark_paid));
-                getPreferenceScreen().findPreference("notify_install").setEnabled(false);
-                getPreferenceScreen().findPreference("notify_install").setTitle(getString(R.string.show_notification_paid));
-            }*/
-            setHasOptionsMenu(true);
-        }
 
         @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            // make sure the migrated theme value is stored before the list shows it
+            Prefs.themeMode();
+            setPreferencesFromResource(R.xml.pref_general, rootKey);
+            Preference dynamic = findPreference(DYNAMIC_COLOR);
+            if (dynamic != null) {
+                dynamic.setVisible(DynamicColors.isDynamicColorAvailable());
             }
-            return super.onOptionsItemSelected(item);
         }
 
         @Override
         public void onResume() {
             super.onResume();
-            // Set up a listener whenever a key changes
-            getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+            getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
 
         @Override
         public void onPause() {
             super.onPause();
-            // Set up a listener whenever a key changes
-            getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+            getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            //seems like theme changed
-            if (key.equals(THEME_RES_ID)) {
-                getActivity().recreate();
+            if (key == null) {
+                return;
+            }
+            if (key.equals(THEME_MODE)) {
+                // recreates every open activity in the new mode
+                AppCompatDelegate.setDefaultNightMode(Prefs.nightMode());
+            }
+            if (key.equals(DYNAMIC_COLOR)) {
+                // DynamicColors is applied when an activity is created
                 MainActivity.setReloadTheme(true);
+                requireActivity().recreate();
             }
-            if (key.equals(TOTAL_ICONS) || key.equals(SHOW_PERCENT) || key.equals(SHOW_SIZE) || key.equals(SHOW_AUTHOR_NAME)) {
-                MainActivity.setReloadApp(true);
+            if (key.equals(NOTIFY) && sharedPreferences.getBoolean(NOTIFY, false)
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                    && requireActivity().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requireActivity().requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
             }
+            // Packs list settings (swipes, favourites first) are re-read when the list resumes
         }
     }
 }

@@ -125,7 +125,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
-                        android:text="• RootTools by Stericson\n• libsuperuser by Chainfire\n• material-dialogs by afollestad\n• greenDAO\n• Room Database"
+                        android:text="• RootTools by Stericson\n• libsu by topjohnwu\n• Material Components for Android\n• Room Database"
                         android:textAppearance="?attr/textAppearanceBody2"
                         android:lineSpacingExtra="4dp" />
 

@@ -40,5 +40,8 @@ public interface FavDao {
     
     @Query("SELECT * FROM Favorite")
     List<Favorite> getAllFavorites();
+
+    @Query("SELECT * FROM Favorite ORDER BY iconName, Icontitle")
+    androidx.lifecycle.LiveData<List<Favorite>> observeAll();
 }
 

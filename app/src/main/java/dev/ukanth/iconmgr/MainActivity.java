@@ -1,84 +1,55 @@
 package dev.ukanth.iconmgr;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.LruCache;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.MimeTypeMap;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.gson.Gson;
-
-import android.graphics.drawable.Drawable;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import dev.ukanth.iconmgr.dao.IPObj;
-import dev.ukanth.iconmgr.dao.IPObjDao;
-import dev.ukanth.iconmgr.util.AppCache;
-import dev.ukanth.iconmgr.util.PackageComparator;
-import dev.ukanth.iconmgr.util.Util;
 
-public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
-    private RecyclerView recyclerView;
-    private TextView emptyView;
-    private IconAdapter adapter;
-    private IPObjDao ipObjDao = App.getInstance().getIPObjDao();;
-    private List<IPObj> iconPacksList;
-    private HashSet<String> iconPacksSet; // For O(1) duplicate checking
-    private SwipeRefreshLayout mSwipeLayout;
-    private MaterialDialog plsWait;
-    private Menu mainMenu;
+import dev.ukanth.iconmgr.home.HistoryFragment;
+import dev.ukanth.iconmgr.home.IconsFragment;
+import dev.ukanth.iconmgr.home.PacksFragment;
+import dev.ukanth.iconmgr.home.SavedFragment;
+import dev.ukanth.iconmgr.util.WindowInsetsHelper;
+
+/**
+ * Home host: bottom navigation between Packs, Icons, Saved and History. Tabs are kept alive
+ * (show/hide) so switching keeps their scroll position and search.
+ */
+public class MainActivity extends AppCompatActivity {
+    private static final String STATE_TAB = "tab";
     private static boolean reloadTheme = false;
     private static boolean reloadApp = false;
-    private static int installed = 0;
-    private IntentFilter filter;
-    private IntentFilter insertFilter;
-    private BroadcastReceiver mMessageReceiver;
 
-    private BroadcastReceiver updateReceiver;
-
-    private BroadcastReceiver packageReceiver;
-    private IntentFilter packageFilter;
-    private ExecutorService receiverExecutor; // Shared thread pool for receivers
-
+    private BottomNavigationView bottomNav;
+    private int currentTab = R.id.nav_packs;
 
     public static void setReloadTheme(boolean reloadTheme) {
         MainActivity.reloadTheme = reloadTheme;
@@ -90,148 +61,85 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Theme must be set BEFORE super.onCreate()
-        if (Prefs.isDarkTheme()) {
-            setTheme(R.style.AppTheme_Dark);
-        } else {
-            setTheme(R.style.AppTheme_Light);
-        }
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_main);
+        setContentView(R.layout.activity_main);
+        WindowInsetsHelper.applyToContent(this);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        emptyView = (TextView) findViewById(R.id.empty_view);
-
-        iconPacksList = new ArrayList<>();
-        iconPacksSet = new HashSet<>();
-        receiverExecutor = Executors.newSingleThreadExecutor();
-
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(llm);
-        recyclerView.setNestedScrollingEnabled(false);
-
-        adapter = new IconAdapter(iconPacksList, installed);
-        recyclerView.setAdapter(adapter);
-
-        mSwipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-        mSwipeLayout.setOnRefreshListener(this);
-
-        loadApp(false);
-
-        filter = new IntentFilter();
-        filter.addAction("updatelist");
-        mMessageReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String pkgName = intent.getStringExtra("pkgName");
-                if (pkgName != null && iconPacksSet.contains(pkgName)) {
-                    // Use iterator to safely remove during iteration
-                    Iterator<IPObj> iterator = iconPacksList.iterator();
-                    while (iterator.hasNext()) {
-                        IPObj pack = iterator.next();
-                        if (pack != null && pack.getIconPkg() != null && pack.getIconPkg().equals(pkgName)) {
-                            iterator.remove();
-                            iconPacksSet.remove(pkgName);
-                            runOnUiThread(() -> {
-                                adapter.notifyDataSetChanged();
-                                updateTitleWithCount();
-                            });
-                            return;
-                        }
-                    }
-                }
-            }
-        };
-        insertFilter = new IntentFilter();
-        insertFilter.addAction("insertlist");
-        updateReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String pkgName = intent.getStringExtra("pkgName");
-                if (pkgName != null && !iconPacksSet.contains(pkgName)) {
-                    // Run database query on shared thread pool
-                    receiverExecutor.execute(() -> {
-                        IPObj obj = ipObjDao.getByIconPkg(pkgName);
-                        if (obj != null) {
-                            runOnUiThread(() -> {
-                                // Double-check to prevent race conditions
-                                if (!iconPacksSet.contains(pkgName)) {
-                                    iconPacksList.add(obj);
-                                    iconPacksSet.add(pkgName);
-                                    adapter.notifyDataSetChanged();
-                                    updateTitleWithCount();
-                                }
-                            });
-                        }
-                    });
-                }
-            }
-        };
-
-
-        packageReceiver = new PackageBroadcast();
-
-        packageFilter = new IntentFilter();
-        packageFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        packageFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        packageFilter.addDataScheme("package");
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(packageReceiver, packageFilter, Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(packageReceiver, packageFilter);
+        if (savedInstanceState != null) {
+            currentTab = savedInstanceState.getInt(STATE_TAB, R.id.nav_packs);
         }
+        bottomNav = findViewById(R.id.bottom_nav);
+        bottomNav.setOnItemSelectedListener(item -> {
+            showTab(item.getItemId());
+            return true;
+        });
+        bottomNav.setOnItemReselectedListener(item -> {
+            // nothing: keep the tab as it is
+        });
+        bottomNav.setSelectedItemId(currentTab);
+        showTab(currentTab);
 
-
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                getApplicationContext().getPackageManager().getUserBadgedLabel("", android.os.Process.myUserHandle());
-                //above is reflection for below...
-                //UserManager.get();
-            } catch (Throwable e) {
-            }
+        if (savedInstanceState == null) {
+            new ViewModelProvider(this).get(MainViewModel.class).refresh(false);
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(mMessageReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
-            registerReceiver(updateReceiver, insertFilter, Context.RECEIVER_NOT_EXPORTED);
-        } else {
-            registerReceiver(mMessageReceiver, filter);
-            registerReceiver(updateReceiver, insertFilter);
-        }
-
-        registerService();;
-        //setUpItemTouchHelper();
-    }
-
-    private void registerService() {
-        Intent i= new Intent(getApplicationContext(), InstallNotificationService.class);
-        startService(i);
-    }
-
-    private void callRandom() {
-        new Thread(() -> {
-            IPObj ipObj = Util.getRandomInstalledIconPack(ipObjDao);
-            runOnUiThread(() -> Util.determineApply(MainActivity.this, ipObj));
-        }).start();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mMessageReceiver != null) {
-            unregisterReceiver(mMessageReceiver);
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_TAB, currentTab);
+    }
+
+    private void showTab(int tabId) {
+        currentTab = tabId;
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction tx = fm.beginTransaction();
+        String tag = tagFor(tabId);
+        for (int id : new int[]{R.id.nav_packs, R.id.nav_icons, R.id.nav_saved, R.id.nav_history}) {
+            Fragment existing = fm.findFragmentByTag(tagFor(id));
+            if (existing != null && id != tabId) {
+                tx.hide(existing);
+            }
         }
-        if (updateReceiver != null) {
-            unregisterReceiver(updateReceiver);
+        Fragment target = fm.findFragmentByTag(tag);
+        if (target == null) {
+            tx.add(R.id.tab_container, newTab(tabId), tag);
+        } else {
+            tx.show(target);
         }
-        if(packageReceiver !=null) {
-            unregisterReceiver(packageReceiver);
+        tx.setReorderingAllowed(true).commitNow();
+        updateTitle(tabId);
+    }
+
+    private static String tagFor(int tabId) {
+        return "tab_" + tabId;
+    }
+
+    private static Fragment newTab(int tabId) {
+        if (tabId == R.id.nav_icons) return new IconsFragment();
+        if (tabId == R.id.nav_saved) return new SavedFragment();
+        if (tabId == R.id.nav_history) return new HistoryFragment();
+        return new PacksFragment();
+    }
+
+    private void updateTitle(int tabId) {
+        ActionBar bar = getSupportActionBar();
+        if (bar == null || tabId == R.id.nav_packs) {
+            return; // the Packs tab sets its own title and pack count
         }
-        if (receiverExecutor != null) {
-            receiverExecutor.shutdown();
+        int title = tabId == R.id.nav_icons ? R.string.nav_icons : tabId == R.id.nav_saved ? R.string.nav_saved : R.string.nav_history;
+        bar.setTitle(title);
+        bar.setSubtitle(null);
+    }
+
+    @Override
+    public void onBackPressed() {
+        // back from another tab returns to Packs before leaving the app
+        if (currentTab != R.id.nav_packs) {
+            bottomNav.setSelectedItemId(R.id.nav_packs);
+            return;
         }
+        super.onBackPressed();
     }
 
     @Override
@@ -239,41 +147,62 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onResume();
         if (reloadTheme) {
             reloadTheme = false;
-            restartActivity();
+            recreate();
         }
         if (reloadApp) {
             reloadApp = false;
-            restartActivity();
+            recreate();
         }
     }
 
-    private void restartActivity() {
-        recreate();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_host, menu);
+        return true;
     }
 
-    private void updateTitleWithCount() {
-        int count = iconPacksList != null ? iconPacksList.size() : 0;
-        setTitle(getString(R.string.app_name));
-        if (getSupportActionBar() != null) {
-            if (count > 0) {
-                getSupportActionBar().setSubtitle(count + " icon " + (count == 1 ? "pack" : "packs"));
-            } else {
-                getSupportActionBar().setSubtitle(null);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.pref) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.about) {
+            startActivity(new Intent(this, AboutActivity.class));
+            return true;
+        } else if (id == R.id.help) {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.app_name)
+                    .setMessage(R.string.about_help)
+                    .setPositiveButton(R.string.ok, null)
+                    .show();
+            return true;
+        } else if (id == R.id.report) {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("message/rfc822");
+            String version = "";
+            try {
+                PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                version = pInfo.versionName;
+            } catch (PackageManager.NameNotFoundException e) {
             }
+            i.putExtra(Intent.EXTRA_EMAIL, new String[]{"uzoftinc+mico@gmail.com"});
+            i.putExtra(Intent.EXTRA_SUBJECT, "Report Issue: " + getString(R.string.app_name) + " " + version);
+            i.putExtra(Intent.EXTRA_TEXT, "");
+            try {
+                startActivity(Intent.createChooser(i, "Send mail..."));
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+            }
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
-    private void loadApp(boolean forceLoad) {
-        if (forceLoad) {
-            // Invalidate caches on force reload
-            AppCache.getInstance().invalidate();
-        }
-        iconPacksList = new ArrayList<>();
-        LoadAppList getAppList = new LoadAppList();
-        if (plsWait == null && (getAppList.getStatus() == AsyncTask.Status.PENDING ||
-                getAppList.getStatus() == AsyncTask.Status.FINISHED)) {
-            getAppList.setContext(forceLoad, this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        }
+    /** "Share" from the Packs tab: renders the list into one image and shares it. */
+    public void shareListScreenshot(RecyclerView list) {
+        Toast.makeText(getApplicationContext(), getString(R.string.generating), Toast.LENGTH_LONG).show();
+        new Thread(() -> shareBitmap(getScreenshotFromRecyclerView(list), System.currentTimeMillis() + "")).start();
     }
 
     private void shareBitmap(Bitmap src, String fileName) {
@@ -369,422 +298,5 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
             runOnUiThread(() -> Toast.makeText(getApplicationContext(), getApplicationContext().getResources().getString(R.string.unable_screenshot), Toast.LENGTH_SHORT).show());
         }
         return bigBitmap;
-    }
-
-    @Override
-    public void onRefresh() {
-        loadApp(false);
-        mSwipeLayout.setRefreshing(false);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-
-        mainMenu = menu;
-        //make sure we update sort entry
-        runOnUiThread(() -> {
-            switch (Prefs.sortBy()) {
-                case "s0":
-                    mainMenu.findItem(R.id.sort_alpha).setChecked(true);
-                    break;
-                case "s1":
-                    mainMenu.findItem(R.id.sort_lastupdate).setChecked(true);
-                    break;
-                case "s2":
-                    mainMenu.findItem(R.id.sort_count).setChecked(true);
-                    break;
-                case "s5" :
-                    mainMenu.findItem(R.id.author_name).setChecked(true);
-            }
-        });
-
-        final MenuItem searchItem = menu.findItem(R.id.action_search);
-        final SearchView searchView;
-
-
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-            searchView.setOnQueryTextListener(this);
-            searchView.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
-                if (!hasFocus) {
-                    searchView.setIconified(true);
-                }
-            });
-        }
-        return true;
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.pref:
-                showPreference();
-                return true;
-            case R.id.iconsearch:
-                showIconSearch();
-                return true;
-            case R.id.about:
-                showAbout();
-                return true;
-            case R.id.force:
-                loadApp(true);
-                return true;
-            case R.id.share:
-                final Toast toast = Toast.makeText(getApplicationContext(), getString(R.string.generating), Toast.LENGTH_LONG);
-                toast.show();
-                new Thread(() -> shareBitmap(getScreenshotFromRecyclerView(recyclerView), System.currentTimeMillis() + "")).start();
-                return true;
-            case R.id.favorite:
-                showFav();
-                return true;
-            case R.id.help:
-                showHelp();
-                return true;
-            case R.id.report:
-                Intent i = new Intent(Intent.ACTION_SEND);
-                i.setType("message/rfc822");
-
-                String version = "";
-                PackageInfo pInfo = null;
-                try {
-                    pInfo = getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
-                    version = pInfo.versionName;
-                } catch (PackageManager.NameNotFoundException e) {
-
-                }
-                i.putExtra(Intent.EXTRA_EMAIL, new String[]{"uzoftinc+mico@gmail.com"});
-                i.putExtra(Intent.EXTRA_SUBJECT, "Report Issue: " + getString(R.string.app_name) + " " + version);
-                i.putExtra(Intent.EXTRA_TEXT, "");
-                try {
-                    startActivity(Intent.createChooser(i, "Send mail..."));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            case R.id.action_random:
-                callRandom();
-                return true;
-            case R.id.sort_alpha:
-                Prefs.sortBy("s0");
-                item.setChecked(true);
-                reload();
-                return true;
-            case R.id.sort_lastupdate:
-                Prefs.sortBy("s1");
-                item.setChecked(true);
-                reload();
-                return true;
-            case R.id.sort_count:
-                Prefs.sortBy("s2");
-                item.setChecked(true);
-                reload();
-                return true;
-            case R.id.sort_size:
-                Prefs.sortBy("s3");
-                item.setChecked(true);
-                reload();
-                return true;
-            case R.id.sort_percent:
-                Prefs.sortBy("s4");
-                item.setChecked(true);
-                reload();
-                return true;
-            case R.id.author_name:
-                Prefs.sortBy("s5");
-                item.setChecked(true);
-                reload();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void showFav() {
-        Intent myIntent = new Intent(MainActivity.this, FavoriteAcitvity.class);
-        startActivity(myIntent);
-    }
-
-    private void showIconSearch() {
-        Intent myIntent = new Intent(MainActivity.this, IconSearchActivity.class);
-        startActivity(myIntent);
-    }
-
-    private void reload() {
-        PackageComparator packageComparator = new PackageComparator(MainActivity.this); // Pass the activity context here
-        Collections.sort(iconPacksList, packageComparator);
-        adapter = new IconAdapter(iconPacksList, installed);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void showPreference() {
-        Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivity(myIntent);
-    }
-
-    private void showHelp() {
-        new MaterialDialog.Builder(this)
-                .title(R.string.app_name)
-                .content(R.string.about_help)
-                .positiveText(R.string.ok)
-                .show();
-    }
-
-    private void showAbout() {
-        Intent intent = new Intent(this, AboutActivity.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String query) {
-        List<IPObj> filteredModelList = filter(query);
-
-        PackageComparator packageComparator = new PackageComparator(MainActivity.this); // Pass the activity context here
-        Collections.sort(new ArrayList<>(filteredModelList), packageComparator);
-
-
-        adapter = new IconAdapter(filteredModelList, installed);
-        recyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        return true;
-    }
-
-    private List<IPObj> filter(String query) {
-        List<IPObj> filteredPack = new ArrayList<>();
-        if (query.length() >= 1) {
-            for (IPObj ipack : iconPacksList) {
-                if (ipack.getIconName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredPack.add(ipack);
-                }
-            }
-        }
-        return filteredPack.size() > 0 ? filteredPack : iconPacksList;
-    }
-
-
-    /*private void setUpItemTouchHelper() {
-
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            Drawable background;
-            Drawable xMark;
-            int xMarkMargin;
-            boolean initiated;
-
-            private void init() {
-                background = new ColorDrawable(Color.WHITE);
-                xMark = ContextCompat.getDrawable(MainActivity.this, R.drawable.ic_clear_24dp);
-                xMark.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-                xMarkMargin = (int) MainActivity.this.getResources().getDimension(R.dimen.ic_clear_margin);
-                initiated = true;
-            }
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                int position = viewHolder.getAdapterPosition();
-                IconAdapter testAdapter = (IconAdapter) recyclerView.getAdapter();
-                return super.getSwipeDirs(recyclerView, viewHolder);
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                int swipedPosition = viewHolder.getAdapterPosition();
-                IconAdapter adapter = (IconAdapter) recyclerView.getAdapter();
-            }
-
-            @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                View itemView = viewHolder.itemView;
-                if (viewHolder.getAdapterPosition() == -1) {
-                    return;
-                }
-                if (!initiated) {
-                    init();
-                }
-                background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
-                background.draw(c);
-
-                int itemHeight = itemView.getBottom() - itemView.getTop();
-                int intrinsicWidth = xMark.getIntrinsicWidth();
-                int intrinsicHeight = xMark.getIntrinsicWidth();
-                int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
-                int xMarkRight = itemView.getRight() - xMarkMargin;
-                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
-                int xMarkBottom = xMarkTop + intrinsicHeight;
-                xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
-                xMark.draw(c);
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            }
-
-        };
-        ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
-    }*/
-
-    public class LoadAppList extends AsyncTask<Void, Integer, List<IPObj>> {
-
-        Context context = null;
-        long startTime;
-        boolean forceLoad = false;
-
-
-        public LoadAppList setContext(boolean forceLoad, Context context) {
-            this.forceLoad = forceLoad;
-            this.context = context;
-            return this;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            plsWait = new MaterialDialog.Builder(context).cancelable(false).title(context.getString(R.string.loading)).content(R.string.please_wait_normal).progress(true, 0).show();
-            startTime = System.currentTimeMillis();
-        }
-
-        @Override
-        protected List<IPObj> doInBackground(Void... params) {
-            try {
-                List<IPObj> loadedPacks = new IconPackManager().updateIconPacks(ipObjDao, forceLoad, plsWait);
-                installed = Util.getInstalledApps().size();
-                if (isCancelled())
-                    return null;
-                return loadedPacks;
-            } catch (SQLiteException sqe) {
-                sqe.printStackTrace();
-                return null;
-            }
-
-        }
-
-        @Override
-        protected void onPostExecute(List<IPObj> result) {
-            try {
-                try {
-                    if (plsWait != null && plsWait.isShowing()) {
-                        plsWait.dismiss();
-                    }
-                } catch (final IllegalArgumentException e) {
-                    // Handle or log or ignore
-                } catch (final Exception e) {
-                    // Handle or log or ignore
-                } finally {
-                    plsWait = null;
-                }
-                mSwipeLayout.setRefreshing(false);
-                // Populate iconPacksList from the result
-                if (result != null && !result.isEmpty()) {
-                    iconPacksList.clear();
-                    iconPacksSet.clear();
-                    iconPacksList.addAll(result);
-                    // Populate the HashSet for fast lookups
-                    for (IPObj pack : result) {
-                        if (pack != null && pack.getIconPkg() != null) {
-                            iconPacksSet.add(pack.getIconPkg());
-                        }
-                    }
-                }
-                if (iconPacksList != null && !iconPacksList.isEmpty()) {
-                    updateTitleWithCount();
-                    recyclerView.setVisibility(View.VISIBLE);
-                    emptyView.setVisibility(View.GONE);
-                    Collections.sort(iconPacksList, new PackageComparator(MainActivity.this));
-                    final Gson gson = new Gson();
-                    if (Prefs.useFavorite()) {
-                        Collections.sort(iconPacksList, (o1, o2) -> {
-                            IconAttr attr1 = gson.fromJson(o1.getAdditional(), IconAttr.class);
-                            IconAttr attr2 = gson.fromJson(o2.getAdditional(), IconAttr.class);
-                            return Boolean.compare(attr2.isFavorite(), attr1.isFavorite());
-                        });
-                    }
-                    adapter = new IconAdapter(iconPacksList, installed);
-                    recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-
-
-                    /*
-
-                    new SwipeHelper(getApplicationContext(), recyclerView) {
-                        @Override
-                        public void instantiateUnderlayButton(RecyclerView.ViewHolder viewHolder, List<UnderlayButton> underlayButtons) {
-                            underlayButtons.add(new SwipeHelper.UnderlayButton(
-                                    "Apply",
-                                    0,
-                                    Color.parseColor("#FF3C30"),
-                                    pos -> {
-                                    }
-                            ));
-
-                            underlayButtons.add(new SwipeHelper.UnderlayButton(
-                                    "Details",
-                                    0,
-                                    Color.parseColor("#FF9502"),
-                                    pos -> {
-                                    }
-                            ));
-                        }
-                    };
-                     */
-                    List<ShortcutInfo> list = new ArrayList<>();
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
-                        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-
-
-                        Intent intent;
-
-                        intent = new Intent(getApplicationContext(), RandomActivity.class);
-                        intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
-                        intent.putExtra("pack", "");
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-                        ShortcutInfo shortcut = new ShortcutInfo.Builder(getApplicationContext(), "card")
-                                .setShortLabel("Random")
-                                .setLongLabel("Apply Random Iconpack")
-                                .setIntent(intent)
-                                .build();
-                        list.add(shortcut);
-
-                        for (IPObj pack : iconPacksList) {
-                            if (pack != null && pack.getIconPkg() != null && gson.fromJson(pack.getAdditional(), IconAttr.class).isFavorite()) {
-                                intent = new Intent(getApplicationContext(), RandomActivity.class);
-                                intent.setAction("dev.ukanth.iconmgr.shortcut.RANDOM");
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                intent.putExtra("pack", pack.getIconPkg());
-                                shortcut = new ShortcutInfo.Builder(getApplicationContext(), pack.getIconPkg())
-                                        .setShortLabel(pack.getIconName())
-                                        .setLongLabel(pack.getIconName())
-                                        .setIntent(intent)
-                                        .build();
-                                list.add(shortcut);
-
-                            }
-                        }
-                        shortcutManager.setDynamicShortcuts(list);
-                    }
-                } else {
-                    recyclerView.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                }
-                //Log.i("MICO", "Total time:" + (System.currentTimeMillis() - startTime) / 1000 + " sec");
-            } catch (Exception e) {
-                // nothing
-                if (plsWait != null) {
-                    plsWait.dismiss();
-                    plsWait = null;
-                }
-                mSwipeLayout.setRefreshing(false);
-            }
-        }
     }
 }

@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by ukanth on 3/9/17.
@@ -90,11 +91,12 @@ public class Icon implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Icon icon = (Icon) o;
-        return mTitle.equals(icon.mTitle);
+        // same drawable name in two packs is two different icons
+        return Objects.equals(mTitle, icon.mTitle) && Objects.equals(mPackageName, icon.mPackageName);
     }
 
     @Override
     public int hashCode() {
-        return mTitle.hashCode();
+        return Objects.hash(mTitle, mPackageName);
     }
 }
