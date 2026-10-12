@@ -14,7 +14,9 @@ public abstract class FavDatabase extends RoomDatabase {
     public static FavDatabase getInstance(Context context) {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(), FavDatabase.class, "fav-db")
-                    .fallbackToDestructiveMigration()
+                    // v1 -> v2 predates real migrations; keep that one path, never wipe on later bumps
+                    .fallbackToDestructiveMigrationFrom(1)
+                    .fallbackToDestructiveMigrationOnDowngrade()
                     .build();
         }
         return instance;

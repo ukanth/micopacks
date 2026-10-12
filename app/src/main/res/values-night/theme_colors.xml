@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="m3_primary">#A3CDE4</color>
+    <color name="m3_on_primary">#023547</color>
+    <color name="m3_primary_container">#214B5E</color>
+    <color name="m3_on_primary_container">#BFE6FB</color>
+    <color name="m3_secondary">#DEC82F</color>
+    <color name="m3_on_secondary">#373100</color>
+    <color name="m3_secondary_container">#504700</color>
+    <color name="m3_on_secondary_container">#FCE449</color>
+    <color name="m3_tertiary">#C3C3EB</color>
+    <color name="m3_on_tertiary">#2C2E4D</color>
+    <color name="m3_tertiary_container">#424465</color>
+    <color name="m3_on_tertiary_container">#E0E0FF</color>
+    <color name="m3_error">#FFB4AB</color>
+    <color name="m3_on_error">#690005</color>
+    <color name="m3_background">#0F1416</color>
+    <color name="m3_on_background">#DFE3E5</color>
+    <color name="m3_surface">#0F1416</color>
+    <color name="m3_on_surface">#DFE3E5</color>
+    <color name="m3_surface_variant">#3F484D</color>
+    <color name="m3_on_surface_variant">#BFC8CD</color>
+    <color name="m3_outline">#899297</color>
+    <color name="m3_outline_variant">#3F484D</color>
+    <color name="m3_surface_container_lowest">#0A0F11</color>
+    <color name="m3_surface_container_low">#181C1E</color>
+    <color name="m3_surface_container">#1C2022</color>
+    <color name="m3_surface_container_high">#262B2D</color>
+    <color name="m3_surface_container_highest">#313638</color>
+
+    <color name="stat_chip_background">#262B2D</color>
+    <color name="text_secondary">#BFC8CD</color>
+</resources>

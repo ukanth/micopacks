@@ -1,81 +1,93 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <SwitchPreference
+    <ListPreference
+        android:defaultValue="system"
+        android:entries="@array/theme_mode_entries"
+        android:entryValues="@array/theme_mode_values"
+        android:key="theme_mode"
+        android:title="@string/theme_mode"
+        app:iconSpaceReserved="false"
+        app:useSimpleSummaryProvider="true" />
+    <!-- shown on Android 12+ only (SettingsActivity) -->
+    <SwitchPreferenceCompat
         android:defaultValue="false"
-        android:key="dark_theme"
-        android:title="@string/use_dark" />
-    <SwitchPreference
+        android:key="dynamic_color"
+        android:summary="@string/dynamic_color_summary"
+        android:title="@string/dynamic_color"
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false" />
+    <SwitchPreferenceCompat
         android:defaultValue="false"
         android:key="notify_install"
-        android:title="@string/show_notification" />
+        android:title="@string/show_notification"
+        app:iconSpaceReserved="false" />
 
 
-    <PreferenceCategory android:title="Main UI">
+    <PreferenceCategory
+        android:title="@string/pref_packs_list"
+        app:iconSpaceReserved="false">
 
-        <SwitchPreference
+        <ListPreference
+            android:defaultValue="apply"
+            android:entries="@array/swipe_action_entries"
+            android:entryValues="@array/swipe_action_values"
+            android:key="swipe_right"
+            android:title="@string/pref_swipe_right"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:defaultValue="favorite"
+            android:entries="@array/swipe_action_entries"
+            android:entryValues="@array/swipe_action_values"
+            android:key="swipe_left"
+            android:title="@string/pref_swipe_left"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="show_favorites"
-            android:title="@string/show_favs" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="show_authorName"
-            android:title="@string/show_authorname" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="total_icons"
-            android:title="@string/total_icons" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="showpack_percent"
-            android:title="@string/show_percent" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="showpack_size"
-            android:title="@string/showsize" />
-
-
+            android:title="@string/pref_favorites_first"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
 
-    <PreferenceCategory android:title="Others">
-        <SwitchPreference
+    <PreferenceCategory
+        android:title="Others"
+        app:iconSpaceReserved="false">
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="enable_auto_theming"
+            android:summary="@string/enable_auto_theming_summary"
             android:title="@string/enable_auto_theming"
-            android:summary="@string/enable_auto_theming_summary" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="enable_fab"
-            android:title="@string/enable_fab_button" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="preview_nonthemed"
-            android:title="@string/preview_nontheme" />
+            app:iconSpaceReserved="false" />
 
         <ListPreference
             android:defaultValue="5"
             android:entries="@array/col"
             android:entryValues="@array/colvalue"
             android:key="preview_col"
-            android:title="Number of Columns in Preview" />
+            android:title="Number of Columns in Preview"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Misc">
-        <SwitchPreference
+    <PreferenceCategory
+        android:title="Misc"
+        app:iconSpaceReserved="false">
+        <SwitchPreferenceCompat
             android:defaultValue="true"
             android:key="use_root_tasker"
-            android:title="@string/use_root" />
-        <SwitchPreference
+            android:title="@string/use_root"
+            app:iconSpaceReserved="false" />
+        <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="use_launcher_menu"
-            android:title="@string/use_launcher_menu" />
+            android:title="@string/use_launcher_menu"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
 

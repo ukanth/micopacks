@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Packs tab actions (the host adds Settings/Report/Help/About). Only search and shuffle are
+     icons; filters and sort live in the overflow so the list stays clean. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_random"
+        android:icon="@drawable/ic_random"
+        android:title="@string/shuffle"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_24"
+        android:title="@string/action_search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
+
+    <item
+        android:id="@+id/menu_show"
+        android:title="@string/menu_show">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/show_all"
+                    android:checked="true"
+                    android:title="@string/filter_all_packs" />
+                <item
+                    android:id="@+id/show_favorites"
+                    android:title="@string/filter_favorites" />
+                <item
+                    android:id="@+id/show_recent"
+                    android:title="@string/filter_recent" />
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/menu_sort"
+        android:title="@string/menu_sort_by">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/sort_alpha"
+                    android:checked="true"
+                    android:title="@string/alphabet" />
+                <item
+                    android:id="@+id/sort_percent"
+                    android:title="@string/iconpercent" />
+                <item
+                    android:id="@+id/sort_count"
+                    android:title="@string/iconcount" />
+                <item
+                    android:id="@+id/sort_lastupdate"
+                    android:title="@string/lastupdated" />
+                <item
+                    android:id="@+id/sort_size"
+                    android:title="@string/iconsize" />
+                <item
+                    android:id="@+id/author_name"
+                    android:title="@string/authorname" />
+            </group>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/share"
+        android:title="@string/sharelist" />
+
+    <item
+        android:id="@+id/force"
+        android:title="@string/forcereload" />
+</menu>

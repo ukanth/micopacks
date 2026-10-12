@@ -1,7 +1,8 @@
 package dev.ukanth.iconmgr;
 
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 /**
  * Created by ukanth on 24/7/17.
@@ -9,25 +10,56 @@ import android.preference.PreferenceManager;
 
 public class Prefs {
     private static final String SORT_BY = "sort_option";
+    /** Legacy boolean (v5.0 and earlier); migrated to {@link #THEME_MODE}. */
     public static final String THEME_RES_ID = "dark_theme";
-    public static final String TOTAL_ICONS = "total_icons";
+    public static final String THEME_MODE = "theme_mode";
+    public static final String DYNAMIC_COLOR = "dynamic_color";
+    public static final String THEME_SYSTEM = "system";
+    public static final String THEME_LIGHT = "light";
+    public static final String THEME_DARK = "dark";
     public static final String NOTIFY = "notify_install";
-    public static final String FAB = "enable_fab";
-    public static final String PREVIEW = "preview_nonthemed";
     public static final String ROOT_TASKER = "use_root_tasker";
-    public static final String SHOW_SIZE = "showpack_size";
-    public static final String SHOW_AUTHOR_NAME = "show_authorName";
-    public static final String SHOW_PERCENT = "showpack_percent";
     public static final String LIST_COL = "preview_col";
     public static final String IS_FIRST_TIME = "isFirstTime";
     public static final String PS = "PS";
     public static final String FAV = "show_favorites";
     public static final String ENABLE_PROMPT="use_launcher_menu";
     public static final String AUTO_THEMING = "enable_auto_theming";
+    public static final String SWIPE_RIGHT = "swipe_right";
+    public static final String SWIPE_LEFT = "swipe_left";
+    private static final String SWIPE_HINT_SHOWN = "swipe_hint_shown";
 
-    public static boolean isDarkTheme() {
+    /**
+     * "system", "light" or "dark". Users who set the old dark-mode switch keep their explicit
+     * choice; everyone else follows the system.
+     */
+    public static String themeMode() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return prefs.getBoolean(THEME_RES_ID, false);
+        String mode = prefs.getString(THEME_MODE, null);
+        if (mode == null) {
+            mode = prefs.contains(THEME_RES_ID)
+                    ? (prefs.getBoolean(THEME_RES_ID, false) ? THEME_DARK : THEME_LIGHT)
+                    : THEME_SYSTEM;
+            prefs.edit().putString(THEME_MODE, mode).apply();
+        }
+        return mode;
+    }
+
+    public static int nightMode() {
+        switch (themeMode()) {
+            case THEME_LIGHT:
+                return AppCompatDelegate.MODE_NIGHT_NO;
+            case THEME_DARK:
+                return AppCompatDelegate.MODE_NIGHT_YES;
+            default:
+                return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        }
+    }
+
+    /** Material You wallpaper colours (Android 12+); brand colours otherwise. */
+    public static boolean useDynamicColor() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        return prefs.getBoolean(DYNAMIC_COLOR, false);
     }
 
     public static boolean useRoot() {
@@ -45,31 +77,15 @@ public class Prefs {
         return prefs.getBoolean(FAV, false);
     }
 
-    public static boolean showSize() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return prefs.getBoolean(SHOW_SIZE, false);
-    }
 
 
-    public static boolean isTotalIcons() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return prefs.getBoolean(TOTAL_ICONS, false);
-    }
 
-    public static boolean isNonPreview() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return prefs.getBoolean(PREVIEW, false);
-    }
 
     public static boolean isNotify() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(NOTIFY, false);
     }
 
-    public static boolean isFabShow() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return prefs.getBoolean(FAB, false);
-    }
 
 
     public static boolean isFirstTime() {
@@ -108,18 +124,32 @@ public class Prefs {
         return prefs.getBoolean(PS, false);
     }
 
-    public static boolean showAuthorName() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return prefs.getBoolean(SHOW_AUTHOR_NAME,false);
-    }
 
-    public static boolean showPercentage() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
-        return prefs.getBoolean(SHOW_PERCENT, false);
-    }
     
     public static boolean isAutoThemingEnabled() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
         return prefs.getBoolean(AUTO_THEMING, false);
+    }
+
+    /** {@link dev.ukanth.iconmgr.home.PackAction} key for a right swipe on a pack row. */
+    public static String swipeRight() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        return prefs.getString(SWIPE_RIGHT, "apply");
+    }
+
+    /** {@link dev.ukanth.iconmgr.home.PackAction} key for a left swipe on a pack row. */
+    public static String swipeLeft() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        return prefs.getString(SWIPE_LEFT, "favorite");
+    }
+
+    public static boolean swipeHintShown() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        return prefs.getBoolean(SWIPE_HINT_SHOWN, false);
+    }
+
+    public static void setSwipeHintShown() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        prefs.edit().putBoolean(SWIPE_HINT_SHOWN, true).apply();
     }
 }

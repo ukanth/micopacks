@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import dev.ukanth.iconmgr.util.WindowInsetsHelper;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -18,13 +19,9 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if (Prefs.isDarkTheme()) {
-            setTheme(R.style.AppTheme_Dark_NoActionBar);
-        } else {
-            setTheme(R.style.AppTheme_Light_NoActionBar);
-        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
+        WindowInsetsHelper.applyToContent(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

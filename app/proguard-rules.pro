@@ -1,47 +1,19 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /mnt/mint/android-sdk-linux/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Micopacks R8 rules. Manifest components, Room and libsu are kept by their own/consumer rules;
+# these cover the code that is only reached through reflection.
 
-# Add any project specific keep options here:
+# Gson reflects over IconAttr's fields (legacy JSON, read by the icons-db v1 -> v2 migration)
+-keep class dev.ukanth.iconmgr.IconAttr { <fields>; <init>(); }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# RootTools / RootShell: RootClass loads classes by name and runs them through app_process
+-keep class com.stericson.** { *; }
+-dontwarn com.stericson.**
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Locale / Tasker plug-in contract (bundle keys and helpers used by the edit and fire components)
+-keep class com.twofortyfouram.locale.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# PrettyTime loads its locale resource bundles by class name
+-keep class org.ocpsoft.prettytime.i18n.** { *; }
 
-
--keep class !android.support.v7.internal.view.menu.**,android.support.** {*;}
--keep class android.support.v7.graphics.** { *; }
-
--keepattributes *Annotation*
--keepclassmembers class ** {
-    @org.greenrobot.eventbus.Subscribe <methods>;
-}
--keep enum org.greenrobot.eventbus.ThreadMode { *; }
-
-# Only required if you use AsyncExecutor
--keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
-    <init>(java.lang.Throwable);
-}
-
--renamesourcefileattribute SourceFile
+# readable crash stack traces
 -keepattributes SourceFile,LineNumberTable
-
--keep class **$$JsonObjectMapper { *; }
-
--dontwarn java.lang.invoke.*
+-renamesourcefileattribute SourceFile

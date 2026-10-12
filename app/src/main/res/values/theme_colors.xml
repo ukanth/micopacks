@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material 3 roles derived from the Micopacks brand: blue-grey (#607D8B) primary, launcher-yellow (#FFEA00) secondary.
+     Dark values live in values-night/theme_colors.xml. -->
+<resources>
+    <color name="m3_primary">#3B6377</color>
+    <color name="m3_on_primary">#FFFFFF</color>
+    <color name="m3_primary_container">#BFE6FB</color>
+    <color name="m3_on_primary_container">#001E2B</color>
+    <color name="m3_secondary">#695F00</color>
+    <color name="m3_on_secondary">#FFFFFF</color>
+    <color name="m3_secondary_container">#FCE449</color>
+    <color name="m3_on_secondary_container">#201C00</color>
+    <color name="m3_tertiary">#5A5C7E</color>
+    <color name="m3_on_tertiary">#FFFFFF</color>
+    <color name="m3_tertiary_container">#E0E0FF</color>
+    <color name="m3_on_tertiary_container">#171937</color>
+    <color name="m3_error">#BA1A1A</color>
+    <color name="m3_on_error">#FFFFFF</color>
+    <color name="m3_background">#F6F9FB</color>
+    <color name="m3_on_background">#181C1E</color>
+    <color name="m3_surface">#F6F9FB</color>
+    <color name="m3_on_surface">#181C1E</color>
+    <color name="m3_surface_variant">#DBE4EA</color>
+    <color name="m3_on_surface_variant">#3F484D</color>
+    <color name="m3_outline">#6F787D</color>
+    <color name="m3_outline_variant">#BFC8CD</color>
+    <color name="m3_surface_container_lowest">#FFFFFF</color>
+    <color name="m3_surface_container_low">#F0F4F6</color>
+    <color name="m3_surface_container">#EAEEF0</color>
+    <color name="m3_surface_container_high">#E4E9EB</color>
+    <color name="m3_surface_container_highest">#DFE3E5</color>
+
+    <color name="stat_chip_background">#E4E9EB</color>
+    <color name="text_secondary">#3F484D</color>
+</resources>

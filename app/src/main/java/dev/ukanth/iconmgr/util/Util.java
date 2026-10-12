@@ -1,5 +1,7 @@
 package dev.ukanth.iconmgr.util;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -15,7 +17,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.os.AsyncTask;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -26,7 +27,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.stericson.roottools.RootTools;
 import com.topjohnwu.superuser.Shell;
 
@@ -51,11 +51,10 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import dev.ukanth.iconmgr.ApplyActionReceiver;
 import dev.ukanth.iconmgr.App;
-import dev.ukanth.iconmgr.DetailsActivity;
 import dev.ukanth.iconmgr.Prefs;
-import dev.ukanth.iconmgr.PreviewActionReceiver;
+import dev.ukanth.iconmgr.detail.PackDetailActivity;
+import dev.ukanth.iconmgr.RandomActivity;
 import dev.ukanth.iconmgr.R;
 import dev.ukanth.iconmgr.dao.IPObj;
 import dev.ukanth.iconmgr.dao.IPObjDao;
@@ -75,8 +74,8 @@ public class Util {
     public static final String CMD_CP = "cp \"%s\" \"%s\"";
     public static final String TMP_FILE = ".temp";
     private static final String TAG = "MICOPACK";
+    public static final String EXTRA_NOTIFICATION_ID = "notification_id";
 
-    private static String authorName;
 
 
 
@@ -225,7 +224,10 @@ public class Util {
         Executors.newSingleThreadExecutor().execute(() -> {
             RootTools.killProcess(packageName);
             Intent LaunchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
-            context.startActivity(LaunchIntent);
+            if (LaunchIntent != null) {
+                LaunchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(LaunchIntent);
+            }
         });
     }
 
@@ -308,14 +310,19 @@ public class Util {
             }
         }
 
-        new MaterialDialog.Builder(ctx)
-                .title(R.string.select_launcher)
-                .items(launchers)
-                .itemsCallbackSingleChoice(-1, (dialog, view, which, text) -> {
-                    LauncherHelper.apply(ctx, currentItem.getIconPkg(), launcherMap.get(text.toString()));
-                    return true;
+        if (currentItem == null) {
+            Toast.makeText(ctx, ctx.getString(R.string.unable_iconpack), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final int[] selected = {-1};
+        new MaterialAlertDialogBuilder(ctx)
+                .setTitle(R.string.select_launcher)
+                .setSingleChoiceItems(launchers.toArray(new String[0]), -1, (dialog, which) -> selected[0] = which)
+                .setPositiveButton(R.string.apply, (dialog, which) -> {
+                    if (selected[0] >= 0) {
+                        LauncherHelper.apply(ctx, currentItem.getIconPkg(), launcherMap.get(launchers.get(selected[0])));
+                    }
                 })
-                .positiveText(R.string.apply)
                 .show();
     }
 
@@ -367,29 +374,29 @@ public class Util {
                 notificationManager.createNotificationChannel(channel);
             }
 
-            int uid = 0;
-            try {
-                uid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;
-            } catch (PackageManager.NameNotFoundException e) {
-            }
-            Intent intent = new Intent(context, DetailsActivity.class);
-            intent.putExtra("pkg", packageName);
-            intent.putExtra(Intent.EXTRA_TITLE, packageName);
-            PendingIntent pIntent = PendingIntent.getActivity(context, uid, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            int notificationId = hash(packageName);
+            // Android 12+ requires an explicit mutability flag, and blocks starting activities
+            // from a receiver triggered by a notification, so every action opens an activity directly.
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE;
 
+            Intent intent = PackDetailActivity.intent(context, packageName);
+            intent.setAction("dev.ukanth.iconmgr.OPEN_PACK");
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+            PendingIntent pIntent = PendingIntent.getActivity(context, notificationId, intent, flags);
 
-            Intent applyReceive = new Intent("dev.ukanth.iconmgr.APPLY_ACTION");
-            applyReceive.putExtra("pkg", packageName);
-            applyReceive.putExtra(Intent.EXTRA_TITLE, packageName);
-            applyReceive.setClass(context, ApplyActionReceiver.class);
-            PendingIntent applyIntentYes = PendingIntent.getBroadcast(context, uid, applyReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent applyIntent = new Intent(context, RandomActivity.class);
+            applyIntent.setAction("dev.ukanth.iconmgr.APPLY_ACTION");
+            applyIntent.putExtra("pack", packageName);
+            applyIntent.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+            applyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent applyIntentYes = PendingIntent.getActivity(context, notificationId, applyIntent, flags);
 
-
-            Intent previewReceive = new Intent("dev.ukanth.iconmgr.PREVIEW_ACTION");
-            previewReceive.putExtra("pkg", packageName);
-            previewReceive.putExtra(Intent.EXTRA_TITLE, packageName);
-            previewReceive.setClass(context, PreviewActionReceiver.class);
-            PendingIntent previewIntent = PendingIntent.getBroadcast(context, uid, previewReceive, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent previewActivity = PackDetailActivity.intent(context, packageName);
+            previewActivity.setAction("dev.ukanth.iconmgr.PREVIEW_ACTION");
+            previewActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            previewActivity.putExtra(EXTRA_NOTIFICATION_ID, notificationId);
+            PendingIntent previewIntent = PendingIntent.getActivity(context, notificationId, previewActivity, flags);
 
 
             NotificationCompat.Action applyAction =
@@ -403,23 +410,12 @@ public class Util {
                     .setContentText(name + " " + context.getString(R.string.iconinstalled))
                     .setSmallIcon(R.drawable.iconpack)
                     .setContentIntent(pIntent)
+                    .setAutoCancel(true)
                     .setChannelId(CHANNEL_ID)
                     .addAction(applyAction)
                     .addAction(previewAction);
-            notificationManager.notify(hash(packageName), mBuilder.build());
+            notificationManager.notify(notificationId, mBuilder.build());
         }
-    }
-
-
-    public static long getApkSize(String packageName)
-            throws PackageManager.NameNotFoundException {
-        long sizeInBytes = new File(App.getContext().getPackageManager().getApplicationInfo(
-                packageName, 0).publicSourceDir).length();
-        if (sizeInBytes > 0) {
-            long sizeInMb = (sizeInBytes + 9216000) / (1024 * 1024);
-            return sizeInMb;
-        }
-        return 0;
     }
 
 
@@ -501,14 +497,12 @@ public class Util {
                     CertificateFactory certFactory = CertificateFactory.getInstance("X509");
                     X509Certificate x509Cert = (X509Certificate) certFactory.generateCertificate(certStream);
                     String issuerDN = x509Cert.getIssuerDN().getName();
-                    Log.i("DN", issuerDN);
 
                     String[] nameComponents = issuerDN.split(",");
                     for (String nameComponent : nameComponents) {
                         String[] keyValue = nameComponent.trim().split("=");
                         if (keyValue.length == 2 && keyValue[0].trim().equalsIgnoreCase("CN")) {
-                            authorName = keyValue[1].trim();
-                            return authorName;
+                            return keyValue[1].trim();
                         }
                     }
                 }

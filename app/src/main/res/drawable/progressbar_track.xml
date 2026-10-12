@@ -3,7 +3,7 @@
     <item android:id="@android:id/background">
         <shape>
             <corners android:radius="2dp" />
-            <solid android:color="@color/colorPrimaryDark" />
+            <solid android:color="@color/m3_primary" />
         </shape>
     </item>
 
